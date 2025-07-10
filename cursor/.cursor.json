@@ -1,0 +1,108 @@
+{
+    "context": [
+        {
+            "type": "system",
+            "content": "Use TypeScript for all code. Use Tailwind CSS for styling. Avoid inline styles entirely."
+        },
+        {
+            "type": "system",
+            "content": "Follow clean code and SOLID principles. Use async/await; never use .then(). Avoid console.log; use a structured logger like Winston or Pino."
+        },
+        {
+            "type": "system",
+            "content": "Never use raw status codes. Always use HTTP status code enums like Axios' HttpStatusCode."
+        },
+        {
+            "type": "system",
+            "content": "Component should not write any business logic, it should only be presentational, write logic in hooks"
+        },
+        {
+            "type": "system",
+            "content": "All functions should be method-based inside classes. Do not write standalone functions. Use service, helper, or repository classes."
+        },
+        {
+            "type": "system",
+            "content": "Use consistent file and folder naming. For example: 'user.controller.ts', 'user.service.ts', 'user.repository.ts'. Use kebab-case for folders and camelCase for variables/functions."
+        },
+        {
+            "type": "system",
+            "content": "Prioritize modular,. Avoid tight coupling. Use dependency injection wherever possible."
+        },
+        {
+            "type": "system",
+            "content": "Follow this file and folder structure:\n- Each feature/module should have its own folder inside 'src/modules' (e.g., src/modules/user/).\n- Inside each module: separate files for controller (e.g., user.controller.ts), service (e.g., user.service.ts), repository (e.g., user.repository.ts), routes (e.g., user.routes.ts), model/schema (e.g., user.model.ts), types (e.g., user.types.ts), validations (e.g., user.validation.ts), utils/helpers if needed.\n- Common/shared code (e.g., config, middlewares, logger, utils, constants) should go under 'src/shared/'.\n- API documentation files should go in 'src/docs/' and follow the naming pattern '<feature>.api.md' or '<feature>.api.ts'."
+        },
+        {
+            "type": "system",
+            "content": "Use proper yup validator and formik, every formik need ErrorMessage, and yup validation should be seperate single file, and initial also other file also"
+        },
+        {
+            "type": "system",
+            "content": "Every API response must follow this structure: { status: boolean, msg: string, data?: any }. If there is no data to return, 'data' can be omitted. All API changes must be documented and synced immediately in 'docs/api/api.docs'."
+        },
+        {
+            "type": "system",
+            "content": "Do not define utility functions like 'generateOtp' inside service classes if they are stateless or reused. Such functions must be moved to 'src/shared/utils/' (e.g., otp.util.ts or time.util.ts). All static or repeated values must be placed in 'src/shared/constants/' and never hardcoded in code directly. Import constants instead of redefining or mutating them."
+        },
+        {
+            "type": "system",
+            "content": "All code must be optimized for performance and scalability. Minimize time complexity and avoid unnecessary synchronous calls. Use non-blocking patterns like Promise.all, batched database queries, pagination, indexing,. Avoid N+1 problems and redundant queries. Handle high-concurrency scenarios safely.  Avoid nested loops and re-calculate only what is necessary. Prioritize clean, efficient, scalable logic over quick hacks."
+        },
+        {
+            "type": "system",
+            "content": "One repository method should only do one thing, if you need to do multiple things, create multiple methods"
+        },
+        {
+            "type": "system",
+            "content": "For frontend code: use functional components only. All components must be strongly typed using TypeScript. Define reusable types and interfaces under 'src/lib/interface/'."
+        },
+        {
+            "type": "system",
+            "content": "Use custom hooks for encapsulating logic, and context API for shared state when needed. Hook naming must follow the 'useX' convention. Context should go under 'src/contexts/'."
+        },
+        {
+            "type": "system",
+            "content": "All API calls must be placed in centralized services under 'src/services/api/'. Use Axios with error handling and typed responses. Use loading/error state management. Implement polling only where required."
+        },
+        {
+            "type": "system",
+            "content": "UI should be built using reusable components inside 'src/components/'. Each component must follow PascalCase. Use Tailwind CSS for styling and ensure responsiveness."
+        },
+        {
+            "type": "system",
+            "content": "Avoid business logic in UI components. Keep them presentational. Extract logic into hooks or context. Use error boundaries and loading indicators where appropriate."
+        },
+        {
+            "type": "system",
+            "content": "Use '@/‘ alias in all imports. Maintain consistent and clean import structure across files."
+        },
+        {
+            "type": "system",
+            "content": "When adding a new feature/module (e.g., Payment), follow the pattern:\n- Create interfaces in 'src/lib/interface'\n- Create API services in 'src/services/api'\n- Add context if needed under 'src/contexts'\n- Add hooks in 'src/hooks'\n- Create reusable components in 'src/components'\n- Add the main page in 'src/pages'\n- Update routing in 'src/App.tsx' or router config"
+        },
+        {
+            "type": "system",
+            "content": "Document every module you create. Add README or inline code comments explaining the logic, especially for complex flows. Place README under feature/page folder if needed."
+        },
+        {
+            "type": "system",
+            "content": "All API data must be routed through Redux. Components/pages should never call APIs directly. Use Redux to check if data exists; if it does, use it. If not, trigger the API via Redux thunk/middleware, then store in Redux. Avoid fetching the same data again on page navigation. No need for data persistence across reloads (e.g., no localStorage or sessionStorage). Redux is used as a short-lived in-memory cache to reduce redundant API calls."
+        },
+        {
+            "type": "system",
+            "content": "After each change, stage only the modified files using `git add <file>`. Then commit using the Conventional Commit format: start with `feat`, `fix`, `refactor`, `docs`, `test`, or `chore` as appropriate. Example: `git commit -m \"feat(payment): add payment controller with CRUD logic\"`. The scope in parentheses must match the module or feature name. Always include Git command blocks with every prompt response unless explicitly disabled."
+        },
+        {
+            "type": "system",
+            "content": "All forms must use Formik and shoult not use zod. Each input field must be implemented using Formik’s `<Field>` component. Error messages must be shown using `<ErrorMessage>` from Formik. Validation must be defined using Yup and passed to Formik as a schema. No custom manual validation or uncontrolled inputs are allowed."
+        },
+        {
+            "type": "system",
+            "content": "Each page must reside in its own dedicated folder under `src/pages/`, following this pattern: `pages/<page-name>/<page-name>.tsx`. For example, the login page must be located at `pages/login/login.tsx`. Group related assets (e.g., styles, tests) in the same folder."
+        },
+        {
+            "type": "system",
+            "content": "Every class (e.g., service, repository, helper) must be instantiated only once in a central `index.ts` file inside its module or shared folder. Export and import this instance wherever needed. Do not use static methods or recreate class instances in multiple files. Enforce proper dependency injection through the instantiated object. This ensures singleton behavior, testability, and consistent internal state."
+        }
+    ]
+}
