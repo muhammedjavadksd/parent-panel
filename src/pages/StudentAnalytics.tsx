@@ -157,13 +157,16 @@ const StudentAnalytics = () => {
             />
           </div>
 
-          {/* <LearningProgress
+          <LearningProgress
             progressOverview={progressOverview?.progress_overview ?? null}
             learningProgress={progressOverview?.learning_progress ?? null}
             isLoading={isProgressLoading}
-          /> */}
+          />
+
+          {/* //replaced with learning progress for uniformity  */}
+
           {/* Overview Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
@@ -200,27 +203,26 @@ const StudentAnalytics = () => {
             <Card className="p-6 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
-                  {/* Changing Average score to Streakwith static data */}
+                  
                   <p className="text-yellow-600 font-semibold mb-2">Streak</p>
                   <p className="text-3xl font-bold text-yellow-800">{0} Days</p>
                   <p className="text-xs text-yellow-600 mt-1">0 Day longer than previous</p>
                 </div>
-                {/* <Award className="text-yellow-500" size={32} /> */}
                 <Target className="text-yellow-500" size={32} />
               </div>
             </Card>
-          </div>
+          </div> */}
 
           {/* Gauge Charts Row */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+          {/* <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <GaugeChart value={68} max={100} label="Monthly Goal" color="#3b82f6" unit="h" />
             <GaugeChart value={24} max={30} label="Classes Done" color="#10b981" />
             <GaugeChart value={87} max={100} label="Average Score" color="#f59e0b" unit="%" />
             <GaugeChart value={12} max={15} label="Current Streak" color="#ef4444" />
-          </div>
+          </div> */}
 
           {/* Advanced Analytics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
             <AreaChart data={areaChartData} title="Weekly Subject Time Distribution" />
             <BubbleChart data={bubbleData} />
           </div>
