@@ -45,11 +45,12 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
             accentColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_COLORS.hours,
             borderColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_BORDERS.hours
         },
-        {
-            title: "Achievements",
+        {   
+            // Achievements is changed to HOmework
+            title: "Homework",
             value: progress.achievements && progress.achievements !== "There is no logic defined yet for achievements." ? "1" : "0",
             target: "3",
-            icon: Trophy,
+            icon: BookOpen,
             percentage: progress.achievements && progress.achievements !== "There is no logic defined yet for achievements." ? 33 : 0,
             color: DASHBOARD_CONSTANTS.PROGRESS_BAR_TEXT_COLORS.achievements,
             bgGradient: DASHBOARD_CONSTANTS.PROGRESS_BAR_GRADIENTS.achievements,

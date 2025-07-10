@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { SupportTicketHistory } from '@/components/SupportTicketHistory/SupportTicketHistory';
-import { SupportModal } from '@/components/SupportModal';
+import SupportModal from '@/components/SupportModal';
 
 const SupportTicketHistoryPage: React.FC = () => {
     const [showModal, setShowModal] = useState(false);

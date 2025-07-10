@@ -20,6 +20,9 @@ import { useJoinClass } from '@/hooks/useJoinClass';
 import JoinClass from '@/components/JoinClass/JoinClass';
 import LearningProgress from '@/components/dashboard/LearningProgress';
 
+import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
+import { useBooking } from '@/hooks/useBooking';
+
 const CalendarWidget = React.lazy(() => import("@/components/CalendarWidget"));
 const DailyChallenges = React.lazy(() => import("@/components/DailyChallenges"));
 
@@ -36,13 +39,20 @@ const Dashboard = () => {
   const { selectedChild } = useChildren();
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview, error, bookingsForCalendar, upcomingClass } = useDashboard();
   const { bookings, isLoading, error: bookingsError, loadAllBookings, loadUpcomingClasses, loadPastClasses, clearBookingData } = useBookings();
+  const { getShiftingDate, changeBooking } = useBooking();
   const [showJoinModal, setShowJoinModal] = useState(false);
   const { data: joinData, isLoading: isJoining, error: joinError, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
 
 
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+  const [modalMode, setModalMode] = useState<'shift' | 'cancel'>('shift');
+
   useEffect(() => {
     loadAllBookings(); // fetch both upcoming and past
   }, []);
+
+
 
 
 
@@ -233,7 +243,7 @@ const Dashboard = () => {
     { title: "Schedule", icon: Calendar, route: "/classes", gradient: "from-yellow-500 to-yellow-600", shadow: "shadow-yellow-500/25" },
     { title: "Games", icon: Gamepad2, route: "/games", gradient: "from-green-500 to-green-600", shadow: "shadow-green-500/25" },
     { title: "Goals", icon: Target, route: "/analytics", gradient: "from-purple-500 to-purple-600", shadow: "shadow-purple-500/25" },
-    { title: "Events", icon: Users, route: "/events", gradient: "from-pink-500 to-pink-600", shadow: "shadow-pink-500/25" },
+    { title: "Home Work", icon: Users, route: "/homework-room", gradient: "from-pink-500 to-pink-600", shadow: "shadow-pink-500/25" },
     { title: "Support", icon: BarChart3, route: "/support", gradient: "from-indigo-500 to-indigo-600", shadow: "shadow-indigo-500/25" },
   ]), []);
 
@@ -416,11 +426,11 @@ const Dashboard = () => {
         {/* 2. Learning Progress Component */}
         {/* <LearningProgress progressOverview={progressOverview} isLoading={isProgressLoading} /> */}
 
-    <LearningProgress
-      progressOverview={progressOverview?.progress_overview ?? null}
-      learningProgress={progressOverview?.learning_progress ?? null}
-      isLoading={isProgressLoading}
-    />
+        <LearningProgress
+          progressOverview={progressOverview?.progress_overview ?? null}
+          learningProgress={progressOverview?.learning_progress ?? null}
+          isLoading={isProgressLoading}
+        />
 
 
 

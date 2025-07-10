@@ -7,12 +7,16 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useBookings } from "@/hooks/useBookings";
 import { useChildren } from "@/hooks/useChildren";
+import { isAfter, subDays, parseISO } from "date-fns";
 
 const PastClassesPage = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { bookings, isLoading, error, loadPastClasses } = useBookings();
   const { selectedChild } = useChildren();
+
+
+
 
   // Listen for sidebar toggle events
   useEffect(() => {
@@ -161,8 +165,16 @@ const PastClassesPage = () => {
                 </div>
               </Card>
             ) : (
-              bookings.map((classItem) => (
-                <Card key={classItem.id} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
+              bookings.map((classItem) => {
+
+                //Handling past 15 days
+                const classDate = new Date(classItem.class_date);
+                const fifteenDaysAgo = subDays(new Date(), 15);
+                const isOlderThan15Days = isAfter(fifteenDaysAgo, classDate);
+
+                const isOldClass = new Date(classItem.class_date) < new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
+
+                return (<Card key={classItem.id} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center space-x-4">
                       <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
@@ -200,43 +212,48 @@ const PastClassesPage = () => {
                   </div>
 
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-                    <Button
-                      onClick={() => navigate(`/class/${classItem.schedulebooking_id}/recording`)}
-                      className="bg-blue-600 hover:bg-blue-700 text-white flex items-center justify-center space-x-2"
-                    >
-                      <Play className="w-4 h-4" />
-                      <span>Recording</span>
-                    </Button>
-
-                    <Button
-                      onClick={() => navigate(`/class/${classItem.schedulebooking_id}/presentations`)}
-                      variant="outline"
-                      className="border-2 border-yellow-300 text-yellow-700 hover:bg-yellow-50 flex items-center justify-center space-x-2"
-                    >
-                      <FileText className="w-4 h-4" />
-                      <span>PPTs</span>
-                    </Button>
-
-                    <Button
-                      onClick={() => navigate(`/class/${classItem.schedulebooking_id}/homework`)}
-                      variant="outline"
-                      className="border-2 border-green-300 text-green-700 hover:bg-green-50 flex items-center justify-center space-x-2"
-                    >
-                      <BookOpen className="w-4 h-4" />
-                      <span>Homework</span>
-                    </Button>
-
-                    <Button
-                      onClick={() => window.open(classItem.feedback_url, '_blank')}
-                      variant="outline"
-                      className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 flex items-center justify-center space-x-2"
-                    >
-                      <MessageSquare className="w-4 h-4" />
-                      <span>AI Feedback</span>
-                    </Button>
+                    {[{
+                      title: "Recording",
+                      icon: <Play className="w-4 h-4" />,
+                      onClick: () => navigate(`/class/${classItem.schedulebooking_id}/recording`),
+                      className: `bg-blue-600 hover:bg-blue-700 text-white`,
+                      disabled: isOlderThan15Days,
+                      titleText: isOlderThan15Days ? "Recordings available for the last 15 days only" : "View Recording"
+                    }, {
+                      title: "PPTs",
+                      icon: <FileText className="w-4 h-4" />,
+                      onClick: () => navigate(`/class/${classItem.schedulebooking_id}/presentations`),
+                      className: "border-2 border-yellow-300 text-yellow-700 hover:bg-yellow-50",
+                      variant: "outline"
+                    }, {
+                      title: "Homework",
+                      icon: <BookOpen className="w-4 h-4" />,
+                      onClick: () => navigate(`/class/${classItem.schedulebooking_id}/homework`),
+                      className: "border-2 border-green-300 text-green-700 hover:bg-green-50",
+                      variant: "outline"
+                    }, {
+                      title: "AI Feedback",
+                      icon: <MessageSquare className="w-4 h-4" />,
+                      onClick: () => window.open(classItem.feedback_url, '_blank'),
+                      className: "border-2 border-purple-300 text-purple-700 hover:bg-purple-50",
+                      variant: "outline"
+                    }].map(({ title, icon, onClick, className, variant = "default", disabled = false, titleText = "" }) => (
+                      <div key={title} className="w-full" title={titleText}>
+                        <Button
+                          onClick={onClick}
+                          disabled={disabled}
+                          variant={variant as any}
+                          className={`w-full flex items-center justify-center space-x-2 ${className} ${disabled ? "cursor-not-allowed" : ""}`}
+                        >
+                          {icon}
+                          <span>{title}</span>
+                        </Button>
+                      </div>
+                    ))}
                   </div>
-                </Card>
-              ))
+
+                </Card>)
+              })
             )}
           </div>
         </main>

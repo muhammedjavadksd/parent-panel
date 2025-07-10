@@ -145,7 +145,7 @@ const LeaderboardPage = () => {
             {/* Sidebar */}
             <div className="space-y-6">
               {/* Points Breakdown */}
-              <Card className="p-5 bg-white border-2 border-yellow-200 shadow-lg">
+              {/* <Card className="p-5 bg-white border-2 border-yellow-200 shadow-lg">
                 <h3 className="text-xl font-bold text-blue-900 mb-5 flex items-center">
                   <Star className="w-6 h-6 mr-2 text-yellow-600" />
                   Your Points
@@ -167,10 +167,10 @@ const LeaderboardPage = () => {
                     <span className="text-2xl font-bold text-blue-900">3,000</span>
                   </div>
                 </div>
-              </Card>
+              </Card> */}
 
               {/* Achievement Progress */}
-              <Card className="p-5 bg-white border-2 border-blue-200 shadow-lg">
+              {/* <Card className="p-5 bg-white border-2 border-blue-200 shadow-lg">
                 <h3 className="text-xl font-bold text-blue-900 mb-5 flex items-center">
                   <Trophy className="w-6 h-6 mr-2 text-blue-600" />
                   Next Achievements
@@ -195,7 +195,7 @@ const LeaderboardPage = () => {
                     </div>
                   ))}
                 </div>
-              </Card>
+              </Card> */}
 
               {/* Quick Stats */}
               <Card className="p-5 bg-white border-2 border-blue-200 shadow-lg">
@@ -203,7 +203,7 @@ const LeaderboardPage = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Your Rank</span>
-                    <span className="font-bold text-blue-900 text-lg">#12</span>
+                    <span className="font-bold text-blue-900 text-lg">#11</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Points to Next</span>

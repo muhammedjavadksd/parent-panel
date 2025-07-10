@@ -1,6 +1,7 @@
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Card } from "@/components/ui/card";
+import { useEffect } from "react";
 import { Progress } from "@/components/ui/progress";
 import { BarChart3, TrendingUp, Calendar, Award, Clock, BookOpen, Target, Brain, Trophy, Star, Zap, Users } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from 'recharts';
@@ -11,9 +12,28 @@ import BubbleChart from "@/components/analytics/BubbleChart";
 import AreaChart from "@/components/analytics/AreaChart";
 import LearningVelocity from "@/components/analytics/LearningVelocity";
 import PersonalizedInsights from "@/components/analytics/PersonalizedInsights";
+import LearningProgress from "@/components/dashboard/LearningProgress";
+import { useDashboard } from '@/hooks/useDashboard';
+import { useBookings } from '@/hooks/useBookings';
+import { useChildren } from "@/contexts/ChildrenContext";
+
+
+
 
 const StudentAnalytics = () => {
+  
   const [timeRange, setTimeRange] = useState('1m');
+  const { progressOverview, isLoading: isProgressLoading, loadProgressOverview, error, bookingsForCalendar, upcomingClass } = useDashboard();
+  
+  const { bookings, isLoading, error: bookingsError, loadAllBookings, loadUpcomingClasses, loadPastClasses, clearBookingData } = useBookings();
+  
+  const { selectedChild } = useChildren();
+  useEffect(() => {
+    if (selectedChild?.id) {
+      console.log('Loading progress overview for child:', selectedChild.id);
+      loadProgressOverview(selectedChild.id);
+    }
+  }, [selectedChild, loadProgressOverview]);
 
   const analyticsData = {
     weeklyProgress: [
@@ -137,6 +157,11 @@ const StudentAnalytics = () => {
             />
           </div>
 
+          {/* <LearningProgress
+            progressOverview={progressOverview?.progress_overview ?? null}
+            learningProgress={progressOverview?.learning_progress ?? null}
+            isLoading={isProgressLoading}
+          /> */}
           {/* Overview Cards */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <Card className="p-6 rounded-2xl bg-gradient-to-br from-blue-50 to-blue-100 border-blue-200 shadow-xl">
@@ -175,11 +200,13 @@ const StudentAnalytics = () => {
             <Card className="p-6 rounded-2xl bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200 shadow-xl">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-yellow-600 font-semibold mb-2">Average Score</p>
-                  <p className="text-3xl font-bold text-yellow-800">{analyticsData.monthlyStats.averageScore}%</p>
-                  <p className="text-xs text-yellow-600 mt-1">+5% improvement</p>
+                  {/* Changing Average score to Streakwith static data */}
+                  <p className="text-yellow-600 font-semibold mb-2">Streak</p>
+                  <p className="text-3xl font-bold text-yellow-800">{0} Days</p>
+                  <p className="text-xs text-yellow-600 mt-1">0 Day longer than previous</p>
                 </div>
-                <Award className="text-yellow-500" size={32} />
+                {/* <Award className="text-yellow-500" size={32} /> */}
+                <Target className="text-yellow-500" size={32} />
               </div>
             </Card>
           </div>

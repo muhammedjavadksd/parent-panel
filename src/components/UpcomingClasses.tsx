@@ -6,6 +6,13 @@ import { useJoinClass } from '@/hooks/useJoinClass';
 import JoinClass from '@/components/JoinClass/JoinClass';
 import { useNavigate } from "react-router-dom";
 
+import { useBooking } from '@/hooks/useBooking';
+import { useChildren } from '@/hooks/useChildren';
+
+import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
+import { useAuth } from '@/hooks/useAuth';
+import { parse, differenceInHours, isBefore } from "date-fns";
+
 
 interface UpcomingClassesProps {
   bookings: any[];
@@ -16,7 +23,7 @@ interface UpcomingClassesProps {
 const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) => {
   const [showJoinModalId, setShowJoinModalId] = useState<string | null>(null);
   const { data: joinData, isLoading: isJoining, error: joinError, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
- const navigate = useNavigate();
+  const navigate = useNavigate();
   // Helper function to format date
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
@@ -34,6 +41,49 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
         day: 'numeric'
       });
     }
+  };
+
+
+  //Rescheduling function
+
+  const { getShiftingDate, changeBooking, reset, loading, error: bookingError, success, shiftingDate } = useBooking();
+  const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
+  const [modalMode, setModalMode] = useState<'shift' | 'cancel'>('shift');
+  const [rescheduleOpen, setRescheduleOpen] = useState(false);
+  const { selectedChild } = useChildren();
+
+  //Cancel booking function
+
+  const handleCancelClick = (schedulebooking_id: number) => {
+    setSelectedBookingId(schedulebooking_id);
+    setModalMode('cancel');
+    setRescheduleOpen(true);
+    // No shifting date fetch for cancel
+  };
+
+
+
+  const handleRescheduleClick = async (schedulebooking_id: number) => {
+    setSelectedBookingId(schedulebooking_id);
+    setModalMode('shift');
+    setRescheduleOpen(true);
+    await getShiftingDate({ schedulebooking_id });
+  };
+
+  const handleModalClose = () => {
+    setRescheduleOpen(false);
+    setSelectedBookingId(null);
+    reset();
+  };
+
+
+  const handleRescheduleSubmit = async (values, action) => {
+    if (!selectedBookingId) return;
+    await changeBooking({
+      schedulebooking_id: selectedBookingId,
+      reason: values.reason,
+      action: modalMode,
+    });
   };
 
   // Helper function to calculate duration
@@ -160,72 +210,111 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
             <p className="text-sm">No upcoming classes</p>
           </div>
         ) : (
-          upcomingClasses.map((classItem, index) => {
-            const emoji = getEmojiFromClassName(classItem.admin_class_name);
-            const status = isStartingSoon(classItem.class_date, classItem.start_time) ? "starting-soon" : "upcoming";
+          <div className="grid grid-cols-1 sm:grid-cols-1 gap-4">
+            {upcomingClasses.map((classItem, index) => {
+              const emoji = getEmojiFromClassName(classItem.admin_class_name);
+              const status = isStartingSoon(classItem.class_date, classItem.start_time) ? "starting-soon" : "upcoming";
 
-            return (
-              <div key={classItem.id} className="p-4 hover:bg-blue-50 rounded-xl transition-all duration-200 border border-blue-200 bg-white shadow-sm">
-                <div className="flex items-start justify-between mb-3">
-                  <div className="flex items-start space-x-3 min-w-0 flex-1">
-                    <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-md">
-                      <span className="text-lg">{emoji}</span>
+              //4 hour check
+
+              const classStartDateTime = new Date(`${classItem.class_date}T${classItem.start_time}`);
+              const hoursUntilClass = differenceInHours(classStartDateTime, new Date());
+              const isLessThan4Hours = hoursUntilClass < 4;
+
+              return (
+                <div key={classItem.id} className="  p-4 hover:bg-blue-50 rounded-xl transition-all duration-200 border border-blue-200 bg-white shadow-sm">
+                  <div className="flex items-start justify-between mb-3">
+                    <div className="flex items-start space-x-3 min-w-0 flex-1">
+                      <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center text-white flex-shrink-0 shadow-md">
+                        <span className="text-lg">{emoji}</span>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <h4 className="font-semibold text-blue-800 text-sm leading-tight mb-1 line-clamp-2">
+                          {classItem.admin_class_name}
+                        </h4>
+                        <p className="text-xs text-blue-600 font-medium mb-1">{classItem.child_name}</p>
+                        <p className="text-xs text-blue-600">{formatDate(classItem.class_date)}, {classItem.start_time}</p>
+                      </div>
                     </div>
-                    <div className="min-w-0 flex-1">
-                      <h4 className="font-semibold text-blue-800 text-sm leading-tight mb-1 line-clamp-2">
-                        {classItem.admin_class_name}
-                      </h4>
-                      <p className="text-xs text-blue-600 font-medium mb-1">{classItem.child_name}</p>
-                      <p className="text-xs text-blue-600">{formatDate(classItem.class_date)}, {classItem.start_time}</p>
+
+                    {status === "starting-soon" && (
+                      <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-200 shadow-sm flex-shrink-0">
+                        <Clock className="text-yellow-600 w-3 h-3 mr-1" />
+                        <span className="text-xs font-semibold text-yellow-700">Starting Soon</span>
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="mb-3 flex items-center space-x-4 text-xs text-blue-600">
+                    <div className="flex items-center space-x-1">
+                      <Clock className="w-3 h-3" />
+                      <span>{calculateDuration(classItem.start_time, classItem.end_time)}</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <Users className="w-3 h-3" />
+                      <span>{classItem.child_name}</span>
                     </div>
                   </div>
 
-                  {status === "starting-soon" && (
-                    <div className="flex items-center bg-yellow-50 px-2 py-1 rounded-lg border border-yellow-200 shadow-sm flex-shrink-0">
-                      <Clock className="text-yellow-600 w-3 h-3 mr-1" />
-                      <span className="text-xs font-semibold text-yellow-700">Starting Soon</span>
+                  <div className="grid grid-cols-1 gap-2">
+                    {classItem.can_join ? (
+                      <JoinClass
+                        isLoading={isJoining && showJoinModalId === String(classItem.schedulebooking_id)}
+                        error={showJoinModalId === String(classItem.schedulebooking_id) ? joinError : null}
+                        onJoin={() => handleJoinClick(String(classItem.schedulebooking_id))}
+                        onConfirm={() => handleConfirmJoin(String(classItem.schedulebooking_id))}
+                        onCancel={() => setShowJoinModalId(null)}
+                        showModal={showJoinModalId === String(classItem.schedulebooking_id)}
+                      />
+                    ) : (
+                      <div className="text-xs text-gray-500 font-medium px-2 py-1 rounded bg-gray-50 border border-gray-200">
+                        Join button will be visible at the time of joining only.
+                      </div>
+                    )}
+                    <div className="grid grid-cols-1 gap-2">
+                      {isLessThan4Hours ? (
+                        <>
+                          {/* <div className="text-xs text-gray-500 font-medium px-2 py-1 rounded bg-gray-50 border border-gray-200">
+                            Join button will be visible at the time of joining only.
+                          </div> */}
+
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs px-2 py-1.5 h-auto border-red-200 text-red-600 hover:bg-red-50 font-medium"
+                            onClick={() => handleCancelClick(classItem.schedulebooking_id)}
+                          >
+                            Cancel
+                          </Button>
+                        </>
+                      ) : (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="text-xs px-2 py-1.5 h-auto border-yellow-200 text-yellow-700 hover:bg-yellow-50 font-medium"
+                          onClick={() => handleRescheduleClick(classItem.schedulebooking_id)}
+                        >
+                          Reschedule
+                        </Button>
+                      )}
                     </div>
-                  )}
-                </div>
 
-                <div className="mb-3 flex items-center space-x-4 text-xs text-blue-600">
-                  <div className="flex items-center space-x-1">
-                    <Clock className="w-3 h-3" />
-                    <span>{calculateDuration(classItem.start_time, classItem.end_time)}</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    <Users className="w-3 h-3" />
-                    <span>{classItem.child_name}</span>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 gap-2">
-                  {classItem.can_join ? (
-                    <JoinClass
-                      isLoading={isJoining && showJoinModalId === String(classItem.schedulebooking_id)}
-                      error={showJoinModalId === String(classItem.schedulebooking_id) ? joinError : null}
-                      onJoin={() => handleJoinClick(String(classItem.schedulebooking_id))}
-                      onConfirm={() => handleConfirmJoin(String(classItem.schedulebooking_id))}
-                      onCancel={() => setShowJoinModalId(null)}
-                      showModal={showJoinModalId === String(classItem.schedulebooking_id)}
+                    <BookingReschedule
+                      open={rescheduleOpen}
+                      onClose={handleModalClose}
+                      onSubmit={handleRescheduleSubmit}
+                      loading={loading}
+                      shiftingDate={modalMode === 'shift' ? shiftingDate : undefined}
+                      error={bookingError}
+                      success={success}
+                      schedulebooking_id={selectedBookingId || 0}
+                      mode={modalMode}
                     />
-                  ) : (
-                    <div className="text-xs text-gray-500 font-medium px-2 py-1 rounded bg-gray-50 border border-gray-200">
-                      Join button will be visible at the time of joining only.
-                    </div>
-                  )}
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button variant="outline" size="sm" className="text-xs px-2 py-1.5 h-auto border-yellow-200 text-yellow-700 hover:bg-yellow-50 font-medium" onClick={() => navigate("/upcoming-classes")}>
-                      Reschedule
-                    </Button>
-                    <Button variant="outline" size="sm" className="text-xs px-2 py-1.5 h-auto border-red-200 text-red-600 hover:bg-red-50 font-medium" onClick={() => navigate("/upcoming-classes")}>
-                      Cancel
-                    </Button>
                   </div>
                 </div>
-              </div>
-            );
-          })
+              );
+            })}
+          </div>
         )}
       </div>
     </div>

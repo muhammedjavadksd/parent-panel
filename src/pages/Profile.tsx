@@ -129,12 +129,14 @@ const Profile = () => {
                   🏆 View Full Leaderboard
                 </Button>
 
-                <Button
+                {/* Family dashboard need to be removed */}
+
+                {/* <Button
                   onClick={handleViewFamilyDashboard}
                   className="w-full bg-yellow-500 hover:bg-yellow-600 text-white shadow-lg border-0"
                 >
                   👥 View Family Dashboard
-                </Button>
+                </Button> */}
               </div>
             </Card>
 

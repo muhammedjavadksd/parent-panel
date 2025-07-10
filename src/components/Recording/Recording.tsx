@@ -32,7 +32,8 @@ const Recording: React.FC<RecordingProps> = ({ data, isLoading, error, onDownloa
             return (
                 <div className="flex flex-col items-center justify-center h-64 text-gray-500">
                     <Video className="w-10 h-10 mb-2 text-gray-300" />
-                    <span className="font-semibold mb-2">This class recording has expired and is no longer available.</span>
+                    <span className="font-semibold mb-2">This class recording is not available.</span>
+                    <span className="text-sm">This may be because the child did not attend the class.</span>
                     <span className="text-sm">If you believe this is a mistake, please contact support.</span>
                 </div>
             );

@@ -62,7 +62,7 @@ export const TRANSACTION_STATS_CARDS = [
     },
     {
         key: 'available_balance',
-        label: 'Available Balance',
+        label: 'Available Tokens',
         color: 'bg-purple-500',
         icon: '💰',
     },

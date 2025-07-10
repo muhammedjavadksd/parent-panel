@@ -296,11 +296,11 @@ const Classes = () => {
             <h2 className="text-lg font-bold text-blue-800 mb-1">Your Learning Statistics</h2>
             <p className="text-blue-600 text-sm mb-3">Track your progress across all learning activities</p>
             {/* <LearningProgress progressOverview={progressOverview} isLoading={isProgressLoading} /> */}
-                <LearningProgress
-                  progressOverview={progressOverview?.progress_overview ?? null}
-                  learningProgress={progressOverview?.learning_progress ?? null}
-                  isLoading={isProgressLoading}
-                />
+            <LearningProgress
+              progressOverview={progressOverview?.progress_overview ?? null}
+              learningProgress={progressOverview?.learning_progress ?? null}
+              isLoading={isProgressLoading}
+            />
           </div>
 
           {/* Class Information from API - Mobile */}
@@ -424,7 +424,7 @@ const Classes = () => {
                 </div>
 
                 {/* Program Cards - Smaller */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                   {/* Alpha Maths - Compact */}
                   <div className="bg-blue-50 p-4 rounded-xl border-2 border-blue-200 hover:border-blue-300 transition-all duration-300 shadow-lg hover:shadow-xl">
                     <div className="flex items-center mb-3">
@@ -502,7 +502,49 @@ const Classes = () => {
                       </p>
                     </div>
                   </div>
+                {/* Little Yogi - Compact */}
+                <div className="bg-green-50 p-4 rounded-xl border-2 border-green-200 hover:border-green-300 transition-all duration-300 shadow-lg hover:shadow-xl">
+                  <div className="flex items-center mb-3">
+                    <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center shadow-lg mr-3">
+                      <BookOpen className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-bold text-green-800 mb-0">Little Yogi</h3>
+                      <p className="text-green-700 font-semibold text-sm">Bhagavad Gita for Kids</p>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1 mb-3">
+                    <div className="flex items-center space-x-2 text-sm">
+                      <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="text-white font-bold text-xs">✓</span>
+                      </div>
+                      <span className="text-green-900 font-medium">Cultural Awareness & Moral Values</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="text-white font-bold text-xs">✓</span>
+                      </div>
+                      <span className="text-green-900 font-medium">Tackle Exam Stress & Peer Pressure</span>
+                    </div>
+                    <div className="flex items-center space-x-2 text-sm">
+                      <div className="w-4 h-4 bg-green-500 rounded-full flex items-center justify-center shadow-sm">
+                        <span className="text-white font-bold text-xs">✓</span>
+                      </div>
+                      <span className="text-green-900 font-medium">Shloka Recitation & Real-Life Application</span>
+                    </div>
+                  </div>
+
+                  <div className="bg-white p-2 rounded-lg border border-green-200 shadow-sm">
+                    <p className="text-xs text-green-700 font-semibold flex items-center">
+                      <Award className="w-3 h-3 mr-1" />
+                      Make Gita a way of life
+                    </p>
+                  </div>
                 </div>
+                </div>
+
+
 
                 {/* Premium Benefits Row - Smaller */}
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
@@ -623,57 +665,16 @@ const Classes = () => {
               <h2 className="text-2xl font-bold text-blue-800 mb-2">Your Learning Statistics</h2>
               <p className="text-blue-600 mb-4">Track your progress across all learning activities</p>
               {/* <LearningProgress progressOverview={progressOverview} isLoading={isProgressLoading} /> */}
-                  <LearningProgress
-                    progressOverview={progressOverview?.progress_overview ?? null}
-                    learningProgress={progressOverview?.learning_progress ?? null}
-                    isLoading={isProgressLoading}
-                  />
+              <LearningProgress
+                progressOverview={progressOverview?.progress_overview ?? null}
+                learningProgress={progressOverview?.learning_progress ?? null}
+                isLoading={isProgressLoading}
+              />
 
             </div>
 
-            {/* Class Information from API - Desktop */}
-            {!isClassesLoading && classInfo && (
-              <div className="mb-8">
-                <h2 className="text-2xl font-bold text-blue-800 mb-3">Class Information</h2>
-                <div className="grid grid-cols-2 gap-3">
-                  {/* Pending Homework */}
-                  <Card className="p-3 rounded-xl bg-red-50 border-2 border-red-200">
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-red-500 rounded-lg flex items-center justify-center mx-auto mb-1">
-                        <FileText className="w-4 h-4 text-white" />
-                      </div>
-                      <p className="text-sm font-bold text-red-800">{classInfo.pending_homework}</p>
-                      <p className="text-xs text-red-600">Pending Homework</p>
-                    </div>
-                  </Card>
+            {/* Class Information from API - Removed */}
 
-                  {/* Average Score */}
-                  <Card className="p-3 rounded-xl bg-green-50 border-2 border-green-200">
-                    <div className="text-center">
-                      <div className="w-8 h-8 bg-green-500 rounded-lg flex items-center justify-center mx-auto mb-1">
-                        <Trophy className="w-4 h-4 text-white" />
-                      </div>
-                      <p className="text-sm font-bold text-green-800">{classInfo.average_score || 'N/A'}</p>
-                      <p className="text-xs text-green-600">Average Score</p>
-                    </div>
-                  </Card>
-                </div>
-
-                {/* Enrolled Categories */}
-                {classInfo.enrolled_categories.length > 0 && (
-                  <Card className="p-3 rounded-xl bg-blue-50 border-2 border-blue-200 mt-3">
-                    <h3 className="text-sm font-bold text-blue-800 mb-2">Enrolled Categories</h3>
-                    <div className="flex flex-wrap gap-1">
-                      {classInfo.enrolled_categories.map((category, index) => (
-                        <span key={index} className="bg-blue-600 text-white px-2 py-1 rounded-full text-xs">
-                          {typeof category === 'string' ? category : category.name || category.id || 'Unknown'}
-                        </span>
-                      ))}
-                    </div>
-                  </Card>
-                )}
-              </div>
-            )}
           </div>
         </main>
       </div>

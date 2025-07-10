@@ -84,11 +84,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isLoadi
                         <TableHeader>
                             <TableRow>
                                 <TableHead>Type</TableHead>
-                                <TableHead>Amount</TableHead>
+                                <TableHead>Token</TableHead>
                                 <TableHead>Balance</TableHead>
                                 <TableHead>Description</TableHead>
                                 <TableHead>Date</TableHead>
-                                <TableHead>Currency</TableHead>
+                                {/* <TableHead>Currency</TableHead> */}
                             </TableRow>
                         </TableHeader>
                         <TableBody>
@@ -98,10 +98,12 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isLoadi
                                         {getTransactionTypeDisplay(transaction.type)}
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        {formatCurrency(transaction.amount, transaction.currency)}
+                                        {/* {formatCurrency(transaction.amount, transaction.currency)} */}
+                                        {transaction.amount}
                                     </TableCell>
                                     <TableCell>
-                                        {formatCurrency(transaction.closing_balance, transaction.currency)}
+                                        {/* {formatCurrency(transaction.closing_balance, transaction.currency)} */}
+                                        {transaction.closing_balance}
                                     </TableCell>
                                     <TableCell className="max-w-xs truncate" title={transaction.narration}>
                                         {transaction.narration}
@@ -109,11 +111,11 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isLoadi
                                     <TableCell>
                                         {formatDate(transaction.created_at)}
                                     </TableCell>
-                                    <TableCell>
+                                    {/* <TableCell>
                                         <Badge variant="outline">
                                             {transaction.currency}
                                         </Badge>
-                                    </TableCell>
+                                    </TableCell> */}
                                 </TableRow>
                             ))}
                         </TableBody>

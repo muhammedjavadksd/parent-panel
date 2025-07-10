@@ -101,14 +101,23 @@ const TicketChatPage: React.FC = () => {
           </div>
 
           <div className="h-[calc(100vh-200px)]">
-            <TicketChat
+            {/* <TicketChat
               messages={chat.messages}
               isLoading={chat.isLoading}
               error={chat.error}
               ticketId={parseInt(ticketId, 10)}
               onSendMessage={handleSendMessage}
               onClearError={clearChatError}
+            /> */}
+            <TicketChat
+              messages={chat?.messages ?? []}
+              isLoading={chat?.isLoading ?? true}
+              error={chat?.error ?? null}
+              ticketId={parseInt(ticketId, 10)}
+              onSendMessage={handleSendMessage}
+              onClearError={clearChatError}
             />
+
           </div>
         </main>
       </div>

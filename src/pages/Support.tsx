@@ -52,7 +52,8 @@ const Support = () => {
   }, [loadTickets, currentPage]);
 
   const handleCall = () => {
-    window.location.href = "tel:+919876543210";
+    // window.location.href = "tel:+919403890176";
+    window.location.href = "https://api.whatsapp.com/send/?phone=919403890176&text=Hello&type=phone_number&app_absent=0";
   };
 
   const handleEmail = () => {
@@ -150,11 +151,11 @@ const Support = () => {
                   <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
                     <Phone className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-green-800 mb-2">Call Support</h3>
+                  <h3 className="text-lg font-bold text-green-800 mb-2">Whatsapp Support</h3>
                   <p className="text-sm text-green-600 mb-4">Immediate assistance available</p>
-                  <p className="text-xs text-green-600 font-mono">+91 98765 43210</p>
+                  <p className="text-xs text-green-600 font-mono">+91 9403890176</p>
                   <Button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white border-0">
-                    Call Now
+                    Whatsapp Now
                   </Button>
                 </div>
               </Card>

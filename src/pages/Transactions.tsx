@@ -101,12 +101,13 @@ const Transactions: React.FC = () => {
               <div>
                 <div className="flex items-center space-x-2 mb-2">
                   <Wallet className="w-5 h-5" />
-                  <h2 className="text-lg font-semibold">Account Balance</h2>
+                  <h2 className="text-lg font-semibold">Available Tokens</h2>
                 </div>
                 <p className="text-2xl font-bold">
-                  {formatCurrency(stats?.available_balance ?? 0, stats?.parent_currency ?? '₹')}
+                  {stats?.available_balance??0}
+                  {/* {formatCurrency(stats?.available_balance ?? 0, stats?.parent_currency ?? '')} */}
                 </p>
-                <p className="text-blue-100 text-sm">Available Balance</p>
+                <p className="text-blue-100 text-sm">Tokens left</p>
               </div>
               <div className="flex flex-col space-y-2">
                 <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30">
