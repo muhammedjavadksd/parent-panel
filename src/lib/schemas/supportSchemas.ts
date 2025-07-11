@@ -29,7 +29,7 @@ export const createTicketSchema = Yup.object().shape({
         .min(10, 'Description must be at least 10 characters')
         .max(TICKET_FORM_CONSTANTS.MAX_DESCRIPTION_LENGTH, `Description cannot exceed ${TICKET_FORM_CONSTANTS.MAX_DESCRIPTION_LENGTH} characters`)
         .required('Description is required'),
-    attachment: Yup.mixed()
+    attachment: Yup.mixed().nullable()
         .test('fileSize', 'File size must be less than 5MB', (value) => {
             if (!value) return true; // Optional field
             return (value as File).size <= TICKET_FORM_CONSTANTS.MAX_FILE_SIZE;

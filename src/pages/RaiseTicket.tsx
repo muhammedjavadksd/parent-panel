@@ -18,27 +18,32 @@ const RaiseTicket = () => {
   const navigate = useNavigate();
   const { createNewTicket, isLoading, error, clearError } = useSupport();
 
-  const handleSubmit = async (values: { issue: string; title: string; description: string }, { setSubmitting, resetForm }: any) => {
-    try {
-      const result = await createNewTicket({
-        issue: values.issue as 'Booking Related' | 'Account Related' | 'Payment Related',
-        title: values.title,
-        description: values.description,
-      });
+const handleSubmit = async (
+  values: { issue: string; title: string; description: string; attachment?: File | null },
+  { setSubmitting, resetForm }: any
+) => {
+  try {
+    const result = await createNewTicket({
+      issue: values.issue as 'Booking Related' | 'Account Related' | 'Payment Related',
+      title: values.title,
+      description: values.description,
+      attachment: values.attachment ?? undefined, 
+    });
 
-      if (result.meta.requestStatus === 'fulfilled') {
-        toast.success("Ticket created successfully! You will receive a confirmation email shortly.");
-        resetForm();
-        navigate("/support");
-      } else {
-        toast.error("Failed to create ticket. Please try again.");
-      }
-    } catch (error) {
-      toast.error("An error occurred while creating the ticket.");
-    } finally {
-      setSubmitting(false);
+    if (result?.success) {
+      toast.success("Ticket created successfully! You will receive a confirmation email shortly.");
+      resetForm();
+      navigate("/support");
+    } else {
+      toast.error("Failed to create ticket. Please try again.");
     }
-  };
+  } catch (error) {
+    toast.error("An error occurred while creating the ticket.");
+  } finally {
+    setSubmitting(false);
+  }
+};
+
 
   const handleBack = () => {
     navigate("/support");
@@ -72,7 +77,8 @@ const RaiseTicket = () => {
                 initialValues={{
                   issue: "",
                   title: "",
-                  description: ""
+                  description: "",
+                  attachment: null,
                 }}
                 validationSchema={createTicketSchema}
                 onSubmit={handleSubmit}
@@ -130,6 +136,26 @@ const RaiseTicket = () => {
                       />
                       <ErrorMessage name="description" component="div" className="text-red-500 text-sm mt-1" />
                     </div>
+
+                    <div>
+                      <Label htmlFor="attachment" className="block text-sm font-semibold text-blue-900 mb-2">
+                        Attachment (optional)
+                      </Label>
+                      <input
+                        id="attachment"
+                        name="attachment"
+                        type="file"
+                        accept=".png,.jpg,.jpeg,.pdf,.doc,.docx"
+                        onChange={(event) => {
+                          setFieldValue("attachment", event.currentTarget.files?.[0]);
+                        }}
+                        className="block w-full text-sm text-blue-900 file:mr-4 file:py-2 file:px-4
+                file:rounded-xl file:border-0 file:text-sm file:font-semibold
+                file:bg-yellow-100 file:text-yellow-800 hover:file:bg-yellow-200
+                border border-blue-200 rounded-xl p-2"
+                      />
+                    </div>
+
 
                     {error && (
                       <div className="p-3 bg-red-50 border border-red-200 rounded-lg">

@@ -43,7 +43,7 @@ const TicketChatPage: React.FC = () => {
     try {
       const result = await sendNewMessage(data);
 
-      if (result.meta.requestStatus === 'fulfilled') {
+      if (result.success) {
         // Refresh the chat to get the latest messages
         await loadTicketChat(data.ticket_id);
         toast.success(TICKET_CHAT_CONSTANTS.SEND_MESSAGE_SUCCESS_TEXT);

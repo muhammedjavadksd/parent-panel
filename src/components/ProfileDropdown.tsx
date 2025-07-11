@@ -73,23 +73,23 @@ const ProfileDropdown = () => {
           <h4 className="text-sm font-semibold text-yellow-700 dark:text-yellow-300 mb-3">Progress Overview</h4>
           {isLoading ? (
             <div className="text-center text-gray-400 py-4">Loading...</div>
-          ) : progressOverview ? (
+          ) : progressOverview?.progress_overview ?(
             <div className="grid grid-cols-2 gap-3 text-sm">
               <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900 dark:to-blue-800 p-3 rounded-xl">
                 <p className="text-blue-600 dark:text-blue-300 font-semibold">Classes</p>
-                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.past_classes}/{progressOverview.total_classes}</p>
+                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.progress_overview.past_classes}/{progressOverview.progress_overview.total_classes}</p>
               </div>
               <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900 dark:to-green-800 p-3 rounded-xl">
                 <p className="text-green-600 dark:text-green-300 font-semibold">Streak</p>
-                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.streak} days</p>
+                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.progress_overview.streak} days</p>
               </div>
               <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 dark:from-yellow-900 dark:to-yellow-800 p-3 rounded-xl">
                 <p className="text-yellow-600 dark:text-yellow-300 font-semibold">Coins</p>
-                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.coins ?? 0}</p>
+                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.progress_overview.coins ?? 0}</p>
               </div>
               <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900 dark:to-purple-800 p-3 rounded-xl">
                 <p className="text-purple-600 dark:text-purple-300 font-semibold">Rank</p>
-                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.rank ? `#${progressOverview.rank}` : '-'}</p>
+                <p className="text-gray-800 dark:text-gray-200 font-bold">{progressOverview.progress_overview.rank ? `#${progressOverview.progress_overview.rank}` : '-'}</p>
               </div>
             </div>
           ) : (
@@ -104,10 +104,12 @@ const ProfileDropdown = () => {
           <span className="text-gray-800 dark:text-gray-200 font-medium">View Profile</span>
         </DropdownMenuItem>
 
-        <DropdownMenuItem onClick={handleViewFamily} className="cursor-pointer hover:bg-purple-50 dark:hover:bg-gray-700 rounded-xl p-3">
+        {/* Remove Family Analytics option */}
+
+        {/* <DropdownMenuItem onClick={handleViewFamily} className="cursor-pointer hover:bg-purple-50 dark:hover:bg-gray-700 rounded-xl p-3">
           <Users className="mr-2 h-4 w-4 text-purple-600 dark:text-purple-400" />
           <span className="text-gray-800 dark:text-gray-200 font-medium">View Family Analytics</span>
-        </DropdownMenuItem>
+        </DropdownMenuItem> */}
 
         <DropdownMenuSeparator className="bg-yellow-200 dark:bg-gray-600" />
 

@@ -1,8 +1,11 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { dashboardService } from '@/services/api/dashboardService';
+import { useChildren } from '@/hooks/useChildren';
 import { DashboardHeaderStatsResponse, UpcomingClass, BookingForCalendar } from '@/lib/interface/dashboard';
 
 export const useDashboard = () => {
+    const { selectedChild } = useChildren();
+
     const [progressOverview, setProgressOverview] = useState<DashboardHeaderStatsResponse | null>(null);
     const [upcomingClass, setUpcomingClass] = useState<UpcomingClass | null>(null);
     const [bookingsForCalendar, setBookingsForCalendar] = useState<BookingForCalendar[]>([]);
@@ -19,7 +22,6 @@ export const useDashboard = () => {
             if (response.status && response.data) {
                 setProgressOverview(response.data);
 
-                // Extract upcoming class and bookings from the response
                 if (response.data.upcoming_class_parent_level) {
                     setUpcomingClass(response.data.upcoming_class_parent_level);
                 }
@@ -46,6 +48,13 @@ export const useDashboard = () => {
         await loadProgressOverview(child_id);
     }, [clearError, loadProgressOverview]);
 
+    // ✅ Auto-load when child is selected
+    useEffect(() => {
+        if (selectedChild?.id) {
+            loadProgressOverview(selectedChild.id);
+        }
+    }, [selectedChild?.id, loadProgressOverview]);
+
     return {
         progressOverview,
         upcomingClass,
@@ -56,4 +65,4 @@ export const useDashboard = () => {
         retryLoadProgressOverview,
         clearError,
     };
-}; 
+};
