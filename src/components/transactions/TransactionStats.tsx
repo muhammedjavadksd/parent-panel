@@ -10,7 +10,8 @@ interface TransactionStatsProps {
 const TransactionStats: React.FC<TransactionStatsProps> = ({ stats }) => {
     const formatCurrency = (amount: number, currency: string) => {
         const symbol = TRANSACTION_CONSTANTS.CURRENCY_SYMBOLS[currency as keyof typeof TRANSACTION_CONSTANTS.CURRENCY_SYMBOLS] || currency;
-        return `${symbol}${amount.toLocaleString()}`;
+        // return `${symbol}${amount.toLocaleString()}`;
+        return `${amount.toLocaleString()}`;
     };
 
     const formatNumber = (num: number) => {

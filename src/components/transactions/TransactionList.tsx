@@ -29,7 +29,7 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isLoadi
     const getTransactionTypeDisplay = (type: 'withdraw' | 'deposit') => {
         const icon = TRANSACTION_TYPE_ICONS[type];
         const colorClass = TRANSACTION_TYPE_COLORS[type];
-        const label = type === 'withdraw' ? 'Withdrawal' : 'Deposit';
+        const label = type === 'withdraw' ? 'Booked' : 'Cancelled';
 
         return (
             <Badge className={colorClass}>
@@ -98,9 +98,10 @@ const TransactionList: React.FC<TransactionListProps> = ({ transactions, isLoadi
                                         {getTransactionTypeDisplay(transaction.type)}
                                     </TableCell>
                                     <TableCell className="font-medium">
-                                        {/* {formatCurrency(transaction.amount, transaction.currency)} */}
+                                        {transaction.type === 'withdraw' ? '-' : '+'}
                                         {transaction.amount}
                                     </TableCell>
+
                                     <TableCell>
                                         {/* {formatCurrency(transaction.closing_balance, transaction.currency)} */}
                                         {transaction.closing_balance}
