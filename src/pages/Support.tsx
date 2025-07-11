@@ -57,7 +57,7 @@ const Support = () => {
   };
 
   const handleEmail = () => {
-    window.location.href = "mailto:support@bambinos.com";
+    window.location.href = "mailto:support@bambinos.live";
   };
 
   const handleRaiseTicket = () => {
@@ -170,7 +170,7 @@ const Support = () => {
                   </div>
                   <h3 className="text-lg font-bold text-blue-800 mb-2">Email Support</h3>
                   <p className="text-sm text-blue-600 mb-4">Detailed assistance via email</p>
-                  <p className="text-xs text-blue-600 font-mono">support@bambinos.com</p>
+                  <p className="text-xs text-blue-600 font-mono">support@bambinos.live</p>
                   <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white border-0">
                     Send Email
                   </Button>
