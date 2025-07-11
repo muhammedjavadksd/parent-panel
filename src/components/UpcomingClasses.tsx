@@ -11,7 +11,7 @@ import { useChildren } from '@/hooks/useChildren';
 
 import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
 import { useAuth } from '@/hooks/useAuth';
-import { parse, differenceInHours, isBefore } from "date-fns";
+import { parse, differenceInHours, isBefore, differenceInMinutes } from "date-fns";
 
 
 interface UpcomingClassesProps {
@@ -220,6 +220,9 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
               const classStartDateTime = new Date(`${classItem.class_date}T${classItem.start_time}`);
               const hoursUntilClass = differenceInHours(classStartDateTime, new Date());
               const isLessThan4Hours = hoursUntilClass < 4;
+              //15 min check
+              const minutesUntilClass = differenceInMinutes(classStartDateTime, new Date());
+              const isLessThan15min = minutesUntilClass <15;
 
               return (
                 <div key={classItem.id} className="  p-4 hover:bg-blue-50 rounded-xl transition-all duration-200 border border-blue-200 bg-white shadow-sm">
@@ -256,8 +259,28 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-1 gap-2">
-                    {classItem.can_join ? (
+                  <div className="grid grid-cols-2 gap-2">
+                    
+                    {isLessThan15min ? (
+
+                    
+                    <Button
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
+                            onClick={() => handleJoinClick(classItem)}
+                          >
+                            Join Class
+                    </Button>):(<Button
+                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
+                            title="Join Class"
+                            disabled={true}
+                          >
+                            Join Class
+                    </Button>)
+                    }
+                    
+                    
+                    
+                    {classItem.can_join && (
                       <JoinClass
                         isLoading={isJoining && showJoinModalId === String(classItem.schedulebooking_id)}
                         error={showJoinModalId === String(classItem.schedulebooking_id) ? joinError : null}
@@ -265,12 +288,9 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                         onConfirm={() => handleConfirmJoin(String(classItem.schedulebooking_id))}
                         onCancel={() => setShowJoinModalId(null)}
                         showModal={showJoinModalId === String(classItem.schedulebooking_id)}
-                      />
-                    ) : (
-                      <div className="text-xs text-gray-500 font-medium px-2 py-1 rounded bg-gray-50 border border-gray-200">
-                        Join button will be visible at the time of joining only.
-                      </div>
-                    )}
+                      /> )
+                    }
+
                     <div className="grid grid-cols-1 gap-2">
                       {isLessThan4Hours ? (
                         <>
