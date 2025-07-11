@@ -107,7 +107,7 @@ const AppRoutes = () => {
       <Route path="/analytics" element={
         <AuthGuard>
           <StudentAnalytics />
-        </AuthGuard>
+        </AuthGuard> 
       } />
       <Route path="/mobile-analytics" element={
         <AuthGuard>
