@@ -13,7 +13,7 @@ import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useChildren } from '@/contexts/ChildrenContext';
 
 const LeaderboardPage = () => {
-  const { loading, error, top3, allData, fetchTop3 } = useLeaderboard();
+  const { loading, error, top3, allData, fetchTop3, childData, childScor } = useLeaderboard();
   const { selectedChild } = useChildren();
 
 
@@ -63,12 +63,28 @@ const LeaderboardPage = () => {
     return <div className="w-4 h-4" />;
   };
 
+  // useEffect(() => {
+  //   if (selectedChild) {
+  //     fetchTop3(selectedChild.id);
+  //     childData && console.log('Child Data:', childData);
+  //     childScor && console.log('Child Score:', childScor);
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [selectedChild]);
+
+  useEffect(() => {
+    if (childData.length > 0) {
+      console.log('✅ Child Data:', childData);
+      console.log('Child Score:', childScor);
+    }
+  }, [childData]);
+
   useEffect(() => {
     if (selectedChild) {
       fetchTop3(selectedChild.id);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedChild]);
+
 
   return (
     <div className="min-h-screen bg-white flex w-full">
@@ -203,11 +219,11 @@ const LeaderboardPage = () => {
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Your Rank</span>
-                    <span className="font-bold text-blue-900 text-lg">#11</span>
+                    <span className="font-bold text-blue-900 text-lg">{childScor?.children[0]?.position}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">Points to Next</span>
-                    <span className="font-bold text-blue-900 text-lg">150</span>
+                    <span className="text-sm text-blue-700 font-medium">Total Points</span>
+                    <span className="font-bold text-blue-900 text-lg">{childData[0]?.total_points}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Learning Streak</span>
@@ -215,7 +231,7 @@ const LeaderboardPage = () => {
                   </div>
                   <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Classes This Week</span>
-                    <span className="font-bold text-blue-900 text-lg">5/7</span>
+                    <span className="font-bold text-blue-900 text-lg">1/4</span>
                   </div>
                 </div>
               </Card>
