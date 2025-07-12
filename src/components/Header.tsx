@@ -1,4 +1,4 @@
-import { Bell } from "lucide-react";
+import { Bell, Sparkles, Play } from "lucide-react";
 import NotificationPanel from "./NotificationPanel";
 import ProfileDropdown from "./ProfileDropdown";
 import LogoutButton from "./LogoutButton";
@@ -8,7 +8,12 @@ import { useNavigate } from "react-router-dom";
 import { useChildren } from "@/hooks/useChildren";
 import { Child } from "@/lib/types/children";
 
-const Header = () => {
+interface HeaderProps {
+  onStartTour: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
+
   const navigate = useNavigate();
   const { children, selectedChild, selectChild, isLoading } = useChildren();
 
@@ -20,6 +25,8 @@ const Header = () => {
     if (hour < 17) return "Good afternoon";
     return "Good evening";
   };
+
+
 
   const handleChildChange = (childId: string) => {
     console.log('🔍 Header: handleChildChange called with:', childId);
@@ -116,18 +123,25 @@ const Header = () => {
       </div>
 
       <div className="flex items-center space-x-4">
-        {/* Classes Left Banner */}
-        {/* <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg px-4 py-2 flex items-center space-x-3 shadow-sm">
-          <div className="text-blue-700">
-            <span className="font-bold text-lg">{classesLeft}</span>
-            <span className="text-sm ml-1">classes left</span>
+
+        {/* Tour Button */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl px-4 py-2 flex items-center space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={onStartTour}>
+          <div className="flex items-center space-x-2">
+            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
+              <Sparkles className="w-3 h-3 text-white" />
+            </div>
+            <span className="text-sm font-semibold text-blue-800 group-hover:text-blue-900 transition-colors">
+              Get Tour
+            </span>
+
           </div>
+          
           <Button
             size="sm"
-            className="bg-blue-600 hover:bg-blue-700 text-white text-xs px-3 py-1 rounded-md shadow-sm border-0"
-            onClick={() => navigate("/classes")}
+            className="header-tour-btn bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-0 group-hover:scale-105"
           >
-            Renew Now
+            <Play className="w-3 h-3 mr-1" />
+            GO
           </Button>
         </div> */}
 
