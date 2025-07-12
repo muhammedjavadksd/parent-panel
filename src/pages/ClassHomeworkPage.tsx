@@ -12,13 +12,13 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  CheckCircle, 
-  Clock, 
-  Calendar, 
-  FileText, 
+import {
+  ArrowLeft,
+  BookOpen,
+  CheckCircle,
+  Clock,
+  Calendar,
+  FileText,
   Download,
   Eye,
   AlertCircle,
@@ -39,7 +39,7 @@ const ClassHomeworkPage = () => {
   const [iframeLoading, setIframeLoading] = useState(false);
   const { selectedChild } = useChildren();
   const { data: homeworkData, isLoading, error, loadHomework, clearError } = useHomework();
-  
+
   // Filter homework data to show only the specific class if API doesn't support filtering
   const filteredHomeworkData = homeworkData?.homework?.data?.filter(
     assignment => assignment.classschedulebooking_id === parseInt(classId || '0')
@@ -64,7 +64,7 @@ const ClassHomeworkPage = () => {
   // Load homework data when component mounts or child changes
   useEffect(() => {
     if (selectedChild?.id) {
-      loadHomework({ 
+      loadHomework({
         child_id: selectedChild.id
       });
     }
@@ -77,9 +77,9 @@ const ClassHomeworkPage = () => {
   };
 
   const getHomeworkHtmlContent = (assignment: HomeworkAssignment) => {
-    const homeworkContent = assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework;
+    const homeworkContent = `https://admin.bambinos.live/storage/${assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework}`;
     const topicContent = assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.topic;
-    
+
     if (!homeworkContent) {
       return `
         <html>
@@ -255,20 +255,10 @@ const ClassHomeworkPage = () => {
   };
 
   const handleDownloadHomework = (assignment: HomeworkAssignment) => {
-    const htmlContent = getHomeworkHtmlContent(assignment);
-    if (htmlContent) {
-      // Create a blob and download the homework content as HTML
-      const blob = new Blob([htmlContent], { type: 'text/html' });
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `homework_${assignment.admin_class_name}_${assignment.class_date}.html`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-    }
+    const fileUrl = `https://admin.bambinos.live/storage/${assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework}`;
+    window.open(fileUrl, '_blank');
   };
+
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -289,7 +279,7 @@ const ClassHomeworkPage = () => {
   const getStatusBadge = (assignment: HomeworkAssignment) => {
     const submittedCount = assignment.submitted_hw_count;
     const pendingCount = parseInt(assignment.pending_hw_count) || 0;
-    
+
     if (submittedCount > 0 && pendingCount === 0) {
       return (
         <Badge className="bg-green-100 text-green-700 border-green-200">
@@ -407,21 +397,21 @@ const ClassHomeworkPage = () => {
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
-      
+
       <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
         <Header />
-        
+
         <main className="flex-1 p-6">
           <div className="mb-6">
-            <Button 
-              variant="outline" 
+            <Button
+              variant="outline"
               onClick={() => navigate("/past-classes")}
               className="mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm"
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Past Classes
             </Button>
-            
+
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h1 className="text-3xl font-bold text-blue-800 mb-2">
@@ -429,7 +419,7 @@ const ClassHomeworkPage = () => {
                 </h1>
                 <p className="text-blue-600">View and download homework assignment for this specific class</p>
               </div>
-              
+
               {filteredHomeworkData && selectedChild && classId && (
                 <div className="flex items-center space-x-4">
                   <div className="text-center">
@@ -458,7 +448,7 @@ const ClassHomeworkPage = () => {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => selectedChild?.id && loadHomework({ 
+                    onClick={() => selectedChild?.id && loadHomework({
                       child_id: selectedChild.id
                     })}
                     className="border-red-200 text-red-700 hover:bg-red-50"
@@ -512,7 +502,7 @@ const ClassHomeworkPage = () => {
               {selectedHomework?.admin_class_name} - Homework Assignment
             </DialogTitle>
           </DialogHeader>
-          
+
           {selectedHomework && (
             <div className="flex flex-col h-full">
               {/* Action Buttons */}
@@ -526,7 +516,7 @@ const ClassHomeworkPage = () => {
                   Download Homework
                 </Button>
               </div>
-              
+
               {/* Iframe Container */}
               <div className="flex-1 px-6 pb-6">
                 <div className="w-full h-[70vh] border border-gray-200 rounded-lg overflow-hidden relative">
@@ -539,12 +529,12 @@ const ClassHomeworkPage = () => {
                     </div>
                   )}
                   <iframe
-                    srcDoc={getHomeworkHtmlContent(selectedHomework)}
+                    src={`https://admin.bambinos.live/storage/${selectedHomework?.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework}`}
                     className="w-full h-full"
-                    title={`Homework - ${selectedHomework.admin_class_name}`}
-                    sandbox="allow-same-origin"
+                    title={`Homework - ${selectedHomework?.admin_class_name}`}
                     onLoad={() => setIframeLoading(false)}
                   />
+
                 </div>
               </div>
             </div>
