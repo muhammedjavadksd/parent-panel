@@ -123,6 +123,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
       </div>
 
       <div className="flex items-center space-x-4">
+
         {/* Tour Button */}
         <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl px-4 py-2 flex items-center space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={onStartTour}>
           <div className="flex items-center space-x-2">
@@ -132,6 +133,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
             <span className="text-sm font-semibold text-blue-800 group-hover:text-blue-900 transition-colors">
               Get Tour
             </span>
+
           </div>
           
           <Button
@@ -141,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
             <Play className="w-3 h-3 mr-1" />
             GO
           </Button>
-        </div>
+        </div> */}
 
         <NotificationPanel />
         <ProfileDropdown />

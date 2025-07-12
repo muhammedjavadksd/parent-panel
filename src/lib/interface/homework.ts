@@ -57,6 +57,7 @@ export interface HomeworkResponse {
 
 export interface HomeworkFilters {
   child_id: number;
+  classschedulebooking_id?: number;
   page?: number;
   limit?: number;
 } 
