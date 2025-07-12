@@ -384,7 +384,8 @@ useEffect(() => {
                             size="sm"
                             className="bg-white/95 text-blue-700 hover:bg-white hover:text-blue-800 px-5 py-2.5 rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 text-sm w-fit hover:scale-105 border border-white/50 backdrop-blur-sm mt-2"
                             // onClick={() => navigate('/classes?tab=past')}
-                            onClick={handleDemoBooking}
+                            onClick={() => window.open("https://bambinos.live/pricings", "_blank")}
+
                           >
                             <Sparkles className="w-4 h-4 mr-2" />
                             Renew Classes
