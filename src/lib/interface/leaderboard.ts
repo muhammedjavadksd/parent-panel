@@ -10,14 +10,19 @@ export interface TopStudent {
 }
 
 export interface ChildScore {
-    id: number;
-    parent_id: number;
-    child_name: string;
-    position: number;
-    total_points: number;
-    total_points_this_week: number;
-    child_age: number;
+    id: number;             // Parent ID
+    country: string;
+    children: {
+        id: number;           // Child ID
+        parent_id: number;
+        child_name: string;
+        position: number;
+        total_points: number;
+        total_points_this_week: number;
+        child_age: number;
+    }[];
 }
+
 
 export interface ChildPointsBreakup {
     reason: string;
