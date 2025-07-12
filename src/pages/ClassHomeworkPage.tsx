@@ -337,14 +337,14 @@ const ClassHomeworkPage = () => {
         </div>
       </div>
 
-      {assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework && (
+      {/* {assignment.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework && (
         <div className="bg-gray-50 p-4 rounded-xl mb-4">
           <h4 className="font-semibold text-gray-800 mb-2">Homework Assignment</h4>
           <p className="text-gray-700 text-sm overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical' }}>
             {assignment.classschedule.facultyclassschedulecurriculum.curriculumtopic.homework}
           </p>
         </div>
-      )}
+      )} */}
 
       <div className="flex justify-end space-x-3">
         <Button
