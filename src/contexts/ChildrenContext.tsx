@@ -57,6 +57,12 @@ export const ChildrenProvider = ({ children }: ChildrenProviderProps) => {
                     setSelectedChild(response.children[0]);
                     console.log('🔍 ChildrenContext: First child selected:', response.children[0]);
                 }
+
+                // Only auto-select a child on first load, not if user explicitly selected "Family" (null)
+                // if (selectedChild === null && childrenList.length === 0 && response.children.length > 0) {
+                //     setSelectedChild(response.children[0]);
+                // }
+
             } else {
                 setError(response.message || 'Failed to fetch children');
                 console.error('🔍 ChildrenContext: API error:', response.message);
