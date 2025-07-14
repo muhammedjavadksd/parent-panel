@@ -20,12 +20,13 @@ const Classes = () => {
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview } = useDashboard();
   const { classInfo, isLoading: isClassesLoading, error: classesError, loadClassesInfo } = useClasses();
 
-  // Fetch stats for selected child
+  // Fetch stats for selected child or family level
   React.useEffect(() => {
-    if (selectedChild?.id) {
-      console.log('🔍 Classes: Loading data for child:', selectedChild.id);
-      loadProgressOverview(selectedChild.id);
-      loadClassesInfo(selectedChild.id.toString());
+    const childId = selectedChild?.id || null;
+    console.log('🔍 Classes: Loading data for:', childId ? `child ${childId}` : 'family level');
+    loadProgressOverview(childId);
+    if (childId) {
+      loadClassesInfo(childId.toString());
     }
   }, [selectedChild, loadProgressOverview, loadClassesInfo]);
 

@@ -94,11 +94,6 @@ const WebsiteTour = () => {
       setRun(false);
     }
 
-    // Add some fun interactions
-    if (type === 'step:after') {
-      // You can add custom animations or effects here
-      console.log('Tour step completed!');
-    }
   };
 
   return (
