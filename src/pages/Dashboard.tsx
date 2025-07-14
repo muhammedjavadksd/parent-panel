@@ -16,8 +16,8 @@ import { useCoins } from "@/contexts/CoinContext";
 import { useDashboard } from '@/hooks/useDashboard';
 import { useChildren } from '@/hooks/useChildren';
 import { useBookings } from '@/hooks/useBookings';
-import { useJoinClass } from '@/hooks/useJoinClass';
-import JoinClass from '@/components/JoinClass/JoinClass';
+
+
 import LearningProgress from '@/components/dashboard/LearningProgress';
 import { useClasses } from "@/hooks/useClasses";
 
@@ -42,8 +42,7 @@ const Dashboard = () => {
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview, error, bookingsForCalendar, upcomingClass } = useDashboard();
   const { bookings, isLoading, error: bookingsError, loadAllBookings, loadUpcomingClasses, loadPastClasses, clearBookingData } = useBookings();
   const { getShiftingDate, changeBooking } = useBooking();
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
+
 
 
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
@@ -159,13 +158,6 @@ const Dashboard = () => {
     }
   }, [bookingsError]);
 
-  // Handle join class button click
-  const handleJoinClick = useCallback(() => {
-    setShowJoinModal(true);
-    clearJoinError();
-    clearJoinData();
-  }, [clearJoinError, clearJoinData]);
-
   // Get the latest upcoming and past class for the selected child
   const now = new Date();
   const filteredUpcoming = bookings
@@ -186,21 +178,12 @@ const Dashboard = () => {
   const latestUpcomingClass = filteredUpcoming[0] || null;
   const latestPastClass = filteredPast[0] || null;
 
-  // Handle confirm join
-  const handleConfirmJoin = useCallback(() => {
+  // Handle join class button click
+  const handleJoinClick = useCallback(() => {
     if (latestUpcomingClass) {
-      doJoinClass(String(latestUpcomingClass.schedulebooking_id));
+      navigate(`/join-class/${latestUpcomingClass.schedulebooking_id}`);
     }
-  }, [latestUpcomingClass, doJoinClass]);
-
-  // Effect: redirect to join_url on success
-  useEffect(() => {
-    if (joinData && joinData.join_url) {
-      window.open(joinData.join_url, '_blank');
-      setShowJoinModal(false);
-      clearJoinData();
-    }
-  }, [joinData, clearJoinData]);
+  }, [latestUpcomingClass, navigate]);
 
   // Helper function to get emoji based on class name
   const getEmojiFromClassName = useCallback((className: string) => {
@@ -352,10 +335,9 @@ const Dashboard = () => {
                             size="sm"
                             className="bg-white/95 text-blue-700 hover:bg-white hover:text-blue-800 px-5 py-2.5 rounded-2xl font-bold shadow-xl hover:shadow-2xl transition-all duration-300 text-sm w-fit hover:scale-105 border border-white/50 backdrop-blur-sm"
                             onClick={handleJoinClick}
-                            disabled={isJoining}
                           >
                             <Sparkles className="w-4 h-4 mr-2" />
-                            {isJoining ? 'Joining...' : 'Join Session'}
+                            Join Session
                           </Button>
                         )}
                       </>
@@ -568,26 +550,7 @@ const Dashboard = () => {
       </main>
     </div>
 
-    {/* Join Class Modal */}
-    {showJoinModal && latestUpcomingClass && (
-      <JoinClass
-        isLoading={isJoining}
-        isPolling={isPolling}
-        error={joinError}
-        pollingMessage={pollingMessage}
-        onJoin={handleJoinClick}
-        onConfirm={handleConfirmJoin}
-        onCancel={() => {
-          setShowJoinModal(false);
-          cancelPolling();
-        }}
-        onCancelPolling={() => {
-          setShowJoinModal(false);
-          cancelPolling();
-        }}
-        showModal={showJoinModal}
-      />
-    )}
+
 
     {/* Website Tour */}
     <WebsiteTour />

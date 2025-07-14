@@ -2,8 +2,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Calendar, Clock, Users, Loader2, Info } from "lucide-react";
 import React, { useState, useEffect } from "react";
-import { useJoinClass } from '@/hooks/useJoinClass';
-import JoinClass from '@/components/JoinClass/JoinClass';
+
 import { useNavigate } from "react-router-dom";
 
 import { useBooking } from '@/hooks/useBooking';
@@ -21,8 +20,6 @@ interface UpcomingClassesProps {
 }
 
 const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) => {
-  const [showJoinModalId, setShowJoinModalId] = useState<string | null>(null);
-  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
   const navigate = useNavigate();
   // Helper function to format date
   const formatDate = (dateString: string) => {
@@ -126,24 +123,10 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
 
   // Handle join class button click
   const handleJoinClick = (schedulebooking_id: string) => {
-    setShowJoinModalId(schedulebooking_id);
-    clearJoinError();
-    clearJoinData();
+    navigate(`/join-class/${schedulebooking_id}`);
   };
 
-  // Handle confirm join
-  const handleConfirmJoin = (schedulebooking_id: string) => {
-    doJoinClass(schedulebooking_id);
-  };
 
-  // Effect: redirect to join_url on success
-  useEffect(() => {
-    if (joinData && joinData.join_url) {
-      window.open(joinData.join_url, '_blank');
-      setShowJoinModalId(null);
-      clearJoinData();
-    }
-  }, [joinData, clearJoinData]);
 
   if (isLoading) {
     return (
@@ -262,21 +245,21 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                   <div className="grid grid-cols-2 gap-2">
                     
                     {isLessThan15min ? (
-
-                    
-                    <Button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
-                            onClick={() => handleJoinClick(classItem)}
-                          >
-                            Join Class
-                    </Button>):(<Button
-                            className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
-                            title="Join Class"
-                            disabled={true}
-                          >
-                            Join Class
-                    </Button>)
-                    }
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
+                        onClick={() => handleJoinClick(classItem.schedulebooking_id)}
+                      >
+                        Join Class
+                      </Button>
+                    ) : (
+                      <Button
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
+                        title="Join Class"
+                        disabled={true}
+                      >
+                        Join Class
+                      </Button>
+                    )}
                     
                     
                     
@@ -329,26 +312,7 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
         )}
       </div>
 
-      {/* Join Class Modal */}
-      {showJoinModalId && (
-        <JoinClass
-          isLoading={isJoining}
-          isPolling={isPolling}
-          error={joinError}
-          pollingMessage={pollingMessage}
-          onJoin={() => handleJoinClick(showJoinModalId)}
-          onConfirm={() => handleConfirmJoin(showJoinModalId)}
-          onCancel={() => {
-            setShowJoinModalId(null);
-            cancelPolling();
-          }}
-          onCancelPolling={() => {
-            setShowJoinModalId(null);
-            cancelPolling();
-          }}
-          showModal={!!showJoinModalId}
-        />
-      )}
+
     </div>
   );
 };

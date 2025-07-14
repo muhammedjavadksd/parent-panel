@@ -3,43 +3,21 @@ import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 import { useEffect, useState, useCallback } from "react";
 import { useBookings } from "@/hooks/useBookings";
-import { useJoinClass } from '@/hooks/useJoinClass';
-import JoinClass from '@/components/JoinClass/JoinClass';
+import { useNavigate } from "react-router-dom";
+
 
 const MobileUpcomingClasses = () => {
   const { bookings, isLoading, error, loadUpcomingClasses } = useBookings();
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [selectedClassForJoin, setSelectedClassForJoin] = useState<any>(null);
-
-  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
+  const navigate = useNavigate();
 
   useEffect(() => {
     loadUpcomingClasses();
   }, [loadUpcomingClasses]); // Re-run when loadUpcomingClasses changes
 
-  // Effect: redirect to join_url on success
-  useEffect(() => {
-    if (joinData && joinData.join_url) {
-      window.open(joinData.join_url, '_blank');
-      setShowJoinModal(false);
-      clearJoinData();
-    }
-  }, [joinData, clearJoinData]);
-
   // Handle join class button click
   const handleJoinClick = useCallback((classItem: any) => {
-    setSelectedClassForJoin(classItem);
-    setShowJoinModal(true);
-    clearJoinError();
-    clearJoinData();
-  }, [clearJoinError, clearJoinData]);
-
-  // Handle confirm join
-  const handleConfirmJoin = useCallback(() => {
-    if (selectedClassForJoin) {
-      doJoinClass(String(selectedClassForJoin.schedulebooking_id));
-    }
-  }, [selectedClassForJoin, doJoinClass]);
+    navigate(`/join-class/${classItem.schedulebooking_id}`);
+  }, [navigate]);
 
   // Helper function to format date
   const formatDate = (dateString: string) => {
@@ -180,26 +158,7 @@ const MobileUpcomingClasses = () => {
         </div>
       </div>
 
-      {/* Join Class Modal */}
-      {showJoinModal && selectedClassForJoin && (
-        <JoinClass
-          isLoading={isJoining}
-          isPolling={isPolling}
-          error={joinError}
-          pollingMessage={pollingMessage}
-          onJoin={() => handleJoinClick(selectedClassForJoin)}
-          onConfirm={handleConfirmJoin}
-          onCancel={() => {
-            setShowJoinModal(false);
-            cancelPolling();
-          }}
-          onCancelPolling={() => {
-            setShowJoinModal(false);
-            cancelPolling();
-          }}
-          showModal={showJoinModal}
-        />
-      )}
+
     </>
   );
 };

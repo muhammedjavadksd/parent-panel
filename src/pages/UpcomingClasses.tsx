@@ -10,8 +10,7 @@ import ApiTest from "@/components/ApiTest";
 import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
 import { useBooking } from '@/hooks/useBooking';
 import { useChildren } from '@/hooks/useChildren';
-import { useJoinClass } from '@/hooks/useJoinClass';
-import JoinClass from '@/components/JoinClass/JoinClass';
+
 
 const UpcomingClasses = () => {
   const navigate = useNavigate();
@@ -20,9 +19,6 @@ const UpcomingClasses = () => {
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [modalMode, setModalMode] = useState<'shift' | 'cancel'>('shift');
-  const [showJoinModal, setShowJoinModal] = useState(false);
-  const [selectedClassForJoin, setSelectedClassForJoin] = useState<any>(null);
-
   const {
     loading,
     error: bookingError,
@@ -33,8 +29,6 @@ const UpcomingClasses = () => {
     reset,
   } = useBooking();
 
-  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
-
   useEffect(() => {
     // Pass the selected child's ID if a specific child is selected, otherwise pass undefined for family view
     const childId = selectedChild?.id;
@@ -42,14 +36,7 @@ const UpcomingClasses = () => {
     // eslint-disable-next-line
   }, [selectedChild]); // Re-run when selectedChild changes
 
-  // Effect: redirect to join_url on success
-  useEffect(() => {
-    if (joinData && joinData.join_url) {
-      window.open(joinData.join_url, '_blank');
-      setShowJoinModal(false);
-      clearJoinData();
-    }
-  }, [joinData, clearJoinData]);
+
 
   console.log('🔍 UpcomingClasses: Current state - bookings:', bookings.length, 'isLoading:', isLoading, 'error:', error, 'selectedChild:', selectedChild);
 
@@ -83,18 +70,8 @@ const UpcomingClasses = () => {
 
   // Handle join class button click
   const handleJoinClick = useCallback((classItem: any) => {
-    setSelectedClassForJoin(classItem);
-    setShowJoinModal(true);
-    clearJoinError();
-    clearJoinData();
-  }, [clearJoinError, clearJoinData]);
-
-  // Handle confirm join
-  const handleConfirmJoin = useCallback(() => {
-    if (selectedClassForJoin) {
-      doJoinClass(String(selectedClassForJoin.schedulebooking_id));
-    }
-  }, [selectedClassForJoin, doJoinClass]);
+    navigate(`/join-class/${classItem.schedulebooking_id}`);
+  }, [navigate]);
 
   const handleRescheduleClick = async (schedulebooking_id: number) => {
     setSelectedBookingId(schedulebooking_id);
@@ -298,26 +275,7 @@ const UpcomingClasses = () => {
         </main>
       </div>
 
-      {/* Join Class Modal */}
-      {showJoinModal && selectedClassForJoin && (
-        <JoinClass
-          isLoading={isJoining}
-          isPolling={isPolling}
-          error={joinError}
-          pollingMessage={pollingMessage}
-          onJoin={() => handleJoinClick(selectedClassForJoin)}
-          onConfirm={handleConfirmJoin}
-          onCancel={() => {
-            setShowJoinModal(false);
-            cancelPolling();
-          }}
-          onCancelPolling={() => {
-            setShowJoinModal(false);
-            cancelPolling();
-          }}
-          showModal={showJoinModal}
-        />
-      )}
+
     </div>
   );
 };
