@@ -18,6 +18,7 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
     
     // Use default values if data is not available
     const data = progressOverview || DASHBOARD_CONSTANTS.DEFAULT_PROGRESS_OVERVIEW;
+    console.log('LearningProgress: data:', data);
 
     const progress = learningProgress || {
         classes: 0,
