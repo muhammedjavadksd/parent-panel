@@ -15,8 +15,8 @@ export const TRANSACTION_CONSTANTS = {
 } as const;
 
 export const TRANSACTION_TYPE_OPTIONS = [
-    { value: 'withdraw', label: 'Withdrawal' },
-    { value: 'deposit', label: 'Deposit' },
+    { value: 'withdraw', label: 'Booked' },
+    { value: 'deposit', label: 'Cancelled' },
 ] as const;
 
 export const TRANSACTION_TYPE_COLORS = {
