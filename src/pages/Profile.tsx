@@ -26,7 +26,7 @@ const Profile = () => {
 
   // Desktop profile data using authenticated user
   const profileData = {
-    name: user ? `${user.parent_name}`: "User",
+    name: user ? `${user.firstName} ${user.lastName}` : "User",
     age: 8,
     grade: 3,
     school: "Sunshine Elementary",
@@ -72,7 +72,7 @@ const Profile = () => {
       <Sidebar />
 
       <div className="ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=>{}}/>
+        <Header />
 
         <main className="flex-1 p-6">
           <div className="mb-8">
