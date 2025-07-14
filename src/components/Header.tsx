@@ -143,7 +143,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
             <Play className="w-3 h-3 mr-1" />
             GO
           </Button>
-        </div> */}
+        </div>
 
         <NotificationPanel />
         <ProfileDropdown />
