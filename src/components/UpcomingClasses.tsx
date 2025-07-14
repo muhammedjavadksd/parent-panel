@@ -22,7 +22,7 @@ interface UpcomingClassesProps {
 
 const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) => {
   const [showJoinModalId, setShowJoinModalId] = useState<string | null>(null);
-  const { data: joinData, isLoading: isJoining, error: joinError, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
+  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
   const navigate = useNavigate();
   // Helper function to format date
   const formatDate = (dateString: string) => {
@@ -280,16 +280,7 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                     
                     
                     
-                    {classItem.can_join && (
-                      <JoinClass
-                        isLoading={isJoining && showJoinModalId === String(classItem.schedulebooking_id)}
-                        error={showJoinModalId === String(classItem.schedulebooking_id) ? joinError : null}
-                        onJoin={() => handleJoinClick(String(classItem.schedulebooking_id))}
-                        onConfirm={() => handleConfirmJoin(String(classItem.schedulebooking_id))}
-                        onCancel={() => setShowJoinModalId(null)}
-                        showModal={showJoinModalId === String(classItem.schedulebooking_id)}
-                      /> )
-                    }
+
 
                     <div className="grid grid-cols-1 gap-2">
                       {isLessThan4Hours ? (
@@ -337,6 +328,27 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
           </div>
         )}
       </div>
+
+      {/* Join Class Modal */}
+      {showJoinModalId && (
+        <JoinClass
+          isLoading={isJoining}
+          isPolling={isPolling}
+          error={joinError}
+          pollingMessage={pollingMessage}
+          onJoin={() => handleJoinClick(showJoinModalId)}
+          onConfirm={() => handleConfirmJoin(showJoinModalId)}
+          onCancel={() => {
+            setShowJoinModalId(null);
+            cancelPolling();
+          }}
+          onCancelPolling={() => {
+            setShowJoinModalId(null);
+            cancelPolling();
+          }}
+          showModal={!!showJoinModalId}
+        />
+      )}
     </div>
   );
 };

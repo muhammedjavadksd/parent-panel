@@ -11,7 +11,7 @@ const MobileUpcomingClasses = () => {
   const [showJoinModal, setShowJoinModal] = useState(false);
   const [selectedClassForJoin, setSelectedClassForJoin] = useState<any>(null);
 
-  const { data: joinData, isLoading: isJoining, error: joinError, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
+  const { data: joinData, isLoading: isJoining, isPolling, error: joinError, pollingMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData, cancelPolling } = useJoinClass();
 
   useEffect(() => {
     loadUpcomingClasses();
@@ -184,10 +184,19 @@ const MobileUpcomingClasses = () => {
       {showJoinModal && selectedClassForJoin && (
         <JoinClass
           isLoading={isJoining}
+          isPolling={isPolling}
           error={joinError}
+          pollingMessage={pollingMessage}
           onJoin={() => handleJoinClick(selectedClassForJoin)}
           onConfirm={handleConfirmJoin}
-          onCancel={() => setShowJoinModal(false)}
+          onCancel={() => {
+            setShowJoinModal(false);
+            cancelPolling();
+          }}
+          onCancelPolling={() => {
+            setShowJoinModal(false);
+            cancelPolling();
+          }}
           showModal={showJoinModal}
         />
       )}
