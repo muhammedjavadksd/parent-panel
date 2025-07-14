@@ -53,10 +53,10 @@ export const ChildrenProvider = ({ children }: ChildrenProviderProps) => {
                 console.log('🔍 ChildrenContext: Children set:', response.children);
 
                 // If no child is selected and we have children, select the first one
-                if (!selectedChild && response.children.length > 0) {
-                    setSelectedChild(response.children[0]);
-                    console.log('🔍 ChildrenContext: First child selected:', response.children[0]);
-                }
+                // if (!selectedChild && response.children.length > 0) {
+                //     setSelectedChild(response.children[0]);
+                //     console.log('🔍 ChildrenContext: First child selected:', response.children[0]);
+                // }
 
                 // Only auto-select a child on first load, not if user explicitly selected "Family" (null)
                 // if (selectedChild === null && childrenList.length === 0 && response.children.length > 0) {

@@ -11,6 +11,11 @@ interface LearningProgressProps {
 
 
 const LearningProgress = ({ progressOverview, learningProgress, isLoading = false }: LearningProgressProps) => {
+    // Debug logging
+    console.log('LearningProgress: progressOverview:', progressOverview);
+    console.log('LearningProgress: learningProgress:', learningProgress);
+    console.log('LearningProgress: isLoading:', isLoading);
+    
     // Use default values if data is not available
     const data = progressOverview || DASHBOARD_CONSTANTS.DEFAULT_PROGRESS_OVERVIEW;
 

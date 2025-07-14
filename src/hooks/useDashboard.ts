@@ -12,12 +12,13 @@ export const useDashboard = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadProgressOverview = useCallback(async (child_id: number) => {
+    const loadProgressOverview = useCallback(async (child_id?: number | null) => {
         setIsLoading(true);
         setError(null);
 
         try {
-            const response = await dashboardService.getProgressOverview(child_id);
+            // If no child is selected, pass null to get family-level data
+            const response = await dashboardService.getProgressOverview(child_id || 0);
 
             if (response.status && response.data) {
                 setProgressOverview(response.data);
@@ -43,16 +44,17 @@ export const useDashboard = () => {
         setError(null);
     }, []);
 
-    const retryLoadProgressOverview = useCallback(async (child_id: number) => {
+    const retryLoadProgressOverview = useCallback(async (child_id?: number | null) => {
         clearError();
         await loadProgressOverview(child_id);
     }, [clearError, loadProgressOverview]);
 
-    // ✅ Auto-load when child is selected
+    // ✅ Auto-load when child is selected OR when no child is selected (family level)
     useEffect(() => {
-        if (selectedChild?.id) {
-            loadProgressOverview(selectedChild.id);
-        }
+        // Always load data - if child is selected, use child_id, otherwise load family-level data
+        const childId = selectedChild?.id || null;
+        console.log('Loading progress overview for:', childId ? `child ${childId}` : 'family level');
+        loadProgressOverview(childId);
     }, [selectedChild?.id, loadProgressOverview]);
 
     return {

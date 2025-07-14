@@ -5,8 +5,11 @@ import { DASHBOARD_CONSTANTS } from '@/shared/constants/dashboard';
 export class DashboardService {
     async getProgressOverview(child_id: number): Promise<{ status: boolean; msg: string; data?: DashboardHeaderStatsResponse }> {
         try {
+            // If child_id is 0, don't include it in params (family level)
+            const params = child_id > 0 ? { child_id } : {};
+            
             const response = await apiClient.get(`/parent-panel/dashboard`, {
-                params: { child_id }
+                params
             });
 
             return {

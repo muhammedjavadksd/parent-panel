@@ -29,10 +29,9 @@ const StudentAnalytics = () => {
   
   const { selectedChild } = useChildren();
   useEffect(() => {
-    if (selectedChild?.id) {
-      console.log('Loading progress overview for child:', selectedChild.id);
-      loadProgressOverview(selectedChild.id);
-    }
+    const childId = selectedChild?.id || null;
+    console.log('Loading progress overview for:', childId ? `child ${childId}` : 'family level');
+    loadProgressOverview(childId);
   }, [selectedChild, loadProgressOverview]);
 
   const analyticsData = {

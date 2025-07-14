@@ -134,13 +134,7 @@ const Dashboard = () => {
   console.log("---------Past Bookings---------")
   console.log(pastBookings)
 
-  // Fetch progress overview when selectedChild changes
-  useEffect(() => {
-    if (selectedChild?.id) {
-      console.log('Loading progress overview for child:', selectedChild.id);
-      loadProgressOverview(selectedChild.id);
-    }
-  }, [selectedChild, loadProgressOverview]);
+  // Progress overview is now handled automatically by useDashboard hook
 
 
 
