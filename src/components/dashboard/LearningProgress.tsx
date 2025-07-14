@@ -1,6 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { BookOpen, Clock, Trophy, Target, TrendingUp, Coins, Loader2 } from "lucide-react";
-import { ProgressOverview , LearningProgressData} from "@/lib/interface/dashboard";
+import { ProgressOverview, LearningProgressData } from "@/lib/interface/dashboard";
 import { DASHBOARD_CONSTANTS } from "@/shared/constants/dashboard";
 
 interface LearningProgressProps {
@@ -10,12 +10,14 @@ interface LearningProgressProps {
 }
 
 
+
+
 const LearningProgress = ({ progressOverview, learningProgress, isLoading = false }: LearningProgressProps) => {
     // Debug logging
     console.log('LearningProgress: progressOverview:', progressOverview);
     console.log('LearningProgress: learningProgress:', learningProgress);
     console.log('LearningProgress: isLoading:', isLoading);
-    
+
     // Use default values if data is not available
     const data = progressOverview || DASHBOARD_CONSTANTS.DEFAULT_PROGRESS_OVERVIEW;
     console.log('LearningProgress: data:', data);
@@ -28,11 +30,15 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
         coins: 0,
     };
 
+    console.log('LearningProgress: Loaded LearningProgress component');
+    console.log('LearningProgress: progressOverview:', progressOverview);
+    console.log('LearningProgress: learningProgress:', learningProgress);
+
     const statsData = [
         {
             title: "Classes",
-            value: (data.past_classes ?? 0).toString(),
-            target: (data.total_classes ?? 0).toString(),
+            value: (progress.classes ?? 0).toString(),
+            target: (5).toString(),
             icon: BookOpen,
             percentage: data.total_classes > 0 ? Math.round((data.past_classes / data.total_classes) * 100) : 0,
             color: DASHBOARD_CONSTANTS.PROGRESS_BAR_TEXT_COLORS.classes,
@@ -51,7 +57,7 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
             accentColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_COLORS.hours,
             borderColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_BORDERS.hours
         },
-        {   
+        {
             // Achievements is changed to HOmework
             title: "Homework",
             value: progress.achievements && progress.achievements !== "There is no logic defined yet for achievements." ? "1" : "0",
