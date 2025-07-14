@@ -30,6 +30,7 @@ export const BookingReschedule: FC<BookingRescheduleProps> = ({
 
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+            
             <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
                 <button
                     className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
@@ -69,6 +70,10 @@ export const BookingReschedule: FC<BookingRescheduleProps> = ({
                     {({ isSubmitting }) => (
                         <Form className="space-y-4">
                             <div>
+                                <div className='text-orange-600 text-sm mb-2'>
+                                    you can reschedule only twice in a month.
+                                    <br />
+                                </div>
                                 <label htmlFor="reason" className="block text-sm font-medium text-gray-700 mb-1">
                                     Reason for {mode === 'shift' ? 'rescheduling' : 'cancelling'}
                                 </label>

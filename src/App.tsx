@@ -107,7 +107,7 @@ function App() {
             <ChildrenProvider>
               <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 text-gray-900">
 
-                
+
 
                 <AppRoutes />
               </div>

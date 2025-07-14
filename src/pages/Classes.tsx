@@ -358,7 +358,7 @@ const Classes = () => {
       <Sidebar />
 
       <div className="ml-64 flex flex-col min-h-screen">
-        <Header />
+        <Header onStartTour={()=> {}}/>
 
         <main className="flex-1 p-0">
           <div className="p-8 bg-white border-b border-blue-100">

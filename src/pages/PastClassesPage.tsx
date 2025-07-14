@@ -2,7 +2,7 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Play, FileText, BookOpen, MessageSquare, Calendar, Clock, Users, Loader2 } from "lucide-react";
+import { Play, FileText, BookOpen, MessageSquare, Calendar, Clock, Users, Loader2, Star } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { useBookings } from "@/hooks/useBookings";
@@ -85,7 +85,7 @@ const PastClassesPage = () => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-          <Header />
+          <Header onStartTour={()=> {}}/>
           <main className="flex-1 p-6">
             <div className="flex items-center justify-center h-64">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -102,7 +102,7 @@ const PastClassesPage = () => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-          <Header />
+          <Header onStartTour={()=> {}}/>
           <main className="flex-1 p-6">
             <div className="flex flex-col items-center justify-center h-64 text-gray-500">
               <BookOpen className="w-16 h-16 mb-4 text-gray-300" />
@@ -120,7 +120,7 @@ const PastClassesPage = () => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-          <Header />
+          <Header onStartTour={()=> {}}/>
           <main className="flex-1 p-6">
             <div className="text-center text-red-600">
               <p>Error loading past classes: {error}</p>
@@ -145,7 +145,7 @@ const PastClassesPage = () => {
       <Sidebar />
 
       <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <Header />
+        <Header onStartTour={()=> {}}/>
 
         <main className="flex-1 p-6">
           <div className="mb-6">
@@ -211,7 +211,7 @@ const PastClassesPage = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
                     {[{
                       title: "Recording",
                       icon: <Play className="w-4 h-4" />,
@@ -230,6 +230,12 @@ const PastClassesPage = () => {
                       icon: <BookOpen className="w-4 h-4" />,
                       onClick: () => navigate(`/class/${classItem.schedulebooking_id}/homework`),
                       className: "border-2 border-green-300 text-green-700 hover:bg-green-50",
+                      variant: "outline"
+                    }, {
+                      title: "Review",
+                      icon: <Star className="w-4 h-4" />,
+                      onClick: () => window.open(classItem.feedback_url, '_blank'),
+                      className: "border-2 border-yellow-500 text-yellow-900 hover:bg-yellow-50",
                       variant: "outline"
                     }, {
                       title: "AI Feedback",
