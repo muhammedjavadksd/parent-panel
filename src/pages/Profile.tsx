@@ -263,7 +263,7 @@ const Profile = () => {
                 </button>
                 <button
                   className="w-full flex items-center space-x-4 p-4 rounded-xl hover:bg-yellow-50 transition-colors border border-yellow-200 shadow-sm"
-                  onClick={() => setShowSupportCenter(true)}
+                  onClick={() => navigate("/support")}
                 >
                   <HelpCircle className="w-6 h-6 text-yellow-600" />
                   <span className="text-lg text-blue-800 font-medium">Support Center</span>
