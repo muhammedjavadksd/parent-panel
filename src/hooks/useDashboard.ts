@@ -18,10 +18,11 @@ export const useDashboard = () => {
 
         try {
             // If no child is selected, pass null to get family-level data
-            const response = await dashboardService.getProgressOverview(child_id || 0);
+            const response = await dashboardService.getProgressOverview(child_id || 0, 'overall');
 
             if (response.status && response.data) {
                 setProgressOverview(response.data);
+                console.log('Progress overview loaded:', response.data);
 
                 if (response.data.upcoming_class_parent_level) {
                     setUpcomingClass(response.data.upcoming_class_parent_level);

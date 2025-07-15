@@ -12,10 +12,12 @@ export interface ProgressOverview {
 export interface LearningProgressData {
   classes: number;
   learning_time_hours: number;
+  total_hours: number;
   achievements: string;
   streak: number;
-  coins: number;
+  coins: number | null;
 }
+
 
 
 
