@@ -448,7 +448,7 @@ const Dashboard = () => {
 
         <div className="learning-progress">
           <LearningProgress
-            progressOverview={progressOverview?.progress_overview ?? null}
+            progressOverview={progressOverview ?? null}
             learningProgress={progressOverview?.learning_progress ?? null}
             isLoading={isProgressLoading}
           />

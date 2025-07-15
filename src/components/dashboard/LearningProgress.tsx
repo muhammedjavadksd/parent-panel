@@ -1,13 +1,17 @@
 import { Card } from "@/components/ui/card";
 import { BookOpen, Clock, Trophy, Target, TrendingUp, Coins, Loader2 } from "lucide-react";
-import { ProgressOverview , LearningProgressData} from "@/lib/interface/dashboard";
+import { ProgressOverview, LearningProgressData } from "@/lib/interface/dashboard";
 import { DASHBOARD_CONSTANTS } from "@/shared/constants/dashboard";
+import { DashboardHeaderStatsResponse } from "@/lib/interface/dashboard";
+import { Day } from "react-day-picker";
 
 interface LearningProgressProps {
-    progressOverview: ProgressOverview | null;
+    progressOverview: DashboardHeaderStatsResponse | null;
     learningProgress?: LearningProgressData | null;
     isLoading?: boolean;
 }
+
+
 
 
 const LearningProgress = ({ progressOverview, learningProgress, isLoading = false }: LearningProgressProps) => {
@@ -15,7 +19,7 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
     console.log('LearningProgress: progressOverview:', progressOverview);
     console.log('LearningProgress: learningProgress:', learningProgress);
     console.log('LearningProgress: isLoading:', isLoading);
-    
+
     // Use default values if data is not available
     const data = progressOverview || DASHBOARD_CONSTANTS.DEFAULT_PROGRESS_OVERVIEW;
     console.log('LearningProgress: data:', data);
@@ -23,18 +27,26 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
     const progress = learningProgress || {
         classes: 0,
         learning_time_hours: 0,
+        total_hours: 0, // ✅ Add this
         achievements: "No achievements yet",
         streak: 0,
         coins: 0,
     };
 
+
+
+    console.log('LearningProgress: Loaded LearningProgress component');
+    console.log('LearningProgress: progressOverview:', progressOverview);
+    console.log('LearningProgress: learningProgress:', learningProgress);
+
     const statsData = [
         {
             title: "Classes",
-            value: (data.past_classes ?? 0).toString(),
-            target: (data.total_classes ?? 0).toString(),
+            value: (progress.classes ?? 0).toString(),
+            // value: (progressOverview?.bookings_for_calendar?.length ?? 0).toString(),
+            target: (progressOverview?.bookings_for_calendar?.length ?? 0).toString(),
             icon: BookOpen,
-            percentage: data.total_classes > 0 ? Math.round((data.past_classes / data.total_classes) * 100) : 0,
+            percentage: Math.round(((progress.classes || 0) / (progressOverview?.bookings_for_calendar?.length || 5)) * 100),
             color: DASHBOARD_CONSTANTS.PROGRESS_BAR_TEXT_COLORS.classes,
             bgGradient: DASHBOARD_CONSTANTS.PROGRESS_BAR_GRADIENTS.classes,
             accentColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_COLORS.classes,
@@ -43,15 +55,23 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
         {
             title: "Hours",
             value: `${Math.floor(progress.learning_time_hours)}h ${Math.round((progress.learning_time_hours % 1) * 60)}m`,
-            target: "15h",
+            target: progress.total_hours
+                ? `${Math.floor(progress.total_hours)}h ${Math.round((progress.total_hours % 1) * 60)}m`
+                : "15h 0m",
             icon: Clock,
-            percentage: Math.min(100, Math.round((progress.learning_time_hours / 15) * 100)),
+            percentage: Math.min(
+                100,
+                Math.round(
+                    ((progress.learning_time_hours || 0) / (progress.total_hours || 15)) * 100
+                )
+            ),
             color: DASHBOARD_CONSTANTS.PROGRESS_BAR_TEXT_COLORS.hours,
             bgGradient: DASHBOARD_CONSTANTS.PROGRESS_BAR_GRADIENTS.hours,
             accentColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_COLORS.hours,
             borderColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_BORDERS.hours
-        },
-        {   
+        }
+        ,
+        {
             // Achievements is changed to HOmework
             title: "Homework",
             value: progress.achievements && progress.achievements !== "There is no logic defined yet for achievements." ? "1" : "0",
@@ -65,10 +85,10 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
         },
         {
             title: "Streak",
-            value: (data.streak ?? 0).toString(),
-            target: (data.streak ?? 0).toString(),
+            value: (progress.streak ?? 0).toString(),
+            target: `${(7).toString()} Days`,
             icon: Target,
-            percentage: 100,
+            percentage: Math.round(((progress.streak || 0) / 7) * 100),
             color: DASHBOARD_CONSTANTS.PROGRESS_BAR_TEXT_COLORS.streak,
             bgGradient: DASHBOARD_CONSTANTS.PROGRESS_BAR_GRADIENTS.streak,
             accentColor: DASHBOARD_CONSTANTS.PROGRESS_BAR_COLORS.streak,
@@ -116,7 +136,7 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
                 </div>
                 <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 rounded-2xl shadow-lg border border-yellow-300/50">
                     <Coins className="w-4 h-4 text-white" />
-                    <span className="text-white font-bold text-sm">{data.coins || 0}</span>
+                    <span className="text-white font-bold text-sm">{progress.coins || 0}</span>
                 </div>
             </div>
 
