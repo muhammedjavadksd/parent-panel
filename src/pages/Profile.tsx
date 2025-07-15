@@ -12,30 +12,37 @@ import SupportCenter from "@/components/SupportCenter";
 import { useIsMobile } from "@/hooks/use-mobile";
 import MobileProfile from "./MobileProfile";
 import { useAuth } from "@/hooks/useAuth";
+import { useProfile } from "@/hooks/useProfile";
+import { useHeader } from "@/hooks/useHeader";
 
+import { useChildren } from "@/hooks/useChildren";
 const Profile = () => {
+  const { selectedChild } = useChildren();
   const isMobile = useIsMobile();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [showSupportCenter, setShowSupportCenter] = useState(false);
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { profileData, isLoading: profileLoading } = useProfile();
+
+  const { headerData, loading: headerLoading } = useHeader();
+
+  const progressOverview = headerData?.data?.progress_overview;
+  const renewalSection = headerData?.data?.renewal_section;
 
   if (isMobile) {
     return <MobileProfile />;
   }
 
-  // Desktop profile data using authenticated user
-  const profileData = {
-    name: user ? `${user.firstName} ${user.lastName}` : "User",
-    age: 8,
-    grade: 3,
-    school: "Sunshine Elementary",
-    avatar: "👧",
-    classes: 28,
-    streak: 15,
-    level: "Gold",
-    country: "India",
-    totalCoins: 2650,
+  // Desktop profile data using selected child and API data
+  const userProfileData = {
+    name: selectedChild?.name || "Family",
+    age: selectedChild?.age || 0,
+    grade: selectedChild?.grade || "Family",
+    avatar: "👨‍👩‍👧‍👦",
+    classes: progressOverview?.total_classes || 0,
+    streak: progressOverview?.streak || 0,
+    totalCoins: progressOverview?.coins || 0,
     achievements: [
       { title: "First Class Complete", date: "Jun 15", emoji: "🎉" },
       { title: "5-Day Streak", date: "Jun 18", emoji: "🔥" },
@@ -43,12 +50,25 @@ const Profile = () => {
     ]
   };
 
-  const subjectData = [
-    { name: "Math", percentage: 35, color: "bg-blue-500" },
-    { name: "Science", percentage: 25, color: "bg-yellow-500" },
-    { name: "Arts", percentage: 20, color: "bg-blue-400" },
-    { name: "Yoga", percentage: 20, color: "bg-yellow-400" }
-  ];
+  console.log("===========profileData===========");
+  console.log(userProfileData);
+  console.log(user);
+  console.log("Header data:", headerData);
+  console.log("Profile data:", profileData);
+
+  // Generate subject data from API response
+  const subjectData = profileData?.subject_time_distribution
+    ? Object.entries(profileData.subject_time_distribution).map(([name, percentage], index) => ({
+      name,
+      percentage,
+      color: index % 2 === 0 ? "bg-blue-500" : "bg-yellow-500"
+    }))
+    : [
+      { name: "Math", percentage: 35, color: "bg-blue-500" },
+      { name: "Science", percentage: 25, color: "bg-yellow-500" },
+      { name: "Arts", percentage: 20, color: "bg-blue-400" },
+      { name: "Yoga", percentage: 20, color: "bg-yellow-400" }
+    ];
 
   const handleViewLeaderboard = () => {
     navigate("/leaderboard");
@@ -72,7 +92,7 @@ const Profile = () => {
       <Sidebar />
 
       <div className="ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=>{}} />
+        <Header onStartTour={() => { }} />
 
         <main className="flex-1 p-6">
           <div className="mb-8">
@@ -85,38 +105,48 @@ const Profile = () => {
             <Card className="lg:col-span-1 p-6 rounded-2xl bg-white border-2 border-yellow-200 shadow-lg">
               <div className="flex items-center space-x-4 mb-6">
                 <div className="w-20 h-20 bg-blue-600 rounded-full flex items-center justify-center text-white text-3xl shadow-lg">
-                  {profileData.avatar}
+                  {userProfileData.avatar}
                 </div>
                 <div className="flex-1">
-                  <h2 className="text-2xl font-bold text-blue-800">{profileData.name}</h2>
-                  <p className="text-blue-600">Age {profileData.age} • Grade {profileData.grade}</p>
-                  <p className="text-sm text-gray-600">{profileData.school}</p>
-                  <p className="text-sm text-gray-600">{profileData.country}</p>
+                  <h2 className="text-2xl font-bold text-blue-800">{userProfileData.name}</h2>
+                  {selectedChild && (
+                    <p className="text-blue-600">
+                      {selectedChild.age ? `Age ${selectedChild.age} • ` : ""}Grade {selectedChild.grade}
+                    </p>
+                  )}
+
+
                   {user?.email && (
                     <p className="text-sm text-gray-600">{user.email}</p>
                   )}
                 </div>
-                <Button
+                {/* <Button
                   variant="outline"
                   size="sm"
                   className="p-2 border-yellow-300 hover:bg-yellow-50"
                   onClick={() => setIsEditModalOpen(true)}
                 >
                   <Edit className="w-4 h-4" />
-                </Button>
+                </Button> */}
               </div>
 
               <div className="grid grid-cols-3 gap-4 text-center mb-6">
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-2xl font-bold text-blue-600">{profileData.classes}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {headerLoading ? "..." : userProfileData.classes}
+                  </p>
                   <p className="text-sm text-gray-600">Classes</p>
                 </div>
                 <div className="p-3 bg-yellow-50 rounded-lg border border-yellow-200">
-                  <p className="text-2xl font-bold text-yellow-600">{profileData.streak}</p>
+                  <p className="text-2xl font-bold text-yellow-600">
+                    {headerLoading ? "..." : userProfileData.streak}
+                  </p>
                   <p className="text-sm text-gray-600">Streak</p>
                 </div>
                 <div className="p-3 bg-blue-50 rounded-lg border border-blue-200">
-                  <p className="text-2xl font-bold text-blue-600">{profileData.totalCoins}</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {headerLoading ? "..." : userProfileData.totalCoins}
+                  </p>
                   <p className="text-sm text-gray-600">Coins</p>
                 </div>
               </div>
@@ -145,15 +175,20 @@ const Profile = () => {
               <h3 className="text-xl font-semibold text-blue-800 mb-6 flex items-center">
                 <Target className="w-6 h-6 mr-3 text-blue-600" />
                 Learning Progress Analytics
+                {profileLoading && (
+                  <span className="ml-2 text-sm text-blue-600">Loading...</span>
+                )}
               </h3>
 
               {/* Monthly Classes Progress */}
               <div className="mb-8">
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-lg text-blue-700 font-medium">Classes This Month</span>
-                  <span className="text-lg font-semibold text-blue-800">{profileData.classes}/30</span>
+                  <span className="text-lg font-semibold text-blue-800">
+                    {profileData?.classes_this_month || 0}/30
+                  </span>
                 </div>
-                <Progress value={(profileData.classes / 30) * 100} className="h-3" />
+                <Progress value={((profileData?.classes_this_month || 0) / 30) * 100} className="h-3" />
               </div>
 
               {/* Subject Distribution */}
@@ -175,13 +210,15 @@ const Profile = () => {
                 <h4 className="text-lg font-medium text-blue-800 mb-4">Weekly Activity</h4>
                 <div className="flex justify-between items-end space-x-2">
                   {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
-                    const heights = [60, 80, 100, 90, 70, 85, 50];
+                    const activityValue = profileData?.weekly_activity?.[day as keyof typeof profileData.weekly_activity] || 0;
+                    const maxValue = Math.max(...Object.values(profileData?.weekly_activity || { Mon: 0, Tue: 0, Wed: 0, Thu: 0, Fri: 0, Sat: 0, Sun: 0 }));
+                    const height = maxValue > 0 ? (activityValue / maxValue) * 100 : 0;
                     const isEven = index % 2 === 0;
                     return (
                       <div key={day} className="flex flex-col items-center flex-1">
                         <div
                           className={`w-full ${isEven ? 'bg-blue-500' : 'bg-yellow-500'} rounded-t-lg mb-2 shadow-sm`}
-                          style={{ height: `${heights[index]}px` }}
+                          style={{ height: `${height}px` }}
                         ></div>
                         <span className="text-sm text-blue-600 font-medium">{day}</span>
                       </div>
@@ -201,7 +238,7 @@ const Profile = () => {
                 Recent Achievements
               </h3>
               <div className="space-y-4">
-                {profileData.achievements.map((achievement, index) => (
+                {userProfileData.achievements.map((achievement, index) => (
                   <div key={index} className="flex items-center space-x-4 p-4 bg-yellow-50 rounded-xl border border-yellow-200 shadow-sm">
                     <div className="text-3xl bg-white rounded-full w-16 h-16 flex items-center justify-center border border-yellow-300 shadow-sm">{achievement.emoji}</div>
                     <div className="flex-1">
