@@ -250,12 +250,12 @@ const Dashboard = () => {
 
   // Premium Quick Actions data
   const quickActions = useMemo(() => ([
-    { title: "Library", icon: BookOpen, route: "/classes?tab=recordings", gradient: "from-blue-500 to-blue-600", shadow: "shadow-blue-500/25" },
     { title: "Schedule", icon: Calendar, route: "/classes", gradient: "from-yellow-500 to-yellow-600", shadow: "shadow-yellow-500/25" },
-    { title: "Games", icon: Gamepad2, route: "/games", gradient: "from-green-500 to-green-600", shadow: "shadow-green-500/25" },
-    { title: "Goals", icon: Target, route: "/analytics", gradient: "from-purple-500 to-purple-600", shadow: "shadow-purple-500/25" },
     { title: "Home Work", icon: Users, route: "/homework-room", gradient: "from-pink-500 to-pink-600", shadow: "shadow-pink-500/25" },
+    { title: "Leaderboard", icon: Target, route: "/leaderboard", gradient: "from-purple-500 to-purple-600", shadow: "shadow-purple-500/25" },
+    { title: "Library", icon: BookOpen, route: "/classes?tab=recordings", gradient: "from-blue-500 to-blue-600", shadow: "shadow-blue-500/25" },
     { title: "Support", icon: BarChart3, route: "/support", gradient: "from-indigo-500 to-indigo-600", shadow: "shadow-indigo-500/25" },
+    { title: "Games", icon: Gamepad2, route: "/games", gradient: "from-green-500 to-green-600", shadow: "shadow-green-500/25" },
   ]), []);
 
   // Add render log

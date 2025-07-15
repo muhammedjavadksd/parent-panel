@@ -90,7 +90,7 @@ const LeaderboardPage = () => {
     <div className="min-h-screen bg-white flex w-full">
       <Sidebar />
       <div className="flex-1 ml-64 flex flex-col min-h-screen">
-        <Header />
+        <Header onStartTour={() => { }} />
         <main className="flex-1 p-8 space-y-8 bg-gray-50">
           <div className="flex items-center justify-between">
             <div>
@@ -218,21 +218,24 @@ const LeaderboardPage = () => {
                 <h3 className="text-xl font-bold text-blue-900 mb-5">Quick Stats</h3>
                 <div className="space-y-4">
                   <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">Your Rank</span>
+                    <span className="text-sm text-blue-700 font-medium">
+                      {selectedChild?.name ? `${selectedChild.name}'s Rank` : `${childScor?.children[0]?.name}'s Rank`}
+                    </span>
+
                     <span className="font-bold text-blue-900 text-lg">{childScor?.children[0]?.position}</span>
                   </div>
                   <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Total Points</span>
                     <span className="font-bold text-blue-900 text-lg">{childData[0]?.total_points}</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
+                  {/* <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Learning Streak</span>
-                    <span className="font-bold text-blue-900 text-lg">🔥 15 days</span>
-                  </div>
-                  <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
+                    <span className="font-bold text-blue-900 text-lg">🔥 {childData[0]?.row_count} days</span>
+                  </div> */}
+                  {/* <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
                     <span className="text-sm text-blue-700 font-medium">Classes This Week</span>
                     <span className="font-bold text-blue-900 text-lg">1/4</span>
-                  </div>
+                  </div> */}
                 </div>
               </Card>
             </div>

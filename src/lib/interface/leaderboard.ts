@@ -13,6 +13,7 @@ export interface ChildScore {
     id: number;             // Parent ID
     country: string;
     children: {
+        name: any;
         id: number;           // Child ID
         parent_id: number;
         child_name: string;

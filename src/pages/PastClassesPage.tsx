@@ -8,12 +8,15 @@ import { useState, useEffect } from "react";
 import { useBookings } from "@/hooks/useBookings";
 import { useChildren } from "@/hooks/useChildren";
 import { isAfter, subDays, parseISO } from "date-fns";
+import ReviewModal from "@/components/ReviewModal";
 
 const PastClassesPage = () => {
   const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { bookings, isLoading, error, loadPastClasses } = useBookings();
   const { selectedChild } = useChildren();
+  const [reviewModalOpen, setReviewModalOpen] = useState(false);
+  const [selectedClassForReview, setSelectedClassForReview] = useState<any>(null);
 
 
 
@@ -234,7 +237,10 @@ const PastClassesPage = () => {
                     }, {
                       title: "Review",
                       icon: <Star className="w-4 h-4" />,
-                      onClick: () => window.open(classItem.feedback_url, '_blank'),
+                      onClick: () => {
+                        setSelectedClassForReview(classItem);
+                        setReviewModalOpen(true);
+                      },
                       className: "border-2 border-yellow-500 text-yellow-900 hover:bg-yellow-50",
                       variant: "outline"
                     }, {
@@ -264,6 +270,18 @@ const PastClassesPage = () => {
           </div>
         </main>
       </div>
+      
+      {/* Review Modal */}
+      {selectedClassForReview && (
+        <ReviewModal
+          isOpen={reviewModalOpen}
+          onClose={() => {
+            setReviewModalOpen(false);
+            setSelectedClassForReview(null);
+          }}
+          classData={selectedClassForReview}
+        />
+      )}
     </div>
   );
 };
