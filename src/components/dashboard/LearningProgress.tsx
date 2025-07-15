@@ -136,7 +136,7 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
                 </div>
                 <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 rounded-2xl shadow-lg border border-yellow-300/50">
                     <Coins className="w-4 h-4 text-white" />
-                    <span className="text-white font-bold text-sm">{data.coins || 0}</span>
+                    <span className="text-white font-bold text-sm">{progress.coins || 0}</span>
                 </div>
             </div>
 
