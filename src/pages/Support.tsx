@@ -71,13 +71,13 @@ const Support = () => {
   const getStatusIcon = (status: string | undefined) => {
     switch (status) {
       case "closed":
-        return <CheckCircle className="w-4 h-4 text-green-600" />;
+        return <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />;
       case "pending":
-        return <Clock className="w-4 h-4 text-yellow-600" />;
+        return <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />;
       case "open":
-        return <AlertCircle className="w-4 h-4 text-red-600" />;
+        return <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-600" />;
       default:
-        return <AlertCircle className="w-4 h-4 text-gray-400" />;
+        return <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />;
     }
   };
 
@@ -119,76 +119,76 @@ const Support = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className="ml-64 flex flex-col">
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={() => {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-8">
-            <div className="flex items-center space-x-3 mb-4">
-              <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg">
-                <HelpCircle className="w-6 h-6 text-white" />
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6 lg:mb-8">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-3 mb-4">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-600 rounded-xl flex items-center justify-center shadow-lg flex-shrink-0">
+                <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-blue-900">Support Center</h1>
-                <p className="text-blue-700">We're here to help you learn better - 24/7 support available</p>
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-900">Support Center</h1>
+                <p className="text-blue-700 text-sm sm:text-base">We're here to help you learn better - 24/7 support available</p>
               </div>
             </div>
           </div>
 
           {/* Quick Support Actions */}
-          <Card className="p-8 rounded-2xl bg-white border border-blue-100 shadow-xl mb-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <MessageSquare className="w-6 h-6 text-blue-600" />
-              <h2 className="text-2xl font-bold text-blue-900">Quick Support</h2>
+          <Card className="p-3 sm:p-4 lg:p-8 rounded-xl sm:rounded-2xl bg-white border border-blue-100 shadow-xl mb-4 sm:mb-6 lg:mb-8">
+            <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+              <MessageSquare className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+              <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">Quick Support</h2>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
               <Card
-                className="p-6 bg-green-50 border border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                className="p-3 sm:p-4 lg:p-6 bg-green-50 border border-green-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                 onClick={handleCall}
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Phone className="w-8 h-8 text-white" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-green-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                    <Phone className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-green-800 mb-2">Whatsapp Support</h3>
-                  <p className="text-sm text-green-600 mb-4">Immediate assistance available</p>
+                  <h3 className="text-sm sm:text-base lg:text-lg font-bold text-green-800 mb-1 sm:mb-2">Whatsapp Support</h3>
+                  <p className="text-xs sm:text-sm text-green-600 mb-2 sm:mb-4">Immediate assistance available</p>
                   <p className="text-xs text-green-600 font-mono">+91 9403890176</p>
-                  <Button className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white border-0">
+                  <Button className="w-full mt-2 sm:mt-4 bg-green-600 hover:bg-green-700 text-white border-0 text-xs sm:text-sm">
                     Whatsapp Now
                   </Button>
                 </div>
               </Card>
 
               <Card
-                className="p-6 bg-blue-50 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                className="p-3 sm:p-4 lg:p-6 bg-blue-50 border border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                 onClick={handleEmail}
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Mail className="w-8 h-8 text-white" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-blue-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                    <Mail className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-blue-800 mb-2">Email Support</h3>
-                  <p className="text-sm text-blue-600 mb-4">Detailed assistance via email</p>
+                  <h3 className="text-sm sm:text-base lg:text-lg font-bold text-blue-800 mb-1 sm:mb-2">Email Support</h3>
+                  <p className="text-xs sm:text-sm text-blue-600 mb-2 sm:mb-4">Detailed assistance via email</p>
                   <p className="text-xs text-blue-600 font-mono">support@bambinos.live</p>
-                  <Button className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white border-0">
+                  <Button className="w-full mt-2 sm:mt-4 bg-blue-600 hover:bg-blue-700 text-white border-0 text-xs sm:text-sm">
                     Send Email
                   </Button>
                 </div>
               </Card>
 
               <Card
-                className="p-6 bg-yellow-50 border border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
+                className="p-3 sm:p-4 lg:p-6 bg-yellow-50 border border-yellow-200 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
                 onClick={handleRaiseTicket}
               >
                 <div className="text-center">
-                  <div className="w-16 h-16 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-4 shadow-lg">
-                    <Ticket className="w-8 h-8 text-white" />
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-yellow-600 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4 shadow-lg">
+                    <Ticket className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                   </div>
-                  <h3 className="text-lg font-bold text-yellow-800 mb-2">Raise Ticket</h3>
-                  <p className="text-sm text-yellow-600 mb-4">Create a support request</p>
+                  <h3 className="text-sm sm:text-base lg:text-lg font-bold text-yellow-800 mb-1 sm:mb-2">Raise Ticket</h3>
+                  <p className="text-xs sm:text-sm text-yellow-600 mb-2 sm:mb-4">Create a support request</p>
                   <p className="text-xs text-yellow-600">Track your queries</p>
-                  <Button className="w-full mt-4 bg-yellow-600 hover:bg-yellow-700 text-white border-0">
+                  <Button className="w-full mt-2 sm:mt-4 bg-yellow-600 hover:bg-yellow-700 text-white border-0 text-xs sm:text-sm">
                     Create Ticket
                   </Button>
                 </div>
@@ -196,21 +196,21 @@ const Support = () => {
             </div>
           </Card>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* FAQs */}
-            <Card className="p-8 rounded-2xl bg-white border border-blue-100 shadow-xl">
-              <div className="flex items-center space-x-3 mb-6">
-                <HelpCircle className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-bold text-blue-900">Frequently Asked Questions</h2>
+            <Card className="p-3 sm:p-4 lg:p-8 rounded-xl sm:rounded-2xl bg-white border border-blue-100 shadow-xl">
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">Frequently Asked Questions</h2>
               </div>
 
               <Accordion type="single" collapsible className="w-full">
                 {faqData.map((faq, index) => (
                   <AccordionItem key={index} value={`item-${index}`} className="border-blue-200">
-                    <AccordionTrigger className="text-left text-blue-900 hover:text-blue-700 font-semibold text-sm">
+                    <AccordionTrigger className="text-left text-blue-900 hover:text-blue-700 font-semibold text-xs sm:text-sm">
                       {faq.question}
                     </AccordionTrigger>
-                    <AccordionContent className="text-blue-700 text-sm leading-relaxed">
+                    <AccordionContent className="text-blue-700 text-xs sm:text-sm leading-relaxed">
                       {faq.answer}
                     </AccordionContent>
                   </AccordionItem>
@@ -219,42 +219,42 @@ const Support = () => {
             </Card>
 
             {/* Ticket History */}
-            <Card className="p-8 rounded-2xl bg-white border border-blue-100 shadow-xl">
-              <div className="flex items-center space-x-3 mb-6">
-                <FileText className="w-6 h-6 text-blue-600" />
-                <h2 className="text-2xl font-bold text-blue-900">Support Ticket History</h2>
+            <Card className="p-3 sm:p-4 lg:p-8 rounded-xl sm:rounded-2xl bg-white border border-blue-100 shadow-xl">
+              <div className="flex items-center space-x-2 sm:space-x-3 mb-4 sm:mb-6">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">Support Ticket History</h2>
               </div>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {isLoading ? (
-                  <div className="text-center py-8 text-blue-600">Loading tickets...</div>
+                  <div className="text-center py-6 sm:py-8 text-blue-600 text-sm sm:text-base">Loading tickets...</div>
                 ) : error ? (
-                  <div className="text-center py-8 text-red-600">{error}</div>
+                  <div className="text-center py-6 sm:py-8 text-red-600 text-sm sm:text-base">{error}</div>
                 ) : tickets.length === 0 ? (
-                  <div className="text-center py-8 text-gray-500">No tickets found.</div>
+                  <div className="text-center py-6 sm:py-8 text-gray-500 text-sm sm:text-base">No tickets found.</div>
                 ) : (
                   tickets.map((ticket) => (
                     <Card
                       key={ticket.id}
-                      className="p-4 bg-blue-50 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm cursor-pointer"
+                      className="p-3 sm:p-4 bg-blue-50 rounded-xl border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm cursor-pointer"
                       onClick={() => handleTicketClick(ticket.id.toString())}
                     >
-                      <div className="flex items-start justify-between mb-3">
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <span className="text-sm font-bold text-blue-900">#{ticket.ticket_number}</span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(ticket.status)}`}>
+                      <div className="flex items-start justify-between mb-2 sm:mb-3">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 space-y-1 sm:space-y-0">
+                            <span className="text-xs sm:text-sm font-bold text-blue-900">#{ticket.ticket_number}</span>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getStatusColor(ticket.status)} w-fit`}>
                               <div className="flex items-center space-x-1">
                                 {getStatusIcon(ticket.status)}
                                 <span>{ticket.status ? ticket.status.charAt(0).toUpperCase() + ticket.status.slice(1) : 'Unknown'}</span>
                               </div>
                             </span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(ticket.priority)}`}>
+                            <span className={`px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(ticket.priority)} w-fit`}>
                               {ticket.priority ? ticket.priority.charAt(0).toUpperCase() + ticket.priority.slice(1) : 'Unknown'}
                             </span>
                           </div>
-                          <h3 className="text-sm font-semibold text-blue-900 mb-1">{ticket.subject}</h3>
-                          <p className="text-xs text-blue-700 mb-2">{ticket.description}</p>
+                          <h3 className="text-xs sm:text-sm font-semibold text-blue-900 mb-1 truncate">{ticket.subject}</h3>
+                          <p className="text-xs text-blue-700 mb-2 line-clamp-2">{ticket.description}</p>
                           <p className="text-xs text-blue-600">{new Date(ticket.created_at).toLocaleDateString()}</p>
                         </div>
                       </div>
@@ -265,9 +265,9 @@ const Support = () => {
 
               <Button
                 onClick={handleRaiseTicket}
-                className="w-full mt-6 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl py-3 border-0"
+                className="w-full mt-4 sm:mt-6 bg-yellow-600 hover:bg-yellow-700 text-white rounded-xl py-2 sm:py-3 border-0 text-xs sm:text-sm"
               >
-                <Ticket className="w-4 h-4 mr-2" />
+                <Ticket className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Raise New Ticket
               </Button>
             </Card>

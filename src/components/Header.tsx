@@ -67,27 +67,29 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
   };
 
   return (
-    <div className="h-16 bg-white border-b-2 border-blue-200 px-6 flex items-center justify-between shadow-lg sticky top-0 z-40">
-      <div className="flex items-center space-x-6">
-        <div>
-          <h1 className="text-xl font-semibold text-blue-800">
+    <div className="h-12 sm:h-14 lg:h-16 bg-white border-b-2 border-blue-200 px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-lg sticky top-0 z-40">
+      <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6 min-w-0 flex-1">
+        {/* Greeting - Hidden on mobile and tablet, visible on desktop */}
+        <div className="hidden lg:block min-w-0 flex-1">
+          <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-blue-800 truncate">
             {getGreeting()}, {getDisplayName()}! ☀️
           </h1>
-          <p className="text-sm text-blue-600">{currentTime}</p>
+          <p className="text-xs sm:text-sm text-blue-600 hidden lg:block">{currentTime}</p>
         </div>
 
-        <div className="flex items-center space-x-3">
-          <span className="text-sm text-blue-700 font-medium">View:</span>
+        {/* Child Selector - More compact on mobile and tablet */}
+        <div className="flex items-center space-x-2 sm:space-x-2 lg:space-x-3">
+          <span className="text-xs sm:text-sm text-blue-700 font-medium hidden lg:inline">View:</span>
           <Select
             value={selectedChild ? selectedChild.id.toString() : "family"}
             onValueChange={handleChildChange}
             disabled={isLoading}
           >
-            <SelectTrigger className="w-44 bg-white border-2 border-blue-200 text-blue-800 font-medium shadow-sm">
+            <SelectTrigger className="w-28 sm:w-36 lg:w-44 bg-white border-2 border-blue-200 text-blue-800 font-medium shadow-sm text-xs sm:text-sm h-8 sm:h-9 lg:h-10">
               <SelectValue>
-                <div className="flex items-center space-x-2">
-                  <span>{getDisplayAvatar()}</span>
-                  <span className="text-gray-800 font-medium">
+                <div className="flex items-center space-x-1 sm:space-x-2 min-w-0">
+                  <span className="text-sm sm:text-base">{getDisplayAvatar()}</span>
+                  <span className="text-gray-800 font-medium truncate">
                     {isLoading ? "Loading..." : getDisplayName()}
                   </span>
                 </div>
@@ -122,26 +124,23 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
+        {/* Tour Button - Compact on mobile and tablet */}
+        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg sm:rounded-xl px-3 sm:px-3 lg:px-4 py-1.5 sm:py-2 flex items-center space-x-2 sm:space-x-2 lg:space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group h-8 sm:h-9 lg:h-10" onClick={onStartTour}>
+          <div className="flex items-center space-x-1 sm:space-x-2">
+            
 
-        {/* Tour Button */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-xl px-4 py-2 flex items-center space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group" onClick={onStartTour}>
-          <div className="flex items-center space-x-2">
-            <div className="bg-gradient-to-r from-blue-500 to-purple-600 p-1.5 rounded-lg group-hover:scale-110 transition-transform duration-300">
-              <Sparkles className="w-3 h-3 text-white" />
-            </div>
-            <span className="text-sm font-semibold text-blue-800 group-hover:text-blue-900 transition-colors">
+            <span className="text-xs sm:text-sm font-semibold text-blue-800 group-hover:text-blue-900 transition-colors ">
               Get Tour
             </span>
-
           </div>
-          
+
           <Button
             size="sm"
-            className="header-tour-btn bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold px-3 py-1.5 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-0 group-hover:scale-105"
+            className="header-tour-btn bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-0 group-hover:scale-105 h-6 sm:h-7 lg:h-8"
           >
-            <Play className="w-3 h-3 mr-1" />
-            GO
+            <Play className="w-3 h-3 sm:w-3 sm:h-3 lg:w-3 lg:h-3 mr-1 sm:mr-1 lg:mr-1" />
+            <span className="hidden lg:inline">GO</span>
           </Button>
         </div>
 
@@ -150,7 +149,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
         <LogoutButton
           variant="outline"
           size="sm"
-          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700"
+          className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hidden lg:flex"
         />
       </div>
     </div>

@@ -137,17 +137,17 @@ const StudentAnalytics = () => {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-white">
       <Sidebar />
       
-      <div className="ml-64 flex flex-col">
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={()=> {}} />
         
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">Enhanced Analytics Dashboard</h1>
-            <p className="text-gray-700">Comprehensive AI-powered analysis of your learning journey with advanced insights</p>
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1 sm:mb-2">Enhanced Analytics Dashboard</h1>
+            <p className="text-gray-700 text-sm sm:text-base">Comprehensive AI-powered analysis of your learning journey with advanced insights</p>
           </div>
 
           {/* Analytics Filters */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <AnalyticsFilters 
               timeRange={timeRange}
               onTimeRangeChange={setTimeRange}
@@ -157,7 +157,7 @@ const StudentAnalytics = () => {
           </div>
 
           <LearningProgress
-            progressOverview={progressOverview?.progress_overview ?? null}
+            progressOverview={progressOverview}
             learningProgress={progressOverview?.learning_progress ?? null}
             isLoading={isProgressLoading}
           />
@@ -221,19 +221,19 @@ const StudentAnalytics = () => {
           </div> */}
 
           {/* Advanced Analytics */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8 mt-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8 mt-6 sm:mt-8">
             <AreaChart data={areaChartData} title="Weekly Subject Time Distribution" />
             <BubbleChart data={bubbleData} />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
             <LearningVelocity data={velocityData} />
             
             {/* Performance Trend */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <TrendingUp className="text-blue-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Performance Trend</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <TrendingUp className="text-blue-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Performance Trend</h3>
               </div>
               
               <ResponsiveContainer width="100%" height={200}>
@@ -247,16 +247,16 @@ const StudentAnalytics = () => {
           </div>
 
           {/* Personalized AI Insights */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <PersonalizedInsights />
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
             {/* Skills Radar */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-purple-50 border-purple-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <Brain className="text-purple-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Skills Assessment</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-purple-50 border-purple-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <Brain className="text-purple-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Skills Assessment</h3>
               </div>
               
               <ResponsiveContainer width="100%" height={250}>
@@ -270,17 +270,17 @@ const StudentAnalytics = () => {
             </Card>
 
             {/* Learning Goals */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-green-50 border-green-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <Target className="text-green-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Learning Goals</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-green-50 border-green-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <Target className="text-green-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Learning Goals</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {analyticsData.learningGoals.map((goal, index) => (
-                  <div key={index} className="p-3 bg-white rounded-lg shadow border">
+                  <div key={index} className="p-2 sm:p-3 bg-white rounded-lg shadow border">
                     <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium text-gray-800 text-sm">{goal.goal}</h4>
+                      <h4 className="font-medium text-gray-800 text-xs sm:text-sm">{goal.goal}</h4>
                       <span className="text-xs text-gray-500">{goal.current}/{goal.target}</span>
                     </div>
                     <Progress value={goal.progress} className="h-2" />
@@ -291,18 +291,18 @@ const StudentAnalytics = () => {
             </Card>
 
             {/* Recent Achievements */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-orange-50 border-orange-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <Trophy className="text-orange-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Recent Achievements</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-orange-50 border-orange-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <Trophy className="text-orange-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Recent Achievements</h3>
               </div>
               
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 {analyticsData.achievements.map((achievement, index) => (
-                  <div key={index} className="flex items-center space-x-3 p-3 bg-white rounded-lg shadow">
-                    <div className="text-2xl">{achievement.icon}</div>
+                  <div key={index} className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-white rounded-lg shadow">
+                    <div className="text-lg sm:text-2xl">{achievement.icon}</div>
                     <div className="flex-1">
-                      <h4 className="font-semibold text-gray-800 text-sm">{achievement.title}</h4>
+                      <h4 className="font-semibold text-gray-800 text-xs sm:text-sm">{achievement.title}</h4>
                       <p className="text-xs text-gray-600">{achievement.description}</p>
                       <p className="text-xs text-gray-500">{achievement.date}</p>
                     </div>
@@ -312,21 +312,21 @@ const StudentAnalytics = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
             {/* Weekly Activity */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <BarChart3 className="text-blue-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Weekly Activity</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <BarChart3 className="text-blue-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Weekly Activity</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {analyticsData.weeklyProgress.map((day, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <span className="font-semibold text-blue-800 w-12">{day.day}</span>
+                  <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-blue-50 rounded-lg">
+                    <div className="flex items-center space-x-2 sm:space-x-4">
+                      <span className="font-semibold text-blue-800 w-8 sm:w-12 text-xs sm:text-sm">{day.day}</span>
                       <div className="flex-1">
-                        <div className="flex justify-between text-sm mb-1">
+                        <div className="flex justify-between text-xs sm:text-sm mb-1">
                           <span className="text-blue-700">{day.hours}h studied</span>
                           <span className="text-blue-700">{day.completed} completed</span>
                         </div>
@@ -339,24 +339,24 @@ const StudentAnalytics = () => {
             </Card>
 
             {/* Subject Performance */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-green-50 border-green-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <BookOpen className="text-green-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Subject Performance</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-green-50 border-green-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <BookOpen className="text-green-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Subject Performance</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {analyticsData.subjects.map((subject, index) => (
-                  <div key={index} className="p-4 bg-white rounded-xl shadow border">
-                    <div className="flex justify-between items-center mb-3">
-                      <h4 className="font-semibold text-gray-800">{subject.name}</h4>
-                      <div className="flex items-center space-x-2">
+                  <div key={index} className="p-3 sm:p-4 bg-white rounded-xl shadow border">
+                    <div className="flex justify-between items-center mb-2 sm:mb-3">
+                      <h4 className="font-semibold text-gray-800 text-sm sm:text-base">{subject.name}</h4>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
                         <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                           subject.grade.startsWith('A') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
                         }`}>
                           {subject.grade}
                         </span>
-                        <span className="text-green-600 text-sm font-medium">{subject.trend}</span>
+                        <span className="text-green-600 text-xs sm:text-sm font-medium">{subject.trend}</span>
                       </div>
                     </div>
                     <Progress value={subject.progress} className="h-3" />
@@ -370,20 +370,20 @@ const StudentAnalytics = () => {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Areas for Improvement */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-red-50 border-red-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <Zap className="text-red-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Areas for Improvement</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-red-50 border-red-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <Zap className="text-red-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Areas for Improvement</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {analyticsData.weakAreas.map((area, index) => (
-                  <div key={index} className="p-4 bg-white rounded-lg shadow border">
+                  <div key={index} className="p-3 sm:p-4 bg-white rounded-lg shadow border">
                     <div className="flex justify-between items-center mb-2">
-                      <h4 className="font-medium text-gray-800">{area.area}</h4>
-                      <div className="flex items-center space-x-2">
+                      <h4 className="font-medium text-gray-800 text-sm sm:text-base">{area.area}</h4>
+                      <div className="flex items-center space-x-1 sm:space-x-2">
                         <span className="text-sm font-bold text-gray-700">{area.score}%</span>
                         <span className="text-green-600 text-xs">{area.improvement}</span>
                       </div>
@@ -395,17 +395,17 @@ const StudentAnalytics = () => {
             </Card>
 
             {/* Study Recommendations */}
-            <Card className="p-6 rounded-2xl bg-gradient-to-br from-white to-indigo-50 border-indigo-200 shadow-xl">
-              <div className="flex items-center mb-6">
-                <Star className="text-indigo-500 mr-3" size={24} />
-                <h3 className="text-xl font-bold text-gray-800">Study Recommendations</h3>
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-indigo-50 border-indigo-200 shadow-xl">
+              <div className="flex items-center mb-4 sm:mb-6">
+                <Star className="text-indigo-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
+                <h3 className="text-lg sm:text-xl font-bold text-gray-800">Study Recommendations</h3>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {analyticsData.studyRecommendations.map((rec, index) => (
-                  <div key={index} className="p-4 bg-white rounded-lg shadow border">
+                  <div key={index} className="p-3 sm:p-4 bg-white rounded-lg shadow border">
                     <div className="flex justify-between items-start mb-2">
-                      <h4 className="font-medium text-gray-800">{rec.subject}</h4>
+                      <h4 className="font-medium text-gray-800 text-sm sm:text-base">{rec.subject}</h4>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                         rec.priority === 'High' ? 'bg-red-100 text-red-800' :
                         rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
@@ -414,7 +414,7 @@ const StudentAnalytics = () => {
                         {rec.priority}
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600">{rec.recommendation}</p>
+                    <p className="text-xs sm:text-sm text-gray-600">{rec.recommendation}</p>
                   </div>
                 ))}
               </div>

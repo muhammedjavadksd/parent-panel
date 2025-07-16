@@ -2,7 +2,7 @@ import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, FileText, Download, Eye, Calendar } from "lucide-react";
+import { ArrowLeft } from "lucide-react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { usePresentation } from '@/hooks/usePresentation';
@@ -43,56 +43,40 @@ const ClassPresentationsPage = () => {
     }
   };
 
-  const presentations = [
-    {
-      id: 1,
-      title: "Ancient Indian Stories - Main Presentation",
-      slides: 24,
-      date: "Jun 20, 2024",
-      size: "3.2 MB",
-      format: "PDF"
-    },
-    {
-      id: 2,
-      title: "Activity Slides",
-      slides: 8,
-      date: "Jun 20, 2024",
-      size: "1.8 MB",
-      format: "PDF"
-    }
-  ];
-
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={() => {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="outline"
               onClick={() => navigate("/past-classes")}
-              className="mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm"
+              className="mb-3 sm:mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm text-sm sm:text-base"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Back to Past Classes
             </Button>
-            <h1 className="text-3xl font-bold text-blue-800 mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
               Class Presentations
             </h1>
-            <p className="text-blue-600">View and download presentation materials</p>
+            <p className="text-blue-600 text-sm sm:text-base">View and download presentation materials</p>
           </div>
 
-
-          <div className="mt-6">
-            <Presentation
-              data={data}
-              isLoading={isLoading}
-              error={error}
-              onRetry={handleRetry}
-            />
+          <div className="mt-4 sm:mt-6 flex flex-col items-center w-full">
+            <Card className="w-full max-w-4xl p-0 sm:p-2 lg:p-4 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 overflow-visible">
+              <div className="w-full flex flex-col">
+                <Presentation
+                  data={data}
+                  isLoading={isLoading}
+                  error={error}
+                  onRetry={handleRetry}
+                />
+              </div>
+            </Card>
           </div>
         </main>
       </div>

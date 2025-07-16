@@ -59,27 +59,27 @@ const ClassRecordingsPage = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={() => {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="outline"
               onClick={() => navigate("/past-classes")}
-              className="mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm"
+              className="mb-3 sm:mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm text-sm sm:text-base"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Back to Past Classes
             </Button>
-            <h1 className="text-3xl font-bold text-blue-800 mb-2">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
               Class Recording
             </h1>
-            <p className="text-blue-600">Watch and download the class recording</p>
+            <p className="text-blue-600 text-sm sm:text-base">Watch and download the class recording</p>
           </div>
 
           <div className="max-w-4xl mx-auto">
-            <Card className="p-6 rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
               <Recording
                 data={data}
                 isLoading={isLoading}

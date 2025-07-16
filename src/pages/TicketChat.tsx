@@ -66,12 +66,12 @@ const TicketChatPage: React.FC = () => {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
-        <div className="ml-64 flex flex-col">
-          <Header />
-          <main className="flex-1 p-6">
-            <div className="text-center py-8">
-              <MessageCircle className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500">Invalid ticket ID</p>
+        <div className="lg:ml-64 flex flex-col">
+          <Header onStartTour={() => {}} />
+          <main className="flex-1 p-4 sm:p-6 pb-20 sm:pb-6">
+            <div className="text-center py-6 sm:py-8">
+              <MessageCircle className="w-8 h-8 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <p className="text-sm sm:text-base text-gray-500">Invalid ticket ID</p>
             </div>
           </main>
         </div>
@@ -83,24 +83,24 @@ const TicketChatPage: React.FC = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className="ml-64 flex flex-col">
-        <Header />
+      <div className="lg:ml-64 flex flex-col">
+        <Header onStartTour={() => {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
+        <main className="flex-1 p-4 sm:p-6 pb-20 sm:pb-6">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="outline"
               onClick={handleBack}
-              className="mb-4 border-blue-300 text-blue-700 hover:bg-blue-50"
+              className="mb-3 sm:mb-4 border-blue-300 text-blue-700 hover:bg-blue-50 text-sm sm:text-base"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Back to Support
             </Button>
-            <h1 className="text-3xl font-bold text-blue-900 mb-2">Support Ticket Chat</h1>
-            <p className="text-blue-700">Chat with our support team about your ticket</p>
+            <h1 className="text-2xl sm:text-3xl font-bold text-blue-900 mb-1 sm:mb-2">Support Ticket Chat</h1>
+            <p className="text-sm sm:text-base text-blue-700">Chat with our support team about your ticket</p>
           </div>
 
-          <div className="h-[calc(100vh-200px)]">
+          <div className="h-[calc(100vh-240px)] sm:h-[calc(100vh-200px)]">
             {/* <TicketChat
               messages={chat.messages}
               isLoading={chat.isLoading}

@@ -67,19 +67,20 @@ const TransactionPagination: React.FC<TransactionPaginationProps> = ({
   }
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="text-sm text-gray-500">
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+      <div className="text-xs sm:text-sm text-gray-500 text-center sm:text-left">
         Showing {safeTotal === 0 ? 0 : startItem} to {safeTotal === 0 ? 0 : endItem} of {safeTotal} results
       </div>
 
-      <div className="flex items-center space-x-2">
+      <div className="flex items-center justify-center space-x-1 sm:space-x-2">
         <Button
           variant="outline"
           size="sm"
           onClick={() => onPageChange(1)}
           disabled={safeCurrentPage === 1 || isLoading}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0"
         >
-          <ChevronsLeft className="w-4 h-4" />
+          <ChevronsLeft className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
 
         <Button
@@ -87,21 +88,22 @@ const TransactionPagination: React.FC<TransactionPaginationProps> = ({
           size="sm"
           onClick={() => onPageChange(safeCurrentPage - 1)}
           disabled={safeCurrentPage === 1 || isLoading}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
 
         {getPageNumbers().map((page, index) => (
           <React.Fragment key={index}>
             {page === '...' ? (
-              <span className="px-2 text-gray-500">...</span>
+              <span className="px-1 sm:px-2 text-gray-500 text-xs sm:text-sm">...</span>
             ) : (
               <Button
                 variant={safeCurrentPage === page ? 'default' : 'outline'}
                 size="sm"
                 onClick={() => onPageChange(page as number)}
                 disabled={isLoading}
-                className="w-8 h-8 p-0"
+                className="h-8 w-8 sm:h-9 sm:w-9 p-0 text-xs sm:text-sm"
               >
                 {page}
               </Button>
@@ -114,8 +116,9 @@ const TransactionPagination: React.FC<TransactionPaginationProps> = ({
           size="sm"
           onClick={() => onPageChange(safeCurrentPage + 1)}
           disabled={safeCurrentPage === totalPages || isLoading}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0"
         >
-          <ChevronRight className="w-4 h-4" />
+          <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
 
         <Button
@@ -123,8 +126,9 @@ const TransactionPagination: React.FC<TransactionPaginationProps> = ({
           size="sm"
           onClick={() => onPageChange(totalPages)}
           disabled={safeCurrentPage === totalPages || isLoading}
+          className="h-8 w-8 sm:h-9 sm:w-9 p-0"
         >
-          <ChevronsRight className="w-4 h-4" />
+          <ChevronsRight className="w-3 h-3 sm:w-4 sm:h-4" />
         </Button>
       </div>
     </div>

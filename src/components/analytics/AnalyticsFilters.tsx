@@ -12,12 +12,12 @@ interface AnalyticsFiltersProps {
 
 const AnalyticsFilters = ({ timeRange, onTimeRangeChange, onExport, onShare }: AnalyticsFiltersProps) => {
   return (
-    <div className="flex items-center justify-between p-4 bg-white rounded-lg shadow-sm border">
-      <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
-          <Calendar className="w-4 h-4 text-gray-500" />
+    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-3 sm:p-4 bg-white rounded-lg shadow-sm border gap-3 sm:gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
+        <div className="flex items-center space-x-2 w-full sm:w-auto">
+          <Calendar className="w-4 h-4 text-gray-500 flex-shrink-0" />
           <Select value={timeRange} onValueChange={onTimeRangeChange}>
-            <SelectTrigger className="w-40">
+            <SelectTrigger className="w-full sm:w-40">
               <SelectValue placeholder="Select time range" />
             </SelectTrigger>
             <SelectContent>
@@ -30,18 +30,18 @@ const AnalyticsFilters = ({ timeRange, onTimeRangeChange, onExport, onShare }: A
           </Select>
         </div>
         
-        <Button variant="outline" size="sm">
+        <Button variant="outline" size="sm" className="w-full sm:w-auto">
           <Filter className="w-4 h-4 mr-2" />
           More Filters
         </Button>
       </div>
       
-      <div className="flex items-center space-x-2">
-        <Button variant="outline" size="sm" onClick={onShare}>
+      <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <Button variant="outline" size="sm" onClick={onShare} className="flex-1 sm:flex-none">
           <Share className="w-4 h-4 mr-2" />
           Share
         </Button>
-        <Button variant="outline" size="sm" onClick={onExport}>
+        <Button variant="outline" size="sm" onClick={onExport} className="flex-1 sm:flex-none">
           <Download className="w-4 h-4 mr-2" />
           Export
         </Button>
