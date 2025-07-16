@@ -24,6 +24,7 @@ import { useClasses } from "@/hooks/useClasses";
 import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
 import { useBooking } from '@/hooks/useBooking';
 import WebsiteTour from '@/components/WebsiteTour';
+import BookingPopup from '@/components/BookingPopup';
 
 const CalendarWidget = React.lazy(() => import("@/components/CalendarWidget"));
 const DailyChallenges = React.lazy(() => import("@/components/DailyChallenges"));
@@ -49,6 +50,8 @@ const Dashboard = () => {
   const [selectedBookingId, setSelectedBookingId] = useState<number | null>(null);
   const [modalMode, setModalMode] = useState<'shift' | 'cancel'>('shift');
   const { classInfo, isLoading: isClassesLoading, error: classesError, loadClassesInfo } = useClasses();
+  const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+  const [bookingType, setBookingType] = useState<'demo' | 'masterclass'>('demo');
 
   useEffect(() => {
     loadAllBookings(); // fetch both upcoming and past
@@ -58,16 +61,19 @@ const Dashboard = () => {
 
   // Handle booking redirects
   const handleDemoBooking = () => {
-    console.log('🔍 Dashboard: handleDemoBooking called');
-    console.log('🔍 Dashboard: classInfo:', classInfo);
-    console.log('🔍 Dashboard: demo_booking_url:', classInfo?.demo_booking_url);
-    if (classInfo?.demo_booking_url) {
-      console.log('🔍 Dashboard: Opening demo booking URL:', classInfo.demo_booking_url);
-      window.open(classInfo.demo_booking_url, '_blank');
-    } else {
-      console.log('🔍 Dashboard: No demo booking URL, navigating to /classes/?tab=demo');
-      navigate("/classes/?tab=demo");
-    }
+    setBookingType('demo');
+    setBookingPopupOpen(true);
+  };
+
+  const handleMasterClassBooking = () => {
+    setBookingType('masterclass');
+    setBookingPopupOpen(true);
+  };
+
+  const handleBookingComplete = (childId: number, bookingType: string) => {
+    console.log('🔍 Dashboard: Booking completed for child:', childId, 'type:', bookingType);
+    // The popup now handles opening the booking URL directly
+    // This callback is mainly for logging and any additional dashboard-specific logic
   };
 
   // Debug logging for classInfo
@@ -551,6 +557,14 @@ const Dashboard = () => {
 
     {/* Website Tour */}
     <WebsiteTour />
+
+    {/* Booking Popup */}
+    <BookingPopup
+      isOpen={bookingPopupOpen}
+      onClose={() => setBookingPopupOpen(false)}
+      bookingType={bookingType}
+      onBookingComplete={handleBookingComplete}
+    />
   </div>;
 };
 export default Dashboard;

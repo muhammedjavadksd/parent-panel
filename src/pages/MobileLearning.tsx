@@ -172,8 +172,22 @@ const MobileLearning = () => {
               ))
             )}
 
-            <BookingSection title="Book Demo Classes" courses={demoCoursesData} />
-            <BookingSection title="Master Classes" courses={masterClassData} />
+            <BookingSection 
+              title="Book Demo Classes" 
+              courses={demoCoursesData} 
+              onBookingComplete={(childId, bookingType) => {
+                console.log('Mobile Learning: Booking completed for child:', childId, 'type:', bookingType);
+                // Handle booking completion - could redirect to external URL or show success message
+              }}
+            />
+            <BookingSection 
+              title="Master Classes" 
+              courses={masterClassData} 
+              onBookingComplete={(childId, bookingType) => {
+                console.log('Mobile Learning: Booking completed for child:', childId, 'type:', bookingType);
+                // Handle booking completion - could redirect to external URL or show success message
+              }}
+            />
           </TabsContent>
 
           <TabsContent value="completed" className="space-y-4">

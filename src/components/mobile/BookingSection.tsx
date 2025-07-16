@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useState } from "react";
+import BookingPopup from "@/components/BookingPopup";
 
 interface Course {
   name: string;
@@ -15,11 +16,14 @@ interface Course {
 interface BookingSectionProps {
   title: string;
   courses: Course[];
+  onBookingComplete?: (childId: number, bookingType: string) => void;
 }
 
-const BookingSection = ({ title, courses }: BookingSectionProps) => {
+const BookingSection = ({ title, courses, onBookingComplete }: BookingSectionProps) => {
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
+  const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+  const [bookingType, setBookingType] = useState<'demo' | 'masterclass'>('demo');
 
   return (
     <div className="mt-6">
@@ -60,12 +64,26 @@ const BookingSection = ({ title, courses }: BookingSectionProps) => {
               </div>
             </div>
             
-            <Button className={`w-full ${course.type === 'demo' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-yellow-500 hover:bg-yellow-600'} text-white rounded-xl text-sm shadow-lg font-semibold transition-all duration-300 min-h-[48px]`}>
+            <Button 
+              className={`w-full ${course.type === 'demo' ? 'bg-blue-600 hover:bg-blue-700' : 'bg-yellow-500 hover:bg-yellow-600'} text-white rounded-xl text-sm shadow-lg font-semibold transition-all duration-300 min-h-[48px]`}
+              onClick={() => {
+                setBookingType(course.type === 'demo' ? 'demo' : 'masterclass');
+                setBookingPopupOpen(true);
+              }}
+            >
               {course.type === 'demo' ? 'Book Demo' : 'Book Master Class'}
             </Button>
           </Card>
         ))}
       </div>
+
+      {/* Booking Popup */}
+      <BookingPopup
+        isOpen={bookingPopupOpen}
+        onClose={() => setBookingPopupOpen(false)}
+        bookingType={bookingType}
+        onBookingComplete={onBookingComplete}
+      />
     </div>
   );
 };
