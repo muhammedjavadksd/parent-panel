@@ -68,7 +68,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
 
   return (
     <div className="h-12 sm:h-14 lg:h-16 bg-white border-b-2 border-blue-200 px-3 sm:px-4 lg:px-6 flex items-center justify-between shadow-lg sticky top-0 z-40">
-      <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6 min-w-0 flex-1">
+      <div className="flex items-center space-x-3 sm:space-x-4 lg:space-x-6 min-w-0 flex-wrap">
         {/* Greeting - Hidden on mobile and tablet, visible on desktop */}
         <div className="hidden lg:block min-w-0 flex-1">
           <h1 className="text-sm sm:text-lg lg:text-xl font-semibold text-blue-800 truncate">

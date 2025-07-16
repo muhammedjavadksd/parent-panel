@@ -9,7 +9,8 @@ import { useDashboard } from '@/hooks/useDashboard';
 import { useChildren } from '@/hooks/useChildren';
 import { useClasses } from '@/hooks/useClasses';
 import LearningProgress from '@/components/dashboard/LearningProgress';
-import React from 'react';
+import BookingPopup from '@/components/BookingPopup';
+import React, { useState } from 'react';
 
 const Classes = () => {
   const isMobile = useIsMobile();
@@ -17,6 +18,8 @@ const Classes = () => {
   const { selectedChild } = useChildren();
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview } = useDashboard();
   const { classInfo, isLoading: isClassesLoading, error: classesError, loadClassesInfo } = useClasses();
+  const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
+  const [bookingType, setBookingType] = useState<'demo' | 'masterclass'>('demo');
 
   // Fetch stats for selected child or family level
   React.useEffect(() => {
@@ -49,25 +52,19 @@ const Classes = () => {
 
   // Handle booking redirects
   const handleDemoBooking = () => {
-    console.log('🔍 Classes: handleDemoBooking called, classInfo:', classInfo);
-    if (classInfo?.demo_booking_url) {
-      console.log('🔍 Classes: Opening demo booking URL:', classInfo.demo_booking_url);
-      window.open(classInfo.demo_booking_url, '_blank');
-    } else {
-      console.log('🔍 Classes: No demo booking URL, navigating to /book-demo');
-      navigate("/book-demo");
-    }
+    setBookingType('demo');
+    setBookingPopupOpen(true);
   };
 
   const handleMasterClassBooking = () => {
-    console.log('🔍 Classes: handleMasterClassBooking called, classInfo:', classInfo);
-    if (classInfo?.masterclass_booking_url) {
-      console.log('🔍 Classes: Opening masterclass booking URL:', classInfo.masterclass_booking_url);
-      window.open(classInfo.masterclass_booking_url, '_blank');
-    } else {
-      console.log('🔍 Classes: No masterclass booking URL, navigating to /book-master-class');
-      navigate("/book-master-class");
-    }
+    setBookingType('masterclass');
+    setBookingPopupOpen(true);
+  };
+
+  const handleBookingComplete = (childId: number, bookingType: string) => {
+    console.log('🔍 Classes: Booking completed for child:', childId, 'type:', bookingType);
+    // The popup now handles opening the booking URL directly
+    // This callback is mainly for logging and any additional classes-specific logic
   };
 
   const handleHomeworkRoom = () => {
@@ -402,6 +399,14 @@ const Classes = () => {
           </div>
         </main>
       </div>
+
+      {/* Booking Popup */}
+      <BookingPopup
+        isOpen={bookingPopupOpen}
+        onClose={() => setBookingPopupOpen(false)}
+        bookingType={bookingType}
+        onBookingComplete={handleBookingComplete}
+      />
     </div>
   );
 };
