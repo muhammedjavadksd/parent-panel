@@ -305,22 +305,22 @@ const ClassHomeworkPage = () => {
   };
 
   const renderHomeworkCard = (assignment: HomeworkAssignment) => (
-    <Card key={assignment.classschedulebooking_id} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-blue-200 hover:shadow-xl transition-shadow">
-      <div className="flex items-start justify-between mb-4">
-        <div className="flex items-start space-x-4 flex-1">
-          <div className="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center">
-            <BookOpen className="w-7 h-7 text-white" />
+    <Card key={assignment.classschedulebooking_id} className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-blue-200 hover:shadow-xl transition-shadow">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between mb-3 sm:mb-4 space-y-3 lg:space-y-0">
+        <div className="flex items-start space-x-3 sm:space-x-4 flex-1">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-blue-600 rounded-xl sm:rounded-2xl flex items-center justify-center flex-shrink-0">
+            <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white" />
           </div>
-          <div className="flex-1">
-            <h3 className="text-xl font-bold text-blue-800 mb-2">{assignment.admin_class_name}</h3>
-            <p className="text-gray-600 mb-2">{assignment.category_name}</p>
-            <div className="grid grid-cols-2 gap-4 text-sm">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg sm:text-xl font-bold text-blue-800 mb-1 sm:mb-2">{assignment.admin_class_name}</h3>
+            <p className="text-gray-600 mb-2 text-sm sm:text-base">{assignment.category_name}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4 text-xs sm:text-sm">
               <div className="flex items-center space-x-2">
-                <Calendar className="w-4 h-4 text-blue-600" />
+                <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600 flex-shrink-0" />
                 <span className="text-gray-600">Date: {formatDate(assignment.class_date)}</span>
               </div>
               <div className="flex items-center space-x-2">
-                <Clock className="w-4 h-4 text-red-600" />
+                <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-red-600 flex-shrink-0" />
                 <span className="text-gray-600">
                   {formatTime(assignment.start_time)} - {formatTime(assignment.end_time)}
                 </span>
@@ -328,9 +328,9 @@ const ClassHomeworkPage = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col items-end space-y-2">
+        <div className="flex flex-col items-start lg:items-end space-y-2">
           {getStatusBadge(assignment)}
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             <div>Submitted: {assignment.submitted_hw_count}</div>
             <div>Pending: {assignment.pending_hw_count}</div>
           </div>
@@ -346,23 +346,23 @@ const ClassHomeworkPage = () => {
         </div>
       )} */}
 
-      <div className="flex justify-end space-x-3">
+      <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3">
         <Button
           variant="outline"
           size="sm"
           onClick={() => handleViewHomework(assignment)}
-          className="border-blue-200 text-blue-700 hover:bg-blue-50"
+          className="border-blue-200 text-blue-700 hover:bg-blue-50 text-xs sm:text-sm"
         >
-          <Eye className="w-4 h-4 mr-2" />
+          <Eye className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           View
         </Button>
         <Button
           variant="outline"
           size="sm"
           onClick={() => handleDownloadHomework(assignment)}
-          className="border-green-200 text-green-700 hover:bg-green-50"
+          className="border-green-200 text-green-700 hover:bg-green-50 text-xs sm:text-sm"
         >
-          <Download className="w-4 h-4 mr-2" />
+          <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
           Download
         </Button>
       </div>
@@ -370,22 +370,22 @@ const ClassHomeworkPage = () => {
   );
 
   const renderSkeleton = () => (
-    <div className="space-y-6">
+    <div className="space-y-3 sm:space-y-4 lg:space-y-6">
       {[1, 2, 3].map((i) => (
-        <Card key={i} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-blue-200">
-          <div className="flex items-start space-x-4 mb-4">
-            <Skeleton className="w-14 h-14 rounded-2xl" />
+        <Card key={i} className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-blue-200">
+          <div className="flex items-start space-x-3 sm:space-x-4 mb-3 sm:mb-4">
+            <Skeleton className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 rounded-xl sm:rounded-2xl" />
             <div className="flex-1 space-y-2">
-              <Skeleton className="h-6 w-3/4" />
+              <Skeleton className="h-5 sm:h-6 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
                 <Skeleton className="h-4 w-24" />
                 <Skeleton className="h-4 w-32" />
               </div>
             </div>
           </div>
-          <Skeleton className="h-20 w-full" />
-          <div className="flex justify-end space-x-3 mt-4">
+          <Skeleton className="h-16 sm:h-20 w-full" />
+          <div className="flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-3 mt-3 sm:mt-4">
             <Skeleton className="h-8 w-16" />
             <Skeleton className="h-8 w-24" />
           </div>
@@ -398,52 +398,52 @@ const ClassHomeworkPage = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={() => {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="outline"
               onClick={() => navigate("/past-classes")}
-              className="mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm"
+              className="mb-3 sm:mb-4 border-2 border-yellow-300 text-blue-700 hover:bg-yellow-50 shadow-sm text-sm sm:text-base"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Back to Past Classes
             </Button>
 
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 sm:mb-4 space-y-3 lg:space-y-0">
               <div>
-                <h1 className="text-3xl font-bold text-blue-800 mb-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
                   Class Homework
                 </h1>
-                <p className="text-blue-600">View and download homework assignment for this specific class</p>
+                <p className="text-blue-600 text-sm sm:text-base">View and download homework assignment for this specific class</p>
               </div>
 
               {filteredHomeworkData && selectedChild && classId && (
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-3 sm:space-x-4">
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-green-600">
+                    <div className="text-lg sm:text-xl lg:text-2xl font-bold text-green-600">
                       {filteredHomeworkData.reduce((sum, assignment) => sum + assignment.submitted_hw_count, 0)}
                     </div>
-                    <div className="text-sm text-gray-600">Submitted</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Submitted</div>
                   </div>
                   <div className="text-center">
-                    <div className="text-2xl font-bold text-red-600">
+                    <div className="text-lg sm:text-xl lg:text-2xl font-bold text-red-600">
                       {filteredHomeworkData.reduce((sum, assignment) => sum + parseInt(assignment.pending_hw_count), 0)}
                     </div>
-                    <div className="text-sm text-gray-600">Pending</div>
+                    <div className="text-xs sm:text-sm text-gray-600">Pending</div>
                   </div>
                 </div>
               )}
             </div>
 
             {error && (
-              <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-                <div className="flex items-center justify-between">
+              <div className="mb-4 sm:mb-6 p-3 sm:p-4 bg-red-50 border border-red-200 rounded-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
                   <div className="flex items-center space-x-2">
-                    <AlertCircle className="w-5 h-5 text-red-600" />
-                    <span className="text-red-700">{error}</span>
+                    <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 text-red-600" />
+                    <span className="text-red-700 text-sm sm:text-base">{error}</span>
                   </div>
                   <Button
                     variant="outline"
@@ -451,9 +451,9 @@ const ClassHomeworkPage = () => {
                     onClick={() => selectedChild?.id && loadHomework({
                       child_id: selectedChild.id
                     })}
-                    className="border-red-200 text-red-700 hover:bg-red-50"
+                    className="border-red-200 text-red-700 hover:bg-red-50 text-xs sm:text-sm"
                   >
-                    <RefreshCw className="w-4 h-4 mr-2" />
+                    <RefreshCw className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Retry
                   </Button>
                 </div>
@@ -462,28 +462,28 @@ const ClassHomeworkPage = () => {
           </div>
 
           {!selectedChild ? (
-            <Card className="p-12 text-center">
-              <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Child Selected</h3>
-              <p className="text-gray-500">Please select a child to view their homework assignments.</p>
+            <Card className="p-6 sm:p-8 lg:p-12 text-center">
+              <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-1 sm:mb-2">No Child Selected</h3>
+              <p className="text-gray-500 text-sm sm:text-base">Please select a child to view their homework assignments.</p>
             </Card>
           ) : !classId ? (
-            <Card className="p-12 text-center">
-              <AlertCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Class Selected</h3>
-              <p className="text-gray-500">Please select a class to view its homework assignment.</p>
+            <Card className="p-6 sm:p-8 lg:p-12 text-center">
+              <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-1 sm:mb-2">No Class Selected</h3>
+              <p className="text-gray-500 text-sm sm:text-base">Please select a class to view its homework assignment.</p>
             </Card>
           ) : isLoading ? (
             renderSkeleton()
           ) : filteredHomeworkData?.length ? (
-            <div className="space-y-6">
+            <div className="space-y-3 sm:space-y-4 lg:space-y-6">
               {filteredHomeworkData.map(renderHomeworkCard)}
             </div>
           ) : (
-            <Card className="p-12 text-center">
-              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-gray-600 mb-2">No Homework Found</h3>
-              <p className="text-gray-500">There are no homework assignments available for this specific class.</p>
+            <Card className="p-6 sm:p-8 lg:p-12 text-center">
+              <BookOpen className="w-12 h-12 sm:w-16 sm:h-16 text-gray-400 mx-auto mb-3 sm:mb-4" />
+              <h3 className="text-lg sm:text-xl font-semibold text-gray-600 mb-1 sm:mb-2">No Homework Found</h3>
+              <p className="text-gray-500 text-sm sm:text-base">There are no homework assignments available for this specific class.</p>
             </Card>
           )}
         </main>
@@ -496,9 +496,9 @@ const ClassHomeworkPage = () => {
           setIframeLoading(false);
         }
       }}>
-        <DialogContent className="max-w-6xl max-h-[90vh] p-0">
-          <DialogHeader className="p-6 pb-4">
-            <DialogTitle className="text-2xl font-bold text-blue-800">
+        <DialogContent className="max-w-4xl sm:max-w-5xl lg:max-w-6xl max-h-[90vh] p-0">
+          <DialogHeader className="p-4 sm:p-6 pb-2 sm:pb-4">
+            <DialogTitle className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-800">
               {selectedHomework?.admin_class_name} - Homework Assignment
             </DialogTitle>
           </DialogHeader>
@@ -506,25 +506,25 @@ const ClassHomeworkPage = () => {
           {selectedHomework && (
             <div className="flex flex-col h-full">
               {/* Action Buttons */}
-              <div className="flex justify-end space-x-3 px-6 pb-4">
+              <div className="flex justify-end space-x-2 sm:space-x-3 px-4 sm:px-6 pb-2 sm:pb-4">
                 <Button
                   variant="outline"
                   onClick={() => handleDownloadHomework(selectedHomework)}
-                  className="border-green-200 text-green-700 hover:bg-green-50"
+                  className="border-green-200 text-green-700 hover:bg-green-50 text-xs sm:text-sm"
                 >
-                  <Download className="w-4 h-4 mr-2" />
+                  <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                   Download Homework
                 </Button>
               </div>
 
               {/* Iframe Container */}
-              <div className="flex-1 px-6 pb-6">
-                <div className="w-full h-[70vh] border border-gray-200 rounded-lg overflow-hidden relative">
+              <div className="flex-1 px-4 sm:px-6 pb-4 sm:pb-6">
+                <div className="w-full h-[60vh] sm:h-[65vh] lg:h-[70vh] border border-gray-200 rounded-lg overflow-hidden relative">
                   {iframeLoading && (
                     <div className="absolute inset-0 flex items-center justify-center bg-gray-50">
                       <div className="flex items-center space-x-2">
-                        <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
-                        <span className="text-gray-600">Loading homework...</span>
+                        <div className="animate-spin rounded-full h-5 w-5 sm:h-6 sm:w-6 border-b-2 border-blue-600"></div>
+                        <span className="text-gray-600 text-sm sm:text-base">Loading homework...</span>
                       </div>
                     </div>
                   )}

@@ -376,77 +376,71 @@ const JoinClassPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen w-full flex flex-col items-center px-2 md:px-8 lg:px-12 py-2 relative overflow-hidden bg-gradient-to-br from-background via-muted/20 to-primary/5">
+    <div className="min-h-screen w-full flex flex-col items-center px-2 sm:px-4 md:px-8 lg:px-12 py-2 relative overflow-hidden bg-gradient-to-br from-background via-muted/20 to-primary/5">
       {/* Subtle background elements */}
-      <div className="absolute top-0 left-0 w-40 h-40 bg-indigo-100 rounded-full blur-3xl opacity-30 z-0" />
-      <div className="absolute bottom-0 right-0 w-56 h-56 bg-blue-100 rounded-full blur-3xl opacity-20 z-0" />
+      <div className="absolute top-0 left-0 w-32 h-32 sm:w-40 sm:h-40 bg-indigo-100 rounded-full blur-3xl opacity-30 z-0" />
+      <div className="absolute bottom-0 right-0 w-40 h-40 sm:w-56 sm:h-56 bg-blue-100 rounded-full blur-3xl opacity-20 z-0" />
       
       {/* Main scaled content */}
       <div className="w-full md:scale-90 md:origin-top mx-auto relative z-10">
         {/* Header */}
-        <div className="w-full max-w-4xl mx-auto text-center mb-2">
+        <div className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl mx-auto text-center mb-2">
           <div className="flex justify-center mb-2">
-            <div className="w-12 h-12 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
-              <Laptop className="w-6 h-6 text-white" />
+            <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-600 rounded-full flex items-center justify-center shadow-lg">
+              <Laptop className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
           </div>
-          <h1 className={`text-3xl md:text-4xl font-extrabold mb-1 tracking-tight ${gradientText}`}>{c.admin_class_name}</h1>
-          <div className="text-lg text-slate-600 italic font-medium mb-1">for {c.child_name}</div>
-          <div className="w-16 h-1 mx-auto bg-indigo-600 rounded-full mb-2" />
+          <h1 className={`text-2xl sm:text-3xl md:text-4xl font-extrabold mb-1 tracking-tight ${gradientText}`}>{c.admin_class_name}</h1>
+          <div className="text-base sm:text-lg text-slate-600 italic font-medium mb-1">for {c.child_name}</div>
+          <div className="w-12 sm:w-16 h-1 mx-auto bg-indigo-600 rounded-full mb-2" />
         </div>
 
         {/* Main content grid */}
-        <div className="w-full max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 mb-2 min-h-[400px]" style={{ height: '60vh' }}>
+        <div className="w-full max-w-2xl sm:max-w-3xl md:max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 mb-2 min-h-[400px]" style={{ minHeight: '400px' }}>
           {/* Left column: 3 stacked blocks */}
-          <div className="flex flex-col gap-4 md:col-span-1">
+          <div className="flex flex-col gap-3 sm:gap-4 md:col-span-1">
             {/* Class Details */}
-            <Card className={`p-4 flex flex-col gap-2 rounded-lg ${glass}`}>
+            <Card className={`p-3 sm:p-4 flex flex-col gap-2 rounded-lg ${glass}`}> 
               <div className="flex items-center gap-2 text-slate-800 font-semibold mb-1 text-base">
-                <span className={`${iconCircle} ${iconColors[0]}`}><Video className="w-5 h-5" /></span> Class Details
+                <span className={`${iconCircle} ${iconColors[0]}`}><Video className="w-4 h-4 sm:w-5 sm:h-5" /></span> Class Details
               </div>
               <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Clock className="w-4 h-4" /></span>
+                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Clock className="w-3 h-3 sm:w-4 sm:h-4" /></span>
                 <span>{formatTime(c.start_time)} • {formatDuration(c.start_time, c.end_time)}</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300 `}><Users className="w-4 h-4" /></span>
+                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300 `}><Users className="w-3 h-3 sm:w-4 sm:h-4" /></span>
                 <span>{c.child_name}</span>
               </div>
-              {/* <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-indigo-600 text-white`}><Users className="w-4 h-4" /></span>
-                <span>{c.students_joining || 1} students joining</span>
-              </div> */}
             </Card>
 
             {/* Countdown */}
-            <Card className={`p-4 flex flex-col items-center gap-3 rounded-lg ${glass}`}>
+            <Card className={`p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 rounded-lg ${glass}`}> 
               <div className="flex items-center gap-2 text-slate-800 font-semibold text-base">
-                <Clock className="w-5 h-5 text-indigo-600" />
+                <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                 Time Until Class
               </div>
-              <div className="text-2xl font-mono font-bold text-indigo-600 tracking-wide text-center bg-indigo-50 px-4 py-2 rounded-lg border border-indigo-200">
+              <div className="text-xl sm:text-2xl font-mono font-bold text-indigo-600 tracking-wide text-center bg-indigo-50 px-3 sm:px-4 py-2 rounded-lg border border-indigo-200">
                 {formatCountdown(timeLeft)}
               </div>
-              <span className={`px-4 py-2 rounded-full text-sm font-semibold tracking-wide ${canJoin ? 'bg-indigo-600 text-white shadow-md' : 'bg-orange-500 text-white shadow-md animate-pulse'}`}>
-                {canJoin ? 'Ready to Join' : 'Please Wait'}
-              </span>
+              <span className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide ${canJoin ? 'bg-indigo-600 text-white shadow-md' : 'bg-orange-500 text-white shadow-md animate-pulse'}`}>{canJoin ? 'Ready to Join' : 'Please Wait'}</span>
             </Card>
 
             {/* Tech Check */}
-            <Card className={`p-4 flex flex-col gap-2 rounded-lg ${glass}`}>
+            <Card className={`p-3 sm:p-4 flex flex-col gap-2 rounded-lg ${glass}`}> 
               <div className="flex items-center gap-2 text-slate-800 font-semibold mb-1 text-base">
-                <span className={`${iconCircle} bg-blue-600 text-white`}><CheckCircle className="w-5 h-5" /></span> Tech Check
+                <span className={`${iconCircle} bg-blue-600 text-white`}><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" /></span> Tech Check
               </div>
               <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Video className="w-4 h-4" /></span> Camera <span className="ml-auto text-green-600">✔️</span>
+                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Video className="w-3 h-3 sm:w-4 sm:h-4" /></span> Camera <span className="ml-auto text-green-600">✔️</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Mic className="w-4 h-4" /></span> Microphone <span className="ml-auto text-green-600">✔️</span>
+                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Mic className="w-3 h-3 sm:w-4 sm:h-4" /></span> Microphone <span className="ml-auto text-green-600">✔️</span>
               </div>
               <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Wifi className="w-4 h-4" /></span> Internet <span className="ml-auto text-green-600">✔️</span>
+                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Wifi className="w-3 h-3 sm:w-4 sm:h-4" /></span> Internet <span className="ml-auto text-green-600">✔️</span>
               </div>
-              <Button variant="outline" className="mt-1 h-8 px-4 py-1 text-sm font-semibold border-slate-300 hover:bg-slate-50 text-slate-700">
+              <Button variant="outline" className="mt-1 h-8 px-4 py-1 text-xs sm:text-sm font-semibold border-slate-300 hover:bg-slate-50 text-slate-700">
                 Run Tech Check
               </Button>
             </Card>
@@ -454,20 +448,20 @@ const JoinClassPage: React.FC = () => {
 
           {/* Right column: Game box */}
           <div className="md:col-span-2 flex flex-col h-full">
-            <Card className={`flex-1 min-h-[320px] flex flex-col items-center justify-center bg-white rounded-lg shadow-md border border-slate-200 p-0 relative overflow-hidden`}>
+            <Card className={`flex-1 min-h-[320px] flex flex-col items-center justify-center bg-white rounded-lg shadow-md border border-slate-200 p-0 relative overflow-visible w-full`}>
               {!showScoreCard ? (
-                <div className="w-full max-w-md mx-auto flex flex-col items-center p-4">
+                <div className="w-full max-w-md mx-auto flex flex-col items-center p-3 sm:p-4 pb-28 sm:pb-32">
                   <div className="flex flex-col items-center mb-2">
-                    <div className="rounded-full bg-indigo-600 p-3 mb-2 shadow-sm">
-                      <span role="img" aria-label="brain" className="text-3xl">{currentQuiz?.icon}</span>
+                    <div className="rounded-full bg-indigo-600 p-2 sm:p-3 mb-2 shadow-sm">
+                      <span role="img" aria-label="brain" className="text-2xl sm:text-3xl">{currentQuiz?.icon}</span>
                     </div>
                     <div className="text-center mb-1">
-                      <div className="font-extrabold text-xl text-slate-800 tracking-tight">{currentQuiz?.title}</div>
-                      <div className="text-sm text-slate-500 mt-1">Question {currentQuestionIndex + 1} of {currentQuiz?.questions.length}</div>
+                      <div className="font-extrabold text-lg sm:text-xl text-slate-800 tracking-tight">{currentQuiz?.title}</div>
+                      <div className="text-xs sm:text-sm text-slate-500 mt-1">Question {currentQuestionIndex + 1} of {currentQuiz?.questions.length}</div>
                     </div>
-                    <div className="text-base text-slate-600 mb-2 font-medium">{currentQuestion?.question}</div>
+                    <div className="text-sm sm:text-base text-slate-600 mb-2 font-medium">{currentQuestion?.question}</div>
                   </div>
-                  <div className="w-full flex flex-col gap-3">
+                  <div className="w-full flex flex-col gap-2 sm:gap-3">
                     {currentQuestion?.options.map((opt, idx) => {
                       let state = '';
                       if (showResult) {
@@ -479,71 +473,57 @@ const JoinClassPage: React.FC = () => {
                       return (
                         <button
                           key={idx}
-                          className={`w-full text-left rounded-lg border px-4 py-2 text-base font-semibold transition-all focus:outline-none shadow-sm flex items-center gap-2 hover:shadow-md duration-150 ${state || 'bg-white border-slate-300 hover:bg-slate-50 text-slate-700'}`}
+                          className={`w-full text-left rounded-lg border px-3 sm:px-4 py-2 text-sm sm:text-base font-semibold transition-all focus:outline-none shadow-sm flex items-center gap-2 hover:shadow-md duration-150 ${state || 'bg-white border-slate-300 hover:bg-slate-50 text-slate-700'}`}
                           onClick={() => handleAnswerSelect(idx)}
                           type="button"
                           disabled={showResult}
                         >
-                          <span className="mr-2 font-bold text-lg">{opt.label}</span> {opt.value}
-                          {showResult && idx === currentQuestion.answer && <CheckCircle className="ml-auto w-5 h-5 text-green-600" />}
-                          {showResult && selected === idx && idx !== currentQuestion.answer && <XCircle className="ml-auto w-5 h-5 text-red-600" />}
+                          <span className="mr-2 font-bold text-base sm:text-lg">{opt.label}</span> {opt.value}
+                          {showResult && idx === currentQuestion.answer && <CheckCircle className="ml-auto w-4 h-4 sm:w-5 sm:h-5 text-green-600" />}
+                          {showResult && selected === idx && idx !== currentQuestion.answer && <XCircle className="ml-auto w-4 h-4 sm:w-5 sm:h-5 text-red-600" />}
                         </button>
                       );
                     })}
                   </div>
                   {showResult && (
                     <div className="mt-4 text-center w-full">
-                      <div className="mb-3">
-                        {/* {selected === currentQuestion.answer ? (
-                          <span className="text-green-600 font-bold text-lg flex items-center justify-center gap-2">
-                            Correct! <CheckCircle className="w-5 h-5" />
-                          </span>
-                        ) : (
-                          <span className="text-red-600 font-bold text-lg flex items-center justify-center gap-2">
-                            Better luck next time! <XCircle className="w-5 h-5" />
-                          </span>
-                        )} */}
-                      </div>
-                        <Button
-                          onClick={handleNextQuestion}
-                          className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2"
-                        >
-                          {currentQuestionIndex < currentQuiz.questions.length - 1 ? 'Next Question' : 'See Results'}
-                        </Button>
+                      <Button
+                        onClick={handleNextQuestion}
+                        className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 text-sm sm:text-base"
+                      >
+                        {currentQuestionIndex < currentQuiz.questions.length - 1 ? 'Next Question' : 'See Results'}
+                      </Button>
                     </div>
                   )}
                 </div>
               ) : (
                 // Score Card
-                <div className="w-full max-w-md mx-auto flex flex-col items-center p-6">
-                  <div className="flex flex-col items-center mb-6">
-                    <div className="rounded-full bg-indigo-600 p-4 mb-4 shadow-lg">
-                      <span role="img" aria-label="trophy" className="text-4xl">🏆</span>
+                <div className="w-full max-w-md mx-auto flex flex-col items-center p-4 sm:p-6 pb-28 sm:pb-32">
+                  <div className="flex flex-col items-center mb-4 sm:mb-6">
+                    <div className="rounded-full bg-indigo-600 p-3 sm:p-4 mb-3 sm:mb-4 shadow-lg">
+                      <span role="img" aria-label="trophy" className="text-2xl sm:text-4xl">🏆</span>
                     </div>
-                    <h2 className="text-2xl font-bold text-slate-800 mb-2">Quiz Complete!</h2>
-                    <div className="text-lg text-slate-600 mb-4">Your Score</div>
-                    
+                    <h2 className="text-lg sm:text-2xl font-bold text-slate-800 mb-2">Quiz Complete!</h2>
+                    <div className="text-base sm:text-lg text-slate-600 mb-2 sm:mb-4">Your Score</div>
                     {/* Score Display */}
-                    <div className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-full px-8 py-4 mb-6 shadow-lg">
-                      <div className="text-4xl font-bold">{score}/{currentQuiz?.questions.length}</div>
-                      <div className="text-sm opacity-90">
+                    <div className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 mb-4 sm:mb-6 shadow-lg">
+                      <div className="text-2xl sm:text-4xl font-bold">{score}/{currentQuiz?.questions.length}</div>
+                      <div className="text-xs sm:text-sm opacity-90">
                         {score === currentQuiz?.questions.length ? 'Perfect Score! 🎉' : 
                          score >= currentQuiz?.questions.length * 0.8 ? 'Great Job! 👏' :
                          score >= currentQuiz?.questions.length * 0.6 ? 'Good Work! 👍' : 'Keep Practicing! 💪'}
                       </div>
                     </div>
-                    
                     {/* Percentage */}
-                    <div className="text-2xl font-bold text-indigo-600 mb-6">
+                    <div className="text-xl sm:text-2xl font-bold text-indigo-600 mb-4 sm:mb-6">
                       {Math.round((score / currentQuiz?.questions.length) * 100)}%
                     </div>
                   </div>
-                  
                   {/* Action Buttons */}
-                  <div className="flex flex-col gap-3 w-full">
+                  <div className="flex flex-col gap-2 sm:gap-3 w-full">
                     <Button
                       onClick={handlePlayMoreGames}
-                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-3 text-lg font-semibold"
+                      className="w-full bg-indigo-600 hover:bg-indigo-700 text-white py-2 sm:py-3 text-base sm:text-lg font-semibold"
                     >
                       🎮 Play More Games
                     </Button>
@@ -556,7 +536,7 @@ const JoinClassPage: React.FC = () => {
                         setShowResult(false);
                       }}
                       variant="outline"
-                      className="w-full border-slate-300 hover:bg-slate-50 text-slate-700 py-3 text-lg font-semibold"
+                      className="w-full border-slate-300 hover:bg-slate-50 text-slate-700 py-2 sm:py-3 text-base sm:text-lg font-semibold"
                     >
                       🔄 Retake Quiz
                     </Button>
@@ -565,21 +545,21 @@ const JoinClassPage: React.FC = () => {
               )}
 
               {/* Fixed button bar */}
-              <div className="absolute left-0 right-0 bottom-0 w-full bg-white border-t border-slate-200 flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center px-4 py-3">
+              <div className="absolute left-0 right-0 bottom-0 w-full bg-white border-t border-slate-200 flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center px-2 sm:px-4 py-2 sm:py-3">
                 <Button
                   onClick={handleJoinClass}
                   disabled={!canJoin || isJoining}
                   size="lg"
-                  className={`w-full md:w-auto px-8 py-3 rounded-lg font-bold text-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 text-white ${canJoin ? 'hover:shadow-lg' : 'opacity-50'}`}
+                  className={`w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 text-white ${canJoin ? 'hover:shadow-lg' : 'opacity-50'}`}
                 >
                   {isJoining ? (
                     <>
-                      <Loader2 className="w-5 h-5 animate-spin mr-2" />
+                      <Loader2 className="w-4 h-4 sm:w-5 sm:h-5 animate-spin mr-2" />
                       Joining Class...
                     </>
                   ) : (
                     <>
-                      <LogIn className="w-5 h-5 mr-2" />
+                      <LogIn className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                       Join Class Now
                     </>
                   )}
@@ -588,9 +568,9 @@ const JoinClassPage: React.FC = () => {
                   onClick={handleGoBack} 
                   variant="outline" 
                   size="lg" 
-                  className="w-full md:w-auto px-8 py-3 rounded-lg font-bold text-lg border-slate-300 hover:bg-slate-50 text-slate-700 hover:border-slate-400"
+                  className="w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg border-slate-300 hover:bg-slate-50 text-slate-700 hover:border-slate-400"
                 >
-                  <ArrowLeft className="w-5 h-5 mr-2" />
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Back to Classes
                 </Button>
               </div>

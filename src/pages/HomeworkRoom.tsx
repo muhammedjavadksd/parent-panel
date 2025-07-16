@@ -66,8 +66,8 @@ const HomeworkRoom = () => {
 
   const getStatusIcon = (pendingCount: string) => {
     const count = parseInt(pendingCount);
-    if (count > 0) return <AlertCircle className="w-4 h-4 text-yellow-600" />;
-    return <CheckCircle2 className="w-4 h-4 text-green-600" />;
+    if (count > 0) return <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-600" />;
+    return <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />;
   };
 
   const getPriorityText = (pendingCount: string) => {
@@ -229,9 +229,9 @@ const HomeworkRoom = () => {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
-        <div className="ml-64 flex flex-col">
-          <Header />
-          <main className="flex-1 p-6">
+        <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+          <Header onStartTour={()=> {}} />
+          <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
             <div className="text-center py-8">
               <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
               <h2 className="text-xl font-semibold text-gray-800 mb-2">Error Loading Homework</h2>
@@ -248,29 +248,29 @@ const HomeworkRoom = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className="ml-64 flex flex-col">
-        <Header />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={()=> {}} />
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
             <Button
               variant="outline"
               onClick={() => navigate("/classes")}
-              className="mb-4 border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm"
+              className="mb-3 sm:mb-4 border-blue-200 text-blue-700 hover:bg-blue-50 shadow-sm text-xs sm:text-sm"
             >
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
               Back to Classes
             </Button>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h1 className="text-3xl font-bold text-blue-800 mb-2">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
                   Homework Room
                 </h1>
-                <p className="text-blue-600">Complete assignments and get help from teachers</p>
+                <p className="text-blue-600 text-sm sm:text-base">Complete assignments and get help from teachers</p>
               </div>
 
               {/* Date Filter */}
-              <div className="flex items-center space-x-3">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
                 <div className="flex items-center space-x-2">
                   <Button
                     variant={!isRangeMode ? "default" : "outline"}
@@ -292,8 +292,8 @@ const HomeworkRoom = () => {
 
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="text-sm min-w-[200px]">
-                      <CalendarIcon className="w-4 h-4 mr-2" />
+                    <Button variant="outline" className="text-xs sm:text-sm min-w-[150px] sm:min-w-[200px]">
+                      <CalendarIcon className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       {isRangeMode ? (
                         dateRange.from && dateRange.to ? (
                           `${format(dateRange.from, "MMM dd")} - ${format(dateRange.to, "MMM dd")}`
@@ -332,7 +332,7 @@ const HomeworkRoom = () => {
                       setSelectedDate(undefined);
                       setDateRange({ from: undefined, to: undefined });
                     }}
-                    className="text-blue-600 hover:text-blue-800 text-sm"
+                    className="text-blue-600 hover:text-blue-800 text-xs sm:text-sm"
                   >
                     Clear Filter
                   </Button>
@@ -342,45 +342,45 @@ const HomeworkRoom = () => {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <Card className="p-6 rounded-2xl bg-white border-2 border-red-200 shadow-lg hover:shadow-xl transition-all duration-300">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white border-2 border-red-200 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-red-700 font-semibold mb-1">Pending</p>
-                  <p className="text-3xl font-bold text-red-800">
+                  <p className="text-red-700 font-semibold mb-1 text-xs sm:text-sm">Pending</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-red-800">
                     {data?.pending_hw_count || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-red-100 rounded-xl flex items-center justify-center">
-                  <AlertCircle className="w-6 h-6 text-red-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-red-100 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <AlertCircle className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-red-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 rounded-2xl bg-white border-2 border-green-200 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white border-2 border-green-200 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-green-700 font-semibold mb-1">Submitted</p>
-                  <p className="text-3xl font-bold text-green-800">
+                  <p className="text-green-700 font-semibold mb-1 text-xs sm:text-sm">Submitted</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-800">
                     {data?.submitted_hw_count || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center">
-                  <CheckCircle2 className="w-6 h-6 text-green-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-green-100 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-green-600" />
                 </div>
               </div>
             </Card>
 
-            <Card className="p-6 rounded-2xl bg-white border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300">
+            <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white border-2 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-blue-700 font-semibold mb-1">Total Classes</p>
-                  <p className="text-3xl font-bold text-blue-800">
+                  <p className="text-blue-700 font-semibold mb-1 text-xs sm:text-sm">Total Classes</p>
+                  <p className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800">
                     {data?.homework?.total || 0}
                   </p>
                 </div>
-                <div className="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center">
-                  <BookOpen className="w-6 h-6 text-blue-600" />
+                <div className="w-8 h-8 sm:w-10 sm:h-10 lg:w-12 lg:h-12 bg-blue-100 rounded-lg sm:rounded-xl flex items-center justify-center">
+                  <BookOpen className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-blue-600" />
                 </div>
               </div>
             </Card>
@@ -388,43 +388,40 @@ const HomeworkRoom = () => {
 
           {/* Loading State */}
           {isLoading && (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600 mr-3" />
-              <span className="text-lg text-gray-600">Loading homework...</span>
+            <div className="flex items-center justify-center py-8 sm:py-12">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-blue-600 mr-2 sm:mr-3" />
+              <span className="text-sm sm:text-lg text-gray-600">Loading homework...</span>
             </div>
           )}
 
           {/* Homework List */}
           {!isLoading && (
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {homeworkAvailable && filteredHomework.map((homework) => (
-                <Card key={homework.classschedulebooking_id} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300">
-                  <div className="flex items-center justify-between">
+                <Card key={homework.classschedulebooking_id} className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                     <div className="flex-1">
-                      <div className="flex items-center space-x-4 mb-4">
-                        <div className="w-14 h-14 bg-yellow-400 rounded-2xl flex items-center justify-center shadow-md">
-                          <BookOpen className="w-7 h-7 text-white" />
+                      <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-yellow-400 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md">
+                          <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 lg:w-7 lg:h-7 text-white" />
                         </div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-2">
-                            <h3 className="text-xl font-bold text-blue-800">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-2 space-y-1 sm:space-y-0">
+                            <h3 className="text-sm sm:text-base lg:text-xl font-bold text-blue-800 truncate">
                               {homework.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.topic || 'Homework Assignment'}
                             </h3>
                             {getStatusIcon(homework.pending_hw_count)}
-                            <Badge className={`${getPriorityColor(homework.pending_hw_count)} font-medium`}>
+                            <Badge className={`${getPriorityColor(homework.pending_hw_count)} font-medium text-xs sm:text-sm w-fit`}>
                               {getPriorityText(homework.pending_hw_count)}
                             </Badge>
                           </div>
-                          <p className="text-blue-600 font-semibold text-lg">{homework.admin_class_name}</p>
-                          {/* <p className="text-gray-600 mt-1">
-                            {homework.classschedule?.facultyclassschedulecurriculum?.curriculumtopic?.homework || 'Complete the assigned homework'}
-                          </p> */}
+                          <p className="text-blue-600 font-semibold text-sm sm:text-base lg:text-lg">{homework.admin_class_name}</p>
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-6 text-sm text-gray-600">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-6 text-xs sm:text-sm text-gray-600 space-y-1 sm:space-y-0">
                         <div className="flex items-center space-x-2">
-                          <Clock className="w-4 h-4 text-blue-500" />
+                          <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" />
                           <span className="font-medium">
                             Class: {format(parseISO(homework.class_date), "MMM dd, yyyy")} at {homework.start_time}
                           </span>
@@ -437,36 +434,36 @@ const HomeworkRoom = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col space-y-3 ml-8">
+                    <div className="flex flex-col space-y-2 sm:space-y-3 lg:ml-8">
                       {parseInt(homework.pending_hw_count) > 0 ? (
                         <>
                           <Button
-                            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
+                            className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
                             onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
                           >
                             Submit Work
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                           >
-                            <HelpCircle className="w-4 h-4 mr-2" />
+                            <HelpCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Ask Doubt
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
                           >
-                            <BookOpen className="w-4 h-4 mr-2" />
+                            <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             View Homework
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleDownloadHomework(homework)}
                           >
-                            <Download className="w-4 h-4 mr-2" />
+                            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Download
                           </Button>
                         </>
@@ -474,31 +471,31 @@ const HomeworkRoom = () => {
                         <>
                           <Button
                             variant="outline"
-                            className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             disabled
                           >
                             ✓ Submitted
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                           >
                             View Feedback
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
                           >
-                            <BookOpen className="w-4 h-4 mr-2" />
+                            <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             View Homework
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-6 py-2 shadow-sm"
+                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleDownloadHomework(homework)}
                           >
-                            <Download className="w-4 h-4 mr-2" />
+                            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Download
                           </Button>
                         </>
@@ -509,10 +506,10 @@ const HomeworkRoom = () => {
               ))}
 
               {filteredHomework.length === 0 && !isLoading && (
-                <div className="text-center py-8 text-gray-500 bg-gray-50 rounded-lg">
-                  <div className="text-3xl mb-2">📚</div>
-                  <p className="font-medium">No homework found for the selected date range.</p>
-                  <p className="text-sm text-gray-400 mt-1">Try adjusting your date filter.</p>
+                <div className="text-center py-6 sm:py-8 text-gray-500 bg-gray-50 rounded-lg">
+                  <div className="text-2xl sm:text-3xl mb-2">📚</div>
+                  <p className="font-medium text-sm sm:text-base">No homework found for the selected date range.</p>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">Try adjusting your date filter.</p>
                 </div>
               )}
             </div>
@@ -520,13 +517,13 @@ const HomeworkRoom = () => {
 
           {/* Pagination */}
           {data?.homework && data.homework.last_page > 1 && (
-            <div className="flex justify-center mt-8">
-              <div className="flex space-x-2">
+            <div className="flex justify-center mt-6 sm:mt-8">
+              <div className="flex space-x-1 sm:space-x-2">
                 <Button
                   variant="outline"
                   onClick={() => handlePageChange(currentPage - 1)}
                   disabled={currentPage === 1}
-                  className="px-3 py-1"
+                  className="px-2 sm:px-3 py-1 text-xs sm:text-sm"
                 >
                   Previous
                 </Button>
@@ -538,7 +535,7 @@ const HomeworkRoom = () => {
                       key={pageNum}
                       variant={currentPage === pageNum ? "default" : "outline"}
                       onClick={() => handlePageChange(pageNum)}
-                      className="px-3 py-1"
+                      className="px-2 sm:px-3 py-1 text-xs sm:text-sm"
                     >
                       {pageNum}
                     </Button>
@@ -549,7 +546,7 @@ const HomeworkRoom = () => {
                   variant="outline"
                   onClick={() => handlePageChange(currentPage + 1)}
                   disabled={currentPage === data.homework.last_page}
-                  className="px-3 py-1"
+                  className="px-2 sm:px-3 py-1 text-xs sm:text-sm"
                 >
                   Next
                 </Button>
@@ -561,21 +558,21 @@ const HomeworkRoom = () => {
           <Dialog open={isSubmitDialogOpen} onOpenChange={setIsSubmitDialogOpen}>
             <DialogContent className="max-w-md">
               <DialogHeader>
-                <DialogTitle className="text-xl font-bold text-blue-800">
+                <DialogTitle className="text-lg sm:text-xl font-bold text-blue-800">
                   Submit Homework
                 </DialogTitle>
               </DialogHeader>
 
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
                     Select Files to Upload
                   </label>
                   <Input
                     type="file"
                     multiple
                     onChange={(e) => currentHomeworkId && handleFileSelect(currentHomeworkId, e.target.files)}
-                    className="cursor-pointer"
+                    className="cursor-pointer text-xs sm:text-sm"
                     accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
                   />
                   <p className="text-xs text-gray-500 mt-1">
@@ -586,13 +583,13 @@ const HomeworkRoom = () => {
                 {/* Selected Files Display */}
                 {currentHomeworkId && selectedFiles[currentHomeworkId]?.length > 0 && (
                   <div className="space-y-2">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-xs sm:text-sm font-medium text-gray-700">
                       Selected Files ({selectedFiles[currentHomeworkId].length})
                     </label>
                     <div className="max-h-32 overflow-y-auto space-y-1">
                       {selectedFiles[currentHomeworkId].map((file, index) => (
                         <div key={index} className="flex items-center justify-between bg-gray-50 p-2 rounded">
-                          <span className="text-sm text-gray-700 truncate flex-1">
+                          <span className="text-xs sm:text-sm text-gray-700 truncate flex-1">
                             {file.name}
                           </span>
                           <Button
@@ -609,20 +606,20 @@ const HomeworkRoom = () => {
                   </div>
                 )}
 
-                <div className="flex space-x-3 pt-4">
+                <div className="flex space-x-2 sm:space-x-3 pt-3 sm:pt-4">
                   <Button
                     variant="outline"
                     onClick={() => setIsSubmitDialogOpen(false)}
-                    className="flex-1"
+                    className="flex-1 text-xs sm:text-sm"
                   >
                     Cancel
                   </Button>
                   <Button
                     onClick={() => currentHomeworkId && handleSubmitWork(currentHomeworkId)}
-                    className="flex-1 bg-green-600 hover:bg-green-700"
+                    className="flex-1 bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
                     disabled={!currentHomeworkId || !selectedFiles[currentHomeworkId]?.length}
                   >
-                    <Upload className="w-4 h-4 mr-2" />
+                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                     Submit
                   </Button>
                 </div>

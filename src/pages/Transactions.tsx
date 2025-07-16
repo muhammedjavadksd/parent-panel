@@ -84,58 +84,58 @@ const Transactions: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
-      <div className="flex-1 flex flex-col ml-64">
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
         <Header onStartTour={()=> {}}/>
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-1">Transactions</h1>
-            <p className="text-gray-600">Manage your payments and wallet</p>
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900 mb-1 sm:mb-2">Transactions</h1>
+            <p className="text-gray-600 text-sm sm:text-base">Manage your payments and wallet</p>
           </div>
 
           {/* Account Balance Card */}
-          <Card className="p-6 mb-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-            <div className="flex items-center justify-between">
-              <div>
+          <Card className="p-3 sm:p-4 lg:p-6 mb-4 sm:mb-6 bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+              <div className="flex-1">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Wallet className="w-5 h-5" />
-                  <h2 className="text-lg font-semibold">Available Tokens</h2>
+                  <Wallet className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <h2 className="text-base sm:text-lg font-semibold">Available Tokens</h2>
                 </div>
-                <p className="text-2xl font-bold">
+                <p className="text-xl sm:text-2xl lg:text-3xl font-bold">
                   {stats?.available_balance??0}
                   {/* {formatCurrency(stats?.available_balance ?? 0, stats?.parent_currency ?? '')} */}
                 </p>
-                <p className="text-blue-100 text-sm">Tokens left</p>
+                <p className="text-blue-100 text-xs sm:text-sm">Tokens left</p>
               </div>
-              <div className="flex flex-col space-y-2">
-                <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30">
+              <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
+                <Button className="bg-white/20 hover:bg-white/30 text-white border-white/30 text-xs sm:text-sm px-3 sm:px-4 py-2">
                   Add Money
                 </Button>
                 <Popover>
                   <PopoverTrigger asChild>
-                    <Button variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/30">
-                      <Download className="w-4 h-4 mr-2" />
+                    <Button variant="outline" className="bg-white/10 hover:bg-white/20 text-white border-white/30 text-xs sm:text-sm px-3 sm:px-4 py-2">
+                      <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                       Download Statement
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-48 p-2">
+                  <PopoverContent className="w-40 sm:w-48 p-2">
                     <div className="space-y-2">
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-sm"
+                        className="w-full justify-start text-xs sm:text-sm"
                         onClick={() => handleDownloadStatement('pdf')}
                       >
-                        <FileText className="w-4 h-4 mr-2" />
+                        <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Download PDF
                       </Button>
                       <Button
                         variant="ghost"
-                        className="w-full justify-start text-sm"
+                        className="w-full justify-start text-xs sm:text-sm"
                         onClick={() => handleDownloadStatement('csv')}
                       >
-                        <FileText className="w-4 h-4 mr-2" />
+                        <FileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                         Download CSV
                       </Button>
                     </div>
@@ -146,12 +146,12 @@ const Transactions: React.FC = () => {
           </Card>
 
           {/* Transaction Statistics */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             {stats && <TransactionStats stats={stats} />}
           </div>
 
           {/* Filters */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <TransactionFilters
               filters={filters}
               onFiltersChange={handleFiltersChange}
@@ -160,7 +160,7 @@ const Transactions: React.FC = () => {
           </div>
 
           {/* Transaction List */}
-          <div className="mb-6">
+          <div className="mb-4 sm:mb-6">
             <TransactionList
               transactions={transactions}
               isLoading={isLoading}
@@ -169,7 +169,7 @@ const Transactions: React.FC = () => {
 
           {/* Pagination */}
           {transactions.length > 0 && (
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <TransactionPagination
                 currentPage={pagination.currentPage}
                 totalPages={pagination.totalPages}

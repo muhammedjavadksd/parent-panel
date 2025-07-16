@@ -87,12 +87,12 @@ const PastClassesPage = () => {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
-        <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
+        <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
           <Header onStartTour={()=> {}}/>
-          <main className="flex-1 p-6">
-            <div className="flex items-center justify-center h-64">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-              <span className="ml-2 text-blue-600">Loading past classes...</span>
+          <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+            <div className="flex items-center justify-center h-32 sm:h-48 lg:h-64">
+              <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-blue-600" />
+              <span className="ml-2 text-blue-600 text-sm sm:text-base">Loading past classes...</span>
             </div>
           </main>
         </div>
@@ -104,13 +104,13 @@ const PastClassesPage = () => {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
-        <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
+        <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
           <Header onStartTour={()=> {}}/>
-          <main className="flex-1 p-6">
-            <div className="flex flex-col items-center justify-center h-64 text-gray-500">
-              <BookOpen className="w-16 h-16 mb-4 text-gray-300" />
-              <h3 className="text-lg font-semibold mb-2">No past classes</h3>
-              <p>You don't have any completed classes yet.</p>
+          <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+            <div className="flex flex-col items-center justify-center h-32 sm:h-48 lg:h-64 text-gray-500">
+              <BookOpen className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 text-gray-300" />
+              <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">No past classes</h3>
+              <p className="text-sm sm:text-base text-center">You don't have any completed classes yet.</p>
             </div>
           </main>
         </div>
@@ -122,17 +122,17 @@ const PastClassesPage = () => {
     return (
       <div className="min-h-screen bg-white">
         <Sidebar />
-        <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
+        <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
           <Header onStartTour={()=> {}}/>
-          <main className="flex-1 p-6">
+          <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
             <div className="text-center text-red-600">
-              <p>Error loading past classes: {error}</p>
+              <p className="text-sm sm:text-base">Error loading past classes: {error}</p>
               <Button
                 onClick={() => {
                   const childId = selectedChild?.id;
                   loadPastClasses(undefined, childId);
                 }}
-                className="mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                className="mt-3 sm:mt-4 bg-blue-600 hover:bg-blue-700 text-white text-sm sm:text-base"
               >
                 Retry
               </Button>
@@ -147,24 +147,24 @@ const PastClassesPage = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
 
-      <div className={`transition-all duration-300 flex flex-col ${sidebarCollapsed ? 'ml-20' : 'ml-64'}`}>
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
         <Header onStartTour={()=> {}}/>
 
-        <main className="flex-1 p-6">
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold text-blue-800 mb-2">
+        <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
               Past Classes
             </h1>
-            <p className="text-blue-600">Review your completed classes and access materials</p>
+            <p className="text-blue-600 text-sm sm:text-base">Review your completed classes and access materials</p>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             {bookings.length === 0 ? (
-              <Card className="p-8 text-center">
+              <Card className="p-4 sm:p-6 lg:p-8 text-center">
                 <div className="text-gray-500">
-                  <BookOpen className="w-16 h-16 mx-auto mb-4 text-gray-300" />
-                  <h3 className="text-lg font-semibold mb-2">No past classes</h3>
-                  <p>You don't have any completed classes yet.</p>
+                  <BookOpen className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-3 sm:mb-4 text-gray-300" />
+                  <h3 className="text-base sm:text-lg font-semibold mb-1 sm:mb-2">No past classes</h3>
+                  <p className="text-sm sm:text-base">You don't have any completed classes yet.</p>
                 </div>
               </Card>
             ) : (
@@ -177,35 +177,35 @@ const PastClassesPage = () => {
 
                 const isOldClass = new Date(classItem.class_date) < new Date(Date.now() - 10 * 24 * 60 * 60 * 1000);
 
-                return (<Card key={classItem.id} className="p-6 rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
-                  <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
-                        <BookOpen className="w-8 h-8 text-white" />
+                return (<Card key={classItem.id} className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200">
+                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-3 sm:mb-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 lg:space-x-4">
+                      <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl sm:rounded-2xl flex items-center justify-center">
+                        <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 lg:w-8 lg:h-8 text-white" />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-blue-800">{classItem.admin_class_name}</h3>
-                        <div className="flex items-center space-x-4 mt-1">
+                        <h3 className="text-lg sm:text-xl font-bold text-blue-800">{classItem.admin_class_name}</h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-3 lg:space-x-4 mt-1">
                           <div className="flex items-center space-x-1">
-                            <Calendar className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-gray-600">{formatDate(classItem.class_date)}</span>
+                            <Calendar className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                            <span className="text-xs sm:text-sm text-gray-600">{formatDate(classItem.class_date)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <Clock className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-gray-600">{formatTime(classItem.start_time, classItem.end_time)}</span>
+                            <Clock className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                            <span className="text-xs sm:text-sm text-gray-600">{formatTime(classItem.start_time, classItem.end_time)}</span>
                           </div>
                           <div className="flex items-center space-x-1">
-                            <Users className="w-4 h-4 text-blue-600" />
-                            <span className="text-sm text-gray-600">{classItem.child_name}</span>
+                            <Users className="w-3 h-3 sm:w-4 sm:h-4 text-blue-600" />
+                            <span className="text-xs sm:text-sm text-gray-600">{classItem.child_name}</span>
                           </div>
                         </div>
-                        <div className="mt-2">
-                          <span className="text-sm text-gray-600">Status: {classItem.attended_class === "Yes" ? "Attended" : "Missed"}</span>
-                          <span className="ml-4 bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
+                        <div className="mt-2 flex flex-wrap gap-2">
+                          <span className="text-xs sm:text-sm text-gray-600">Status: {classItem.attended_class === "Yes" ? "Attended" : "Missed"}</span>
+                          <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-semibold">
                             {getSubjectFromClassName(classItem.admin_class_name)}
                           </span>
                           {classItem.points && parseFloat(classItem.points) > 0 && (
-                            <span className="ml-4 bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold">
+                            <span className="bg-yellow-100 text-yellow-700 px-2 py-1 rounded-full text-xs font-semibold">
                               {classItem.points} points
                             </span>
                           )}
@@ -214,29 +214,29 @@ const PastClassesPage = () => {
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+                  <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                     {[{
                       title: "Recording",
-                      icon: <Play className="w-4 h-4" />,
+                      icon: <Play className="w-3 h-3 sm:w-4 sm:h-4" />,
                       onClick: () => navigate(`/class/${classItem.schedulebooking_id}/recording`),
                       className: `bg-blue-600 hover:bg-blue-700 text-white`,
                       disabled: isOlderThan15Days,
                       titleText: isOlderThan15Days ? "Recordings available for the last 15 days only" : "View Recording"
                     }, {
                       title: "PPTs",
-                      icon: <FileText className="w-4 h-4" />,
+                      icon: <FileText className="w-3 h-3 sm:w-4 sm:h-4" />,
                       onClick: () => navigate(`/class/${classItem.schedulebooking_id}/presentations`),
                       className: "border-2 border-yellow-300 text-yellow-700 hover:bg-yellow-50",
                       variant: "outline"
                     }, {
                       title: "Homework",
-                      icon: <BookOpen className="w-4 h-4" />,
+                      icon: <BookOpen className="w-3 h-3 sm:w-4 sm:h-4" />,
                       onClick: () => navigate(`/class/${classItem.schedulebooking_id}/homework`),
                       className: "border-2 border-green-300 text-green-700 hover:bg-green-50",
                       variant: "outline"
                     }, {
                       title: "Review",
-                      icon: <Star className="w-4 h-4" />,
+                      icon: <Star className="w-3 h-3 sm:w-4 sm:h-4" />,
                       onClick: () => {
                         setSelectedClassForReview(classItem);
                         setReviewModalOpen(true);
@@ -245,7 +245,7 @@ const PastClassesPage = () => {
                       variant: "outline"
                     }, {
                       title: "AI Feedback",
-                      icon: <MessageSquare className="w-4 h-4" />,
+                      icon: <MessageSquare className="w-3 h-3 sm:w-4 sm:h-4" />,
                       onClick: () => window.open(classItem.feedback_url, '_blank'),
                       className: "border-2 border-purple-300 text-purple-700 hover:bg-purple-50",
                       variant: "outline"
@@ -255,7 +255,7 @@ const PastClassesPage = () => {
                           onClick={onClick}
                           disabled={disabled}
                           variant={variant as any}
-                          className={`w-full flex items-center justify-center space-x-2 ${className} ${disabled ? "cursor-not-allowed" : ""}`}
+                          className={`w-full flex items-center justify-center space-x-1 sm:space-x-2 ${className} ${disabled ? "cursor-not-allowed" : ""} text-xs sm:text-sm py-1.5 sm:py-2`}
                         >
                           {icon}
                           <span>{title}</span>

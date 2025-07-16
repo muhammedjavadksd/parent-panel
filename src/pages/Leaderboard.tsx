@@ -51,16 +51,16 @@ const LeaderboardPage = () => {
   ];
 
   const getRankIcon = (rank: number) => {
-    if (rank === 1) return <Crown className="w-6 h-6 text-yellow-600" />;
-    if (rank === 2) return <Medal className="w-6 h-6 text-gray-500" />;
-    if (rank === 3) return <Award className="w-6 h-6 text-yellow-700" />;
-    return <span className="w-6 h-6 flex items-center justify-center text-sm font-bold text-blue-600">#{rank}</span>;
+    if (rank === 1) return <Crown className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-600" />;
+    if (rank === 2) return <Medal className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-gray-500" />;
+    if (rank === 3) return <Award className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 text-yellow-700" />;
+    return <span className="w-4 h-4 sm:w-5 sm:h-5 lg:w-6 lg:h-6 flex items-center justify-center text-xs sm:text-sm font-bold text-blue-600">#{rank}</span>;
   };
 
   const getTrendIcon = (trend: string) => {
-    if (trend === 'up') return <TrendingUp className="w-4 h-4 text-green-600" />;
-    if (trend === 'down') return <TrendingDown className="w-4 h-4 text-red-500" />;
-    return <div className="w-4 h-4" />;
+    if (trend === 'up') return <TrendingUp className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />;
+    if (trend === 'down') return <TrendingDown className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" />;
+    return <div className="w-3 h-3 sm:w-4 sm:h-4" />;
   };
 
   // useEffect(() => {
@@ -87,67 +87,67 @@ const LeaderboardPage = () => {
 
 
   return (
-    <div className="min-h-screen bg-white flex w-full">
+    <div className="min-h-screen bg-white">
       <Sidebar />
-      <div className="flex-1 ml-64 flex flex-col min-h-screen">
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
         <Header onStartTour={() => { }} />
-        <main className="flex-1 p-8 space-y-8 bg-gray-50">
-          <div className="flex items-center justify-between">
+        <main className="flex-1 p-2 sm:p-3 lg:p-8 space-y-4 sm:space-y-6 lg:space-y-8 bg-gray-50 pb-20 sm:pb-0">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div>
-              <h1 className="text-4xl font-bold text-blue-900 mb-2">🏆 Leaderboard</h1>
-              <p className="text-blue-700 text-lg">Celebrate achievements and friendly competition among our young learners!</p>
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-blue-900 mb-1 sm:mb-2">🏆 Leaderboard</h1>
+              <p className="text-blue-700 text-sm sm:text-base lg:text-lg">Celebrate achievements and friendly competition among our young learners!</p>
             </div>
           </div>
 
 
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Leaderboard */}
-            <div className="lg:col-span-3 space-y-8">
+            <div className="lg:col-span-3 space-y-4 sm:space-y-6 lg:space-y-8">
               {/* Top 3 Podium - Champions of the Week */}
               <Leaderboard top3={top3} loading={loading} error={error} />
 
               {/* Rankings 4-10+ */}
-              <Card className="p-6 bg-white border-2 border-blue-100 shadow-lg">
-                <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-blue-900">Rankings</h3>
+              <Card className="p-3 sm:p-4 lg:p-6 bg-white border-2 border-blue-100 shadow-lg">
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0">
+                  <h3 className="text-xl sm:text-2xl font-bold text-blue-900">Rankings</h3>
                   <div className="flex items-center space-x-2 text-blue-700">
-                    <Users className="w-5 h-5" />
-                    <span className="font-medium">248 active learners</span>
+                    <Users className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-medium text-sm sm:text-base">248 active learners</span>
                   </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3 sm:space-y-4">
                   {otherUsers.map((user) => (
-                    <div key={user.id} className="flex items-center p-5 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition-colors hover:shadow-md">
-                      <div className="flex items-center space-x-4 flex-1">
-                        <div className="flex items-center space-x-3">
+                    <div key={user.id} className="flex items-center p-3 sm:p-4 lg:p-5 bg-blue-50 border border-blue-100 rounded-xl hover:bg-blue-100 transition-colors hover:shadow-md">
+                      <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4 flex-1 min-w-0">
+                        <div className="flex items-center space-x-1 sm:space-x-2 lg:space-x-3 flex-shrink-0">
                           {getRankIcon(user.rank)}
                           {getTrendIcon(user.trend)}
                         </div>
-                        <div className="text-3xl">{user.avatar}</div>
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-1">
-                            <h4 className="font-semibold text-blue-900 text-lg">{user.name}</h4>
-                            <span className="text-xl">{user.country}</span>
-                            <Badge variant="secondary" className="text-xs bg-yellow-100 text-blue-800 border-yellow-200">Age {user.age}</Badge>
+                        <div className="text-xl sm:text-2xl lg:text-3xl flex-shrink-0">{user.avatar}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-3 mb-1 space-y-1 sm:space-y-0">
+                            <h4 className="font-semibold text-blue-900 text-sm sm:text-base lg:text-lg truncate">{user.name}</h4>
+                            <span className="text-lg sm:text-xl flex-shrink-0">{user.country}</span>
+                            <Badge variant="secondary" className="text-xs bg-yellow-100 text-blue-800 border-yellow-200 w-fit">Age {user.age}</Badge>
                           </div>
-                          <div className="flex items-center space-x-4 text-blue-700 mb-1">
-                            <span className="font-medium">{user.level}</span>
+                          <div className="flex flex-col sm:flex-row sm:items-center sm:space-x-4 text-blue-700 mb-1 space-y-1 sm:space-y-0">
+                            <span className="font-medium text-xs sm:text-sm">{user.level}</span>
                             <div className="flex items-center space-x-1">
-                              <Zap className="w-4 h-4" />
-                              <span className="text-sm">{user.streak} day streak</span>
+                              <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
+                              <span className="text-xs sm:text-sm">{user.streak} day streak</span>
                             </div>
                           </div>
-                          <p className="text-sm text-blue-600">{user.recentActivity}</p>
+                          <p className="text-xs sm:text-sm text-blue-600 truncate">{user.recentActivity}</p>
                         </div>
-                        <div className="flex space-x-2">
+                        <div className="flex space-x-1 sm:space-x-2 flex-shrink-0">
                           {user.badges.map((badge, i) => (
-                            <span key={i} className="text-xl">{badge}</span>
+                            <span key={i} className="text-lg sm:text-xl">{badge}</span>
                           ))}
                         </div>
-                        <div className="text-right">
-                          <div className="text-2xl font-bold text-blue-900">{user.points}</div>
-                          <div className="text-sm text-blue-700">points</div>
+                        <div className="text-right flex-shrink-0">
+                          <div className="text-lg sm:text-xl lg:text-2xl font-bold text-blue-900">{user.points}</div>
+                          <div className="text-xs sm:text-sm text-blue-700">points</div>
                         </div>
                       </div>
                     </div>
@@ -159,51 +159,51 @@ const LeaderboardPage = () => {
             </div>
 
             {/* Sidebar */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {/* Points Breakdown */}
-              {/* <Card className="p-5 bg-white border-2 border-yellow-200 shadow-lg">
-                <h3 className="text-xl font-bold text-blue-900 mb-5 flex items-center">
-                  <Star className="w-6 h-6 mr-2 text-yellow-600" />
+              {/* <Card className="p-3 sm:p-4 lg:p-5 bg-white border-2 border-yellow-200 shadow-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3 sm:mb-5 flex items-center">
+                  <Star className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-yellow-600" />
                   Your Points
                 </h3>
-                <div className="space-y-3">
+                <div className="space-y-2 sm:space-y-3">
                   {pointsBreakdown.map((item, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 bg-yellow-50 border border-yellow-100 rounded-lg">
-                      <div className="flex items-center space-x-3">
-                        <span className="text-xl">{item.icon}</span>
-                        <span className="text-sm font-medium text-blue-900">{item.category}</span>
+                    <div key={index} className="flex items-center justify-between p-3 sm:p-4 bg-yellow-50 border border-yellow-100 rounded-lg">
+                      <div className="flex items-center space-x-2 sm:space-x-3">
+                        <span className="text-lg sm:text-xl">{item.icon}</span>
+                        <span className="text-xs sm:text-sm font-medium text-blue-900">{item.category}</span>
                       </div>
-                      <span className="font-bold text-blue-900">{item.points}</span>
+                      <span className="font-bold text-blue-900 text-sm sm:text-base">{item.points}</span>
                     </div>
                   ))}
                 </div>
-                <div className="mt-5 pt-4 border-t border-yellow-200">
+                <div className="mt-3 sm:mt-5 pt-3 sm:pt-4 border-t border-yellow-200">
                   <div className="flex justify-between items-center">
-                    <span className="font-bold text-blue-900">Total Points</span>
-                    <span className="text-2xl font-bold text-blue-900">3,000</span>
+                    <span className="font-bold text-blue-900 text-sm sm:text-base">Total Points</span>
+                    <span className="text-xl sm:text-2xl font-bold text-blue-900">3,000</span>
                   </div>
                 </div>
               </Card> */}
 
               {/* Achievement Progress */}
-              {/* <Card className="p-5 bg-white border-2 border-blue-200 shadow-lg">
-                <h3 className="text-xl font-bold text-blue-900 mb-5 flex items-center">
-                  <Trophy className="w-6 h-6 mr-2 text-blue-600" />
+              {/* <Card className="p-3 sm:p-4 lg:p-5 bg-white border-2 border-blue-200 shadow-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3 sm:mb-5 flex items-center">
+                  <Trophy className="w-5 h-5 sm:w-6 sm:h-6 mr-2 text-blue-600" />
                   Next Achievements
                 </h3>
-                <div className="space-y-5">
+                <div className="space-y-3 sm:space-y-5">
                   {achievements.map((achievement, index) => (
-                    <div key={index} className="space-y-3">
+                    <div key={index} className="space-y-2 sm:space-y-3">
                       <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-3">
-                          <span className="text-xl">{achievement.icon}</span>
-                          <span className="text-sm font-medium text-blue-900">{achievement.name}</span>
+                        <div className="flex items-center space-x-2 sm:space-x-3">
+                          <span className="text-lg sm:text-xl">{achievement.icon}</span>
+                          <span className="text-xs sm:text-sm font-medium text-blue-900">{achievement.name}</span>
                         </div>
-                        <span className="text-sm text-blue-700 font-medium">{achievement.progress}%</span>
+                        <span className="text-xs sm:text-sm text-blue-700 font-medium">{achievement.progress}%</span>
                       </div>
-                      <div className="w-full bg-blue-100 rounded-full h-3">
+                      <div className="w-full bg-blue-100 rounded-full h-2 sm:h-3">
                         <div
-                          className="bg-blue-600 h-3 rounded-full transition-all duration-300"
+                          className="bg-blue-600 h-2 sm:h-3 rounded-full transition-all duration-300"
                           style={{ width: `${achievement.progress}%` }}
                         ></div>
                       </div>
@@ -214,27 +214,27 @@ const LeaderboardPage = () => {
               </Card> */}
 
               {/* Quick Stats */}
-              <Card className="p-5 bg-white border-2 border-blue-200 shadow-lg">
-                <h3 className="text-xl font-bold text-blue-900 mb-5">Quick Stats</h3>
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">
+              <Card className="p-3 sm:p-4 lg:p-5 bg-white border-2 border-blue-200 shadow-lg">
+                <h3 className="text-lg sm:text-xl font-bold text-blue-900 mb-3 sm:mb-5">Quick Stats</h3>
+                <div className="space-y-3 sm:space-y-4">
+                  <div className="flex justify-between items-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">
                       {selectedChild?.name ? `${selectedChild.name}'s Rank` : `${childScor?.children[0]?.name}'s Rank`}
                     </span>
 
-                    <span className="font-bold text-blue-900 text-lg">{childScor?.children[0]?.position}</span>
+                    <span className="font-bold text-blue-900 text-base sm:text-lg">{childScor?.children[0]?.position}</span>
                   </div>
-                  <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">Total Points</span>
-                    <span className="font-bold text-blue-900 text-lg">{childData[0]?.total_points}</span>
+                  <div className="flex justify-between items-center p-2 sm:p-3 bg-yellow-50 rounded-lg">
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">Total Points</span>
+                    <span className="font-bold text-blue-900 text-base sm:text-lg">{childData[0]?.total_points}</span>
                   </div>
-                  {/* <div className="flex justify-between items-center p-3 bg-blue-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">Learning Streak</span>
-                    <span className="font-bold text-blue-900 text-lg">🔥 {childData[0]?.row_count} days</span>
+                  {/* <div className="flex justify-between items-center p-2 sm:p-3 bg-blue-50 rounded-lg">
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">Learning Streak</span>
+                    <span className="font-bold text-blue-900 text-base sm:text-lg">🔥 {childData[0]?.row_count} days</span>
                   </div> */}
-                  {/* <div className="flex justify-between items-center p-3 bg-yellow-50 rounded-lg">
-                    <span className="text-sm text-blue-700 font-medium">Classes This Week</span>
-                    <span className="font-bold text-blue-900 text-lg">1/4</span>
+                  {/* <div className="flex justify-between items-center p-2 sm:p-3 bg-yellow-50 rounded-lg">
+                    <span className="text-xs sm:text-sm text-blue-700 font-medium">Classes This Week</span>
+                    <span className="font-bold text-blue-900 text-base sm:text-lg">1/4</span>
                   </div> */}
                 </div>
               </Card>
