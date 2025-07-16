@@ -11,6 +11,7 @@ import Header from '@/components/Header';
 import Leaderboard from '@/components/Leaderboard/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useChildren } from '@/contexts/ChildrenContext';
+import LeaderboardGuideCard from '@/components/Leaderboard/LeaderboardGuideCard';
 
 const LeaderboardPage = () => {
   const { loading, error, top3, allData, fetchTop3, childData, childScor } = useLeaderboard();
@@ -228,16 +229,12 @@ const LeaderboardPage = () => {
                     <span className="text-xs sm:text-sm text-blue-700 font-medium">Total Points</span>
                     <span className="font-bold text-blue-900 text-base sm:text-lg">{childData[0]?.total_points}</span>
                   </div>
-                  {/* <div className="flex justify-between items-center p-2 sm:p-3 bg-blue-50 rounded-lg">
-                    <span className="text-xs sm:text-sm text-blue-700 font-medium">Learning Streak</span>
-                    <span className="font-bold text-blue-900 text-base sm:text-lg">🔥 {childData[0]?.row_count} days</span>
-                  </div> */}
-                  {/* <div className="flex justify-between items-center p-2 sm:p-3 bg-yellow-50 rounded-lg">
-                    <span className="text-xs sm:text-sm text-blue-700 font-medium">Classes This Week</span>
-                    <span className="font-bold text-blue-900 text-base sm:text-lg">1/4</span>
-                  </div> */}
                 </div>
               </Card>
+
+
+              {/* Leaderboard Guide Card */}
+              <LeaderboardGuideCard/>
             </div>
           </div>
         </main>

@@ -3,7 +3,8 @@ import { BookOpen, Clock, Trophy, Target, TrendingUp, Coins, Loader2 } from "luc
 import { ProgressOverview, LearningProgressData } from "@/lib/interface/dashboard";
 import { DASHBOARD_CONSTANTS } from "@/shared/constants/dashboard";
 import { DashboardHeaderStatsResponse } from "@/lib/interface/dashboard";
-import { Day } from "react-day-picker";
+import { Day } from "react-day-picker"; 
+import ToggleViewSelector from "./ToggleViewSelector";
 
 interface LearningProgressProps {
     progressOverview: DashboardHeaderStatsResponse | null;
@@ -134,9 +135,14 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
                     </div>
                     <h2 className="text-lg lg:text-xl font-bold text-gray-900 tracking-tight">Learning Progress</h2>
                 </div>
-                <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 rounded-2xl shadow-lg border border-yellow-300/50">
-                    <Coins className="w-4 h-4 text-white" />
-                    <span className="text-white font-bold text-sm">{progress.coins || 0}</span>
+                <div className="flex items-center space-x-2  px-4 py-2 rounded-2xl ">
+                    {/* <Coins className="w-4 h-4 text-white" />
+                    <span className="text-white font-bold text-sm">{progress.coins || 0}</span> */}
+
+                    <div className="flex justify-center">
+                        <ToggleViewSelector />
+                    </div>
+
                 </div>
             </div>
 
