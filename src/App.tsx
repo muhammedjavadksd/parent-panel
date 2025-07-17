@@ -77,7 +77,7 @@ const AppRoutes = () => {
       <Route path="/class/:classId/homework" element={<AuthGuard><ClassHomeworkPage /></AuthGuard>} />
       <Route path="/class/:classId/feedback" element={<AuthGuard><ClassFeedbackPage /></AuthGuard>} />
       <Route path="/join-class/:classId" element={<AuthGuard><JoinClassPage /></AuthGuard>} />
-      <Route path="/git " element={<AuthGuard><TutorialPage /></AuthGuard>} />
+      <Route path="/TutorialPage" element={<AuthGuard><TutorialPage /></AuthGuard>} />
     </Routes>
   );
 };
