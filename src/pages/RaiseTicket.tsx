@@ -18,31 +18,31 @@ const RaiseTicket = () => {
   const navigate = useNavigate();
   const { createNewTicket, isLoading, error, clearError } = useSupport();
 
-const handleSubmit = async (
-  values: { issue: string; title: string; description: string; attachment?: File | null },
-  { setSubmitting, resetForm }: any
-) => {
-  try {
-    const result = await createNewTicket({
-      issue: values.issue as 'Booking Related' | 'Account Related' | 'Payment Related',
-      title: values.title,
-      description: values.description,
-      attachment: values.attachment ?? undefined, 
-    });
+  const handleSubmit = async (
+    values: { issue: string; title: string; description: string; attachment?: File | null },
+    { setSubmitting, resetForm }: any
+  ) => {
+    try {
+      const result = await createNewTicket({
+        issue: values.issue as 'Booking Related' | 'Account Related' | 'Payment Related',
+        title: values.title,
+        description: values.description,
+        attachment: values.attachment ?? undefined,
+      });
 
-    if (result?.success) {
-      toast.success("Ticket created successfully! You will receive a confirmation email shortly.");
-      resetForm();
-      navigate("/support");
-    } else {
-      toast.error("Failed to create ticket. Please try again.");
+      if (result?.success) {
+        toast.success("Ticket created successfully! You will receive a confirmation email shortly.");
+        resetForm();
+        navigate("/support");
+      } else {
+        toast.error("Failed to create ticket. Please try again.");
+      }
+    } catch (error) {
+      toast.error("An error occurred while creating the ticket.");
+    } finally {
+      setSubmitting(false);
     }
-  } catch (error) {
-    toast.error("An error occurred while creating the ticket.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+  };
 
 
   const handleBack = () => {
@@ -59,7 +59,7 @@ const handleSubmit = async (
       <Sidebar />
 
       <div className="lg:ml-64 flex flex-col">
-        <Header onStartTour={() => {}} />
+        <Header onStartTour={() => { }} />
 
         <main className="flex-1 p-4 sm:p-6">
           <div className="mb-4 sm:mb-6">
