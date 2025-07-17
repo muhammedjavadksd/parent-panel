@@ -146,11 +146,14 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
 
         <NotificationPanel />
         <ProfileDropdown />
-        <LogoutButton
+
+        {/* Removed Logout Button as its already in profile  */}
+        
+        {/* <LogoutButton
           variant="outline"
           size="sm"
           className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 hidden lg:flex"
-        />
+        /> */}
       </div>
     </div>
   );

@@ -5,12 +5,59 @@ import { Textarea } from '@/components/ui/textarea';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
-import { Send, Paperclip, Download, User, MessageCircle } from 'lucide-react';
+import { Send, Paperclip, Download, User, MessageCircle, FileText } from 'lucide-react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { sendMessageSchema, sendMessageInitialValues } from '@/lib/schemas/supportSchemas';
 import { TicketMessage } from '@/lib/interface/support';
 import { TICKET_CHAT_CONSTANTS } from '@/shared/constants/support';
 import { format } from 'date-fns';
+
+
+
+// ✅ Add this new helper component inside your TicketChat.tsx file
+const AttachmentDisplay = ({ message }: { message: TicketMessage }) => {
+    if (!message.attachment || !message.file_name) return null;
+
+    const isImage = /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(message.file_name);
+
+    const isSentByUser = message.parent_id && !message.admin_id;
+    const textColorClass = isSentByUser ? 'text-blue-100' : 'text-gray-600';
+
+    // Image Preview
+    if (isImage) {
+        return (
+            <div className="mt-2">
+                <a href={`https://bambinos.live/${message.attachment}`} target="_blank" rel="noopener noreferrer">
+                    <img
+                        src={`https://bambinos.live/${message.attachment}`}
+                        alt={message.file_name}
+                        className="max-w-[200px] h-auto rounded-lg object-cover cursor-pointer border border-black/10 hover:opacity-90 transition-opacity"
+                    />
+                </a>
+            </div>
+        );
+    }
+
+    // Fallback for other file types
+    return (
+        <div className={`mt-2 p-2 flex items-center justify-between rounded-md bg-black/10 ${textColorClass}`}>
+            <div className="flex items-center gap-2 truncate">
+                <FileText className="w-5 h-5 flex-shrink-0" />
+                <span className="text-sm font-medium truncate">{message.file_name}</span>
+            </div>
+            <a
+                href={`https://bambinos.live/${message.attachment}`}
+                download={`https://bambinos.live/${message.attachment}`}
+                title={`Download ${message.file_name}`}
+                className="p-1 rounded-full hover:bg-black/20 transition-colors"
+            >
+                <Download className="w-4 h-4" />
+            </a>
+        </div>
+    );
+};
+
+
 
 interface TicketChatProps {
     messages: TicketMessage[];
@@ -207,28 +254,8 @@ const TicketChat: React.FC<TicketChatProps> = ({
                                         }`}>
                                         <p className="text-sm whitespace-pre-wrap">{message.message}</p>
 
-                                        {message.attachment && message.file_name && (
-                                            <div className={`mt-2 flex items-center space-x-2 ${isParentMessage(message)
-                                                ? 'text-blue-100'
-                                                : isAdminMessage(message)
-                                                    ? 'text-green-100'
-                                                    : isFacultyMessage(message)
-                                                        ? 'text-purple-100'
-                                                        : 'text-gray-600'
-                                                }`}>
-                                                <Paperclip className="w-4 h-4" />
-                                                <span className="text-xs">{message.file_name}</span>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    className="h-6 px-2 text-xs"
-                                                    onClick={() => downloadAttachment(message.attachment, message.file_name)}
-                                                >
-                                                    <Download className="w-3 h-3 mr-1" />
-                                                    Download
-                                                </Button>
-                                            </div>
-                                        )}
+                                        
+                                        <AttachmentDisplay message={message} />
                                     </div>
 
                                     <div className={`mt-1 text-xs text-gray-500 ${isParentMessage(message) ? 'text-right' : 'text-left'}`}>

@@ -34,7 +34,7 @@ const Dashboard = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
 
-  const [period, setPeriod] = useState<'month' | 'overall'>('month');
+  const [period, setPeriod] = useState<string>('month');
 
   const {
     user
