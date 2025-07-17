@@ -10,6 +10,16 @@ export const loginSchema = Yup.object().shape({
         .min(4, 'Password must be at least 4 characters'),
 });
 
+export const loginOtpSchema = Yup.object().shape({
+    mobile_number: Yup.string()
+        .required('Mobile number is required')
+        .matches(/^[0-9]+$/, 'Mobile number must contain only digits'),
+
+    otp: Yup.string()
+        .required('OTP is required')
+        .matches(/^[0-9]{4}$/, 'OTP must be 4 digits'),
+});
+
 export const sendOtpSchema = Yup.object().shape({
     mobile_number: Yup.string()
         .required('Mobile number is required')
