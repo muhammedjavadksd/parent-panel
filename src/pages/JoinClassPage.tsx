@@ -1,10 +1,11 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Loader2, LogIn, Clock, Users, Video, Mic, Wifi, ArrowLeft, CheckCircle, XCircle, Laptop } from 'lucide-react';
+import { Loader2, LogIn, Clock, Users, Video, Mic, Wifi, ArrowLeft, CheckCircle, XCircle, Laptop, ExternalLink } from 'lucide-react';
 import { useJoinClass } from '@/hooks/useJoinClass';
 import { useBookings } from '@/hooks/useBookings';
+import { useToast } from '@/hooks/use-toast';
 
 const fallbackClass = {
   admin_class_name: 'Class Name',
@@ -207,7 +208,6 @@ const JoinClassPage: React.FC = () => {
   const navigate = useNavigate();
   const [classDetails, setClassDetails] = useState<any>(null);
   const [timeLeft, setTimeLeft] = useState<number>(0); // seconds
-  const [canJoin, setCanJoin] = useState(false);
   const [isLoadingClass, setIsLoadingClass] = useState(true);
   const [progress, setProgress] = useState(0); // 0-1
   const [selected, setSelected] = useState<number | null>(null);
@@ -215,8 +215,13 @@ const JoinClassPage: React.FC = () => {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [showScoreCard, setShowScoreCard] = useState(false);
+  const { toast } = useToast();
 
-  const { data: joinData, isLoading: isJoining, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
+  const [canJoin, setCanJoin] = useState(false); // 👈 Add this state
+  const hasAutoJoined = useRef(false); // 👈 Add this ref to prevent re-joining
+
+
+  const { data: joinData, isLoading: isJoining, isPolling, pollingMessage, classStatusMessage, doJoinClass, clearError: clearJoinError, clearData: clearJoinData } = useJoinClass();
   const { bookings, loadUpcomingClasses } = useBookings();
 
   // Determine quiz type based on class name
@@ -241,7 +246,7 @@ const JoinClassPage: React.FC = () => {
 
   const handleNextQuestion = () => {
     console.log('Next Question clicked. Current index:', currentQuestionIndex, 'Total questions:', currentQuiz?.questions.length);
-    
+
     if (currentQuestionIndex < currentQuiz.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
       setSelected(null);
@@ -257,12 +262,12 @@ const JoinClassPage: React.FC = () => {
     if (!showResult) {
       setSelected(selectedIndex);
       setShowResult(true);
-      
+
       // Check if answer is correct and update score
       if (selectedIndex === currentQuestion.answer) {
         setScore(prev => prev + 1);
       }
-      
+
       // If this is the last question, automatically show score card after a delay
       if (currentQuestionIndex === currentQuiz.questions.length - 1) {
         setTimeout(() => {
@@ -294,31 +299,41 @@ const JoinClassPage: React.FC = () => {
       setClassDetails(classItem || null);
     }
   }, [bookings, classId]);
+  
+    const handleJoinClass = useCallback(() => {
+      if (classId) {
+        // console.log('Joining class', classDetails);
+        clearJoinError();
+        clearJoinData();
+        doJoinClass(classId);
+      }
+    }, [classId, doJoinClass, clearJoinError, clearJoinData]);
 
   useEffect(() => {
     if (!classDetails) return;
-    const getTimeLeft = () => {
+
+    // This interval will run every second to update the timer AND check if it's time to join
+    const interval = setInterval(() => {
       const now = new Date();
       const classTime = new Date(`${classDetails.class_date}T${classDetails.start_time}`);
       const secondsToClass = Math.floor((classTime.getTime() - now.getTime()) / 1000);
-      setTimeLeft(Math.max(0, secondsToClass));
-      const total = 60 * 15;
-      setProgress(Math.min(1, Math.max(0, 1 - secondsToClass / total)));
-      setCanJoin(secondsToClass <= 15 * 60 && secondsToClass >= -60 * 60);
-    };
-    getTimeLeft();
-    const interval = setInterval(getTimeLeft, 1000);
-    return () => clearInterval(interval);
-  }, [classDetails]);
 
-  const handleJoinClass = useCallback(() => {
-    if (classId && canJoin) {
-      // console.log('Joining class', classDetails);
-      clearJoinError();
-      clearJoinData();
-      doJoinClass(classId);
-    }
-  }, [classId, canJoin, doJoinClass, clearJoinError, clearJoinData]);
+      setTimeLeft(Math.max(0, secondsToClass));
+
+      // Determine if the class is within the joinable window
+      const isJoinable = secondsToClass <= 15 * 60 && secondsToClass >= -60 * 60;
+      setCanJoin(isJoinable);
+
+      // If the class is ready AND we haven't already tried to auto-join, join now.
+      if (isJoinable && !hasAutoJoined.current) {
+        console.log("Class is ready. Auto-joining...");
+        handleJoinClass();
+        hasAutoJoined.current = true; // Set the flag to true so we don't try again
+      }
+    }, 1000);
+
+    return () => clearInterval(interval); // Clean up the interval
+  }, [classDetails, handleJoinClass]);
 
   useEffect(() => {
     if (joinData && joinData.join_url) {
@@ -330,6 +345,38 @@ const JoinClassPage: React.FC = () => {
   const handleGoBack = () => {
     navigate('/upcoming-classes');
   };
+
+  useEffect(() => {
+    // Wait until we have the class details and the class ID
+    if (!classDetails || !classId) {
+      return;
+    }
+
+    // Perform an initial check to see if the class is joinable right now
+    const now = new Date();
+    const classTime = new Date(`${classDetails.class_date}T${classDetails.start_time}`);
+    const secondsToClass = Math.floor((classTime.getTime() - now.getTime()) / 1000);
+
+    // Always attempt to join when page loads if class is within reasonable time window
+    const isWithinReasonableTime = secondsToClass <= 15 * 60 && secondsToClass >= -60 * 60;
+
+    if (isWithinReasonableTime) {
+      console.log("Class is within time window. Attempting to join automatically...");
+      // Call the join function directly, bypassing the need to click the button
+      handleJoinClass();
+    }
+    // This effect should only run once when the class details are first loaded.
+  }, [classDetails, classId, handleJoinClass]);
+
+  useEffect(() => {
+    const message = classStatusMessage || pollingMessage;
+    if (message) {
+      toast({
+        title: "Class Status",
+        description: message,
+      });
+    }
+  }, [pollingMessage, classStatusMessage, toast]);
 
   const formatTime = (t: string) => t ? new Date(`2000-01-01T${t}`).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) : '--';
   const formatDuration = (start: string, end: string) => {
@@ -363,7 +410,7 @@ const JoinClassPage: React.FC = () => {
   const iconCircle = 'rounded-full flex items-center justify-center w-8 h-8 md:w-9 md:h-9';
   const iconColors = [
     'bg-indigo-600 text-white',
-    'bg-blue-600 text-white', 
+    'bg-blue-600 text-white',
     'bg-slate-600 text-white'
   ];
 
@@ -375,12 +422,15 @@ const JoinClassPage: React.FC = () => {
     );
   }
 
+
+
+
   return (
     <div className="min-h-screen w-full flex flex-col items-center px-2 sm:px-4 md:px-8 lg:px-12 py-2 relative overflow-hidden bg-gradient-to-br from-background via-muted/20 to-primary/5">
       {/* Subtle background elements */}
       <div className="absolute top-0 left-0 w-32 h-32 sm:w-40 sm:h-40 bg-indigo-100 rounded-full blur-3xl opacity-30 z-0" />
       <div className="absolute bottom-0 right-0 w-40 h-40 sm:w-56 sm:h-56 bg-blue-100 rounded-full blur-3xl opacity-20 z-0" />
-      
+
       {/* Main scaled content */}
       <div className="w-full md:scale-90 md:origin-top mx-auto relative z-10">
         {/* Header */}
@@ -400,7 +450,7 @@ const JoinClassPage: React.FC = () => {
           {/* Left column: 3 stacked blocks */}
           <div className="flex flex-col gap-3 sm:gap-4 md:col-span-1">
             {/* Class Details */}
-            <Card className={`p-3 sm:p-4 flex flex-col gap-2 rounded-lg ${glass}`}> 
+            <Card className={`p-3 sm:p-4 flex flex-col gap-2 rounded-lg ${glass} bg-gradient-to-br from-slate-50 to-sky-100/60 border`}>
               <div className="flex items-center gap-2 text-slate-800 font-semibold mb-1 text-base">
                 <span className={`${iconCircle} ${iconColors[0]}`}><Video className="w-4 h-4 sm:w-5 sm:h-5" /></span> Class Details
               </div>
@@ -415,7 +465,7 @@ const JoinClassPage: React.FC = () => {
             </Card>
 
             {/* Countdown */}
-            <Card className={`p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 rounded-lg ${glass}`}> 
+            <Card className={`p-3 sm:p-4 flex flex-col items-center gap-2 sm:gap-3 rounded-lg ${glass} bg-gradient-to-br from-slate-50 to-sky-100/60 border`}>
               <div className="flex items-center gap-2 text-slate-800 font-semibold text-base">
                 <Clock className="w-4 h-4 sm:w-5 sm:h-5 text-indigo-600" />
                 Time Until Class
@@ -423,32 +473,46 @@ const JoinClassPage: React.FC = () => {
               <div className="text-xl sm:text-2xl font-mono font-bold text-indigo-600 tracking-wide text-center bg-indigo-50 px-3 sm:px-4 py-2 rounded-lg border border-indigo-200">
                 {formatCountdown(timeLeft)}
               </div>
-              <span className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide ${canJoin ? 'bg-indigo-600 text-white shadow-md' : 'bg-orange-500 text-white shadow-md animate-pulse'}`}>{canJoin ? 'Ready to Join' : 'Please Wait'}</span>
+              <span className={`px-3 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold tracking-wide ${isPolling ? 'bg-orange-500 text-white shadow-md animate-pulse' : 'bg-indigo-600 text-white shadow-md'}`}>
+                {isPolling ? 'Checking Availability' : 'Please Wait'}
+              </span>
             </Card>
 
             {/* Tech Check */}
-            <Card className={`p-3 sm:p-4 flex flex-col gap-2 rounded-lg ${glass}`}> 
-              <div className="flex items-center gap-2 text-slate-800 font-semibold mb-1 text-base">
-                <span className={`${iconCircle} bg-blue-600 text-white`}><CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" /></span> Tech Check
+            <Card className="p-5 rounded-2xl shadow-xl bg-gradient-to-br from-slate-50 to-sky-100/60 border">
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-3 rounded-full bg-blue-500 p-3 text-white shadow-lg">
+                  <CheckCircle className="h-6 w-6" />
+                </div>
+                <h3 className="text-lg font-bold text-slate-800">Tech Check</h3>
+                <p className="text-sm text-slate-500 mb-5">
+                  One-click test for your setup.
+                </p>
+                <div className="flex items-center space-x-4 mb-6">
+                  <div className="rounded-full border-2 border-blue-200 bg-white p-2.5 shadow-sm">
+                    <Video className="h-5 w-5 text-blue-500" />
+                  </div>
+                  <div className="rounded-full border-2 border-pink-200 bg-white p-2.5 shadow-sm">
+                    <Mic className="h-5 w-5 text-pink-500" />
+                  </div>
+                  <div className="rounded-full border-2 border-green-200 bg-white p-2.5 shadow-sm">
+                    <Wifi className="h-5 w-5 text-green-500" />
+                  </div>
+                </div>
+                <Button
+                  className="h-11 w-full transform gap-2 rounded-lg bg-gradient-to-r from-blue-500 to-sky-500 text-base font-bold text-white shadow-md transition-all hover:-translate-y-0.5 hover:shadow-lg"
+                  onClick={() => { window.open('https://zoom.us/test', '_blank') }}
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  Start Zoom Test
+                </Button>
               </div>
-              <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Video className="w-3 h-3 sm:w-4 sm:h-4" /></span> Camera <span className="ml-auto text-green-600">✔️</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Mic className="w-3 h-3 sm:w-4 sm:h-4" /></span> Microphone <span className="ml-auto text-green-600">✔️</span>
-              </div>
-              <div className="flex items-center gap-2 text-slate-700 text-sm">
-                <span className={`${iconCircle} bg-slate-100 text-slate-700 border border-slate-300`}><Wifi className="w-3 h-3 sm:w-4 sm:h-4" /></span> Internet <span className="ml-auto text-green-600">✔️</span>
-              </div>
-              <Button variant="outline" className="mt-1 h-8 px-4 py-1 text-xs sm:text-sm font-semibold border-slate-300 hover:bg-slate-50 text-slate-700">
-                Run Tech Check
-              </Button>
             </Card>
           </div>
 
           {/* Right column: Game box */}
           <div className="md:col-span-2 flex flex-col h-full">
-            <Card className={`flex-1 min-h-[320px] flex flex-col items-center justify-center bg-white rounded-lg shadow-md border border-slate-200 p-0 relative overflow-visible w-full`}>
+            <Card className={`flex-1 min-h-[320px] flex flex-col items-center justify-center bg-gradient-to-br from-slate-50 to-sky-100/60 border bg-white rounded-lg shadow-md  border-slate-200 p-0 relative overflow-visible w-full`}>
               {!showScoreCard ? (
                 <div className="w-full max-w-md mx-auto flex flex-col items-center p-3 sm:p-4 pb-28 sm:pb-32">
                   <div className="flex flex-col items-center mb-2">
@@ -509,9 +573,9 @@ const JoinClassPage: React.FC = () => {
                     <div className="bg-gradient-to-r from-indigo-500 to-blue-600 text-white rounded-full px-6 sm:px-8 py-3 sm:py-4 mb-4 sm:mb-6 shadow-lg">
                       <div className="text-2xl sm:text-4xl font-bold">{score}/{currentQuiz?.questions.length}</div>
                       <div className="text-xs sm:text-sm opacity-90">
-                        {score === currentQuiz?.questions.length ? 'Perfect Score! 🎉' : 
-                         score >= currentQuiz?.questions.length * 0.8 ? 'Great Job! 👏' :
-                         score >= currentQuiz?.questions.length * 0.6 ? 'Good Work! 👍' : 'Keep Practicing! 💪'}
+                        {score === currentQuiz?.questions.length ? 'Perfect Score! 🎉' :
+                          score >= currentQuiz?.questions.length * 0.8 ? 'Great Job! 👏' :
+                            score >= currentQuiz?.questions.length * 0.6 ? 'Good Work! 👍' : 'Keep Practicing! 💪'}
                       </div>
                     </div>
                     {/* Percentage */}
@@ -545,12 +609,23 @@ const JoinClassPage: React.FC = () => {
               )}
 
               {/* Fixed button bar */}
-              <div className="absolute left-0 right-0 bottom-0 w-full bg-white border-t border-slate-200 flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center px-2 sm:px-4 py-2 sm:py-3">
+              <div className="absolute left-0 right-0 bottom-0 w-full bg-white border-t border-slate-200 flex flex-col md:flex-row gap-2 md:gap-4 justify-center items-center px-2 sm:px-4 py-2 sm:py-3 rounded-sm">
+                {/* Status message */}
+                {/* Showing in toast instead */}
+
+
+                {/* {(classStatusMessage || pollingMessage) && (
+                  <div className="w-full md:w-auto px-4 py-2 text-sm text-center">
+                    <div className={`px-3 py-2 rounded-lg ${isPolling ? 'bg-orange-50 text-orange-700 border border-orange-200' : 'bg-blue-50 text-blue-700 border border-blue-200'}`}>
+                      {classStatusMessage || pollingMessage}
+                    </div>
+                  </div>
+                )} */}
                 <Button
                   onClick={handleJoinClass}
                   disabled={!canJoin || isJoining}
                   size="lg"
-                  className={`w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 text-white ${canJoin ? 'hover:shadow-lg' : 'opacity-50'}`}
+                  className="w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg shadow-md transition-all duration-300 bg-indigo-600 hover:bg-indigo-700 text-white hover:shadow-lg"
                 >
                   {isJoining ? (
                     <>
@@ -564,10 +639,10 @@ const JoinClassPage: React.FC = () => {
                     </>
                   )}
                 </Button>
-                <Button 
-                  onClick={handleGoBack} 
-                  variant="outline" 
-                  size="lg" 
+                <Button
+                  onClick={handleGoBack}
+                  variant="outline"
+                  size="lg"
                   className="w-full md:w-auto px-6 sm:px-8 py-2 sm:py-3 rounded-lg font-bold text-base sm:text-lg border-slate-300 hover:bg-slate-50 text-slate-700 hover:border-slate-400"
                 >
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />

@@ -112,6 +112,7 @@ function App() {
 
 
                 <AppRoutes />
+                
               </div>
             </ChildrenProvider>
           </Router>
