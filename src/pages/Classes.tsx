@@ -21,15 +21,27 @@ const Classes = () => {
   const [bookingPopupOpen, setBookingPopupOpen] = useState(false);
   const [bookingType, setBookingType] = useState<'demo' | 'masterclass'>('demo');
 
+  // 👇 1. ADD THIS STATE VARIABLE
+  const [period, setPeriod] = useState('month');
+
   // Fetch stats for selected child or family level
+  // 👇 2. UPDATE THIS useEffect
   React.useEffect(() => {
     const childId = selectedChild?.id || null;
-    console.log('🔍 Classes: Loading data for:', childId ? `child ${childId}` : 'family level');
-    loadProgressOverview(childId);
+
+    // Create params object based on the current period
+    const params = period === 'overall' ? { period: 'overall' } : {};
+
+    console.log('🔍 Classes: Loading data for:', childId ? `child ${childId}` : 'family level', `with period: ${period}`);
+
+    // Pass the params to the hook
+    loadProgressOverview(childId, params);
+
     if (childId) {
       loadClassesInfo(childId.toString());
     }
-  }, [selectedChild, loadProgressOverview, loadClassesInfo]);
+  }, [selectedChild, period, loadProgressOverview, loadClassesInfo]); // ✅ Add 'period' to the dependency array
+
 
   // Debug logging for classInfo
   React.useEffect(() => {
@@ -83,7 +95,7 @@ const Classes = () => {
       <Sidebar />
 
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=> {}}/>
+        <Header onStartTour={() => { }} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-4 md:p-4 space-y-2 sm:space-y-3 lg:space-y-4 md:space-y-4 max-w-7xl mx-auto w-full pb-20 sm:pb-0">
           <div className="p-4 sm:p-6 lg:p-8 md:p-6 bg-white border-b border-blue-100">
@@ -394,6 +406,9 @@ const Classes = () => {
                 progressOverview={progressOverview ?? null}
                 learningProgress={progressOverview?.learning_progress ?? null}
                 isLoading={isProgressLoading}
+                // 👇 3. PASS THESE PROPS DOWN
+                period={period}
+                onPeriodChange={setPeriod}
               />
             </div>
           </div>

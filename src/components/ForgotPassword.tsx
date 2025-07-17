@@ -11,11 +11,15 @@ import { ResetPasswordRequest } from '@/lib/interface/auth';
 
 interface ForgotPasswordProps {
     onBack: () => void;
-}
+    initialMobileNumber?: string; // 👈 1. Add this optional prop
+  }
+  
+  const ForgotPassword = ({ onBack, initialMobileNumber = '' }: ForgotPasswordProps) => { // 👈 2. Destructure the new prop
 
-const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
+    console.log('initialMobileNumber', initialMobileNumber);
+
     const [step, setStep] = useState<'mobile' | 'otpAndPassword'>('mobile');
-    const [mobileNumber, setMobileNumber] = useState('');
+    const [mobileNumber, setMobileNumber] = useState(initialMobileNumber);
     const { sendOtp, resetPassword, isLoading, error, clearError } = useAuth();
 
     const handleSendOtp = async (values: { mobile_number: string }) => {
@@ -77,14 +81,15 @@ const ForgotPassword = ({ onBack }: ForgotPasswordProps) => {
                     </div>
                 )}
 
-                {step === 'mobile' && (
-                    <Formik
-                        initialValues={{ mobile_number: '' }}
-                        validationSchema={sendOtpSchema}
-                        onSubmit={handleSendOtp}
-                    >
-                        {({ isSubmitting }) => (
-                            <Form className="space-y-4">
+{step === 'mobile' && (
+    <Formik
+        // 👇 Use the prop you passed in to set the initial value
+        initialValues={{ mobile_number: initialMobileNumber }} 
+        validationSchema={sendOtpSchema}
+        onSubmit={handleSendOtp}
+    >
+        {({ isSubmitting }) => (
+            <Form className="space-y-4">
                                 <div>
                                     <Label htmlFor="mobile_number" className="text-gray-700 font-medium">
                                         Mobile Number

@@ -1,29 +1,49 @@
-import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { Formik, Form, Field, ErrorMessage, useFormikContext } from 'formik';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { loginSchema } from '@/lib/schemas/authSchemas';
 import { LoginCredentials } from '@/lib/interface/auth';
+import { useEffect } from 'react';
 
 interface LoginFormProps {
   onSubmit: (values: LoginCredentials) => Promise<void>;
-  onForgotPassword: () => void;
+  onForgotPassword: (mobileNumber: string) => void;
   isSubmitting: boolean;
+  onMobileNumberChange: (mobileNumber: string) => void; // 👈 2. Add this prop
 }
 
-const LoginForm = ({ onSubmit, onForgotPassword, isSubmitting }: LoginFormProps) => {
+// 👇 Custom inner component to watch mobile number changes
+const MobileWatcher = ({ onMobileNumberChange }: { onMobileNumberChange: (val: string) => void }) => {
+  const { values } = useFormikContext<LoginCredentials>();
+
+  useEffect(() => {
+    onMobileNumberChange(values.mobile_number);
+  }, [values.mobile_number, onMobileNumberChange]);
+
+  return null;
+};
+
+const LoginForm = ({ onSubmit, onForgotPassword, isSubmitting, onMobileNumberChange }: LoginFormProps) => {
   return (
     <Formik
-      initialValues={{
-        mobile_number: '',
-        password: '',
-      }}
+      initialValues={{ mobile_number: '', password: '' }}
       validationSchema={loginSchema}
       onSubmit={onSubmit}
     >
-      {({ values, setFieldValue, isSubmitting: formikSubmitting }) => (
+            {({ values, setFieldValue, isSubmitting: formikSubmitting }) => {
+        
+        // 👇 3. This useEffect sends the number up to the parent component
+        useEffect(() => {
+          onMobileNumberChange(values.mobile_number);
+        }, [values.mobile_number, onMobileNumberChange]);
+
+        return (
         <Form className="space-y-4">
+          {/* Hook to watch mobile number changes */}
+          <MobileWatcher onMobileNumberChange={onMobileNumberChange} />
+
           <div>
             <Label htmlFor="mobile_number" className="text-gray-700 font-medium">
               Mobile Number
@@ -71,7 +91,7 @@ const LoginForm = ({ onSubmit, onForgotPassword, isSubmitting }: LoginFormProps)
           <div className="flex justify-end">
             <button
               type="button"
-              onClick={onForgotPassword}
+              onClick={() => onForgotPassword(values.mobile_number)}
               className="text-sm text-orange-600 hover:text-orange-700 font-medium"
             >
               Forgot Password?
@@ -85,8 +105,9 @@ const LoginForm = ({ onSubmit, onForgotPassword, isSubmitting }: LoginFormProps)
           >
             {isSubmitting || formikSubmitting ? 'Signing In...' : 'Sign In'}
           </Button>
-        </Form>
-      )}
+          </Form>
+        );
+      }}
     </Formik>
   );
 };

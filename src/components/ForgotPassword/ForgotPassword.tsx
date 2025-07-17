@@ -8,10 +8,15 @@ import { sendOtpSchema, resetPasswordSchema } from '@/lib/schemas/authSchemas';
 import { useAuth } from '@/hooks/useAuth';
 import { ResetPasswordRequest } from '@/lib/interface/auth';
 
-const ForgotPassword: React.FC = () => {
+interface ForgotPasswordProps {
+    onBack: () => void;
+    initialMobileNumber?: string;
+}
+
+const ForgotPassword: React.FC<ForgotPasswordProps> = ({ onBack, initialMobileNumber = '' }) => {
     const { sendOtp, resetPassword, isLoading, error, clearError } = useAuth();
     const [step, setStep] = useState<'mobile' | 'otp'>('mobile');
-    const [mobileNumber, setMobileNumber] = useState('');
+    const [mobileNumber, setMobileNumber] = useState(initialMobileNumber);
 
     const handleSendOtp = async (values: { mobile_number: string }) => {
         clearError();
@@ -43,7 +48,7 @@ const ForgotPassword: React.FC = () => {
 
                 {step === 'mobile' ? (
                     <Formik
-                        initialValues={{ mobile_number: '' }}
+                        initialValues={{ mobile_number: initialMobileNumber }}
                         validationSchema={sendOtpSchema}
                         onSubmit={handleSendOtp}
                     >
@@ -166,7 +171,7 @@ const ForgotPassword: React.FC = () => {
 
                 <div className="text-center">
                     <button
-                        onClick={() => setStep('mobile')}
+                        onClick={onBack}
                         className="text-blue-600 hover:text-blue-800 text-sm"
                     >
                         Back to login
