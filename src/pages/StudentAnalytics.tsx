@@ -23,7 +23,7 @@ import { useChildren } from "@/contexts/ChildrenContext";
 const StudentAnalytics = () => {
   const [timeRange, setTimeRange] = useState('1m');
   // 👇 ADD THIS STATE VARIABLE
-  const [period, setPeriod] = useState<string>('overall'); 
+  const [period, setPeriod] = useState('month'); 
 
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview } = useDashboard();
 

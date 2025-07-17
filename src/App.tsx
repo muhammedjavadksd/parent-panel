@@ -40,6 +40,7 @@ import ClassPresentationsPage from '@/pages/ClassPresentationsPage';
 import ClassHomeworkPage from '@/pages/ClassHomeworkPage';
 import ClassFeedbackPage from '@/pages/ClassFeedbackPage';
 import JoinClassPage from '@/pages/JoinClassPage';
+import TutorialPage from './pages/TutorialPage';
 
 const queryClient = new QueryClient();
 
@@ -76,6 +77,7 @@ const AppRoutes = () => {
       <Route path="/class/:classId/homework" element={<AuthGuard><ClassHomeworkPage /></AuthGuard>} />
       <Route path="/class/:classId/feedback" element={<AuthGuard><ClassFeedbackPage /></AuthGuard>} />
       <Route path="/join-class/:classId" element={<AuthGuard><JoinClassPage /></AuthGuard>} />
+      <Route path="/TutorialPage" element={<AuthGuard><TutorialPage /></AuthGuard>} />
     </Routes>
   );
 };
