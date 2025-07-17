@@ -21,18 +21,24 @@ import { useChildren } from "@/contexts/ChildrenContext";
 
 
 const StudentAnalytics = () => {
-  
   const [timeRange, setTimeRange] = useState('1m');
-  const { progressOverview, isLoading: isProgressLoading, loadProgressOverview, error, bookingsForCalendar, upcomingClass } = useDashboard();
-  
+  // 👇 ADD THIS STATE VARIABLE
+  const [period, setPeriod] = useState<string>('overall'); 
+
+  const { progressOverview, isLoading: isProgressLoading, loadProgressOverview } = useDashboard();
+
   const { bookings, isLoading, error: bookingsError, loadAllBookings, loadUpcomingClasses, loadPastClasses, clearBookingData } = useBookings();
   
   const { selectedChild } = useChildren();
   useEffect(() => {
     const childId = selectedChild?.id || null;
+    // Create params object based on the current period
+    const params = period === 'overall' ? { period: 'overall' } : {};
     console.log('Loading progress overview for:', childId ? `child ${childId}` : 'family level');
-    loadProgressOverview(childId);
-  }, [selectedChild, loadProgressOverview]);
+    // loadProgressOverview(childId);
+
+    loadProgressOverview(childId, params); 
+  }, [selectedChild, loadProgressOverview, period]);
 
   const analyticsData = {
     weeklyProgress: [
@@ -156,11 +162,14 @@ const StudentAnalytics = () => {
             />
           </div>
 
-          <LearningProgress
-            progressOverview={progressOverview}
-            learningProgress={progressOverview?.learning_progress ?? null}
-            isLoading={isProgressLoading}
-          />
+          {/* 👇 UPDATE THIS COMPONENT */}
+        <LearningProgress
+          progressOverview={progressOverview}
+          learningProgress={progressOverview?.learning_progress ?? null}
+          isLoading={isProgressLoading}
+          period={period}             // Pass the current state
+          onPeriodChange={setPeriod}  // Pass the function to update the state
+        />
 
           {/* //replaced with learning progress for uniformity  */}
 
