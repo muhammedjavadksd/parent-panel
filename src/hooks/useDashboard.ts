@@ -12,17 +12,21 @@ export const useDashboard = () => {
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const loadProgressOverview = useCallback(async (child_id?: number | null) => {
+    // 1. UPDATE the function to accept an optional params object
+    const loadProgressOverview = useCallback(async (child_id?: number | null, params?: { period?: string } | null) => {
         setIsLoading(true);
         setError(null);
 
         try {
-            // If no child is selected, pass null to get family-level data
-            const response = await dashboardService.getProgressOverview(child_id || 0, 'overall');
+            // 2. USE the period from params, default to an empty string for monthly data
+            const periodParam = params?.period || '';
+            console.log(`🚀 Fetching progress with period: '${periodParam || 'month'}'`);
+            
+            const response = await dashboardService.getProgressOverview(child_id || 0, periodParam);
 
             if (response.status && response.data) {
                 setProgressOverview(response.data);
-                console.log('Progress overview loaded:', response.data);
+                console.log('✅ Progress overview loaded:', response.data);
 
                 if (response.data.upcoming_class_parent_level) {
                     setUpcomingClass(response.data.upcoming_class_parent_level);
@@ -39,15 +43,16 @@ export const useDashboard = () => {
         } finally {
             setIsLoading(false);
         }
-    }, []);
+    }, []); // The dependency array is empty as the function is self-contained
 
     const clearError = useCallback(() => {
         setError(null);
     }, []);
-
-    const retryLoadProgressOverview = useCallback(async (child_id?: number | null) => {
+    
+    // This function can be updated to accept params if needed, or removed if unused.
+    const retryLoadProgressOverview = useCallback(async (child_id?: number | null, params?: string | null) => {
         clearError();
-        await loadProgressOverview(child_id);
+        await loadProgressOverview(child_id, params);
     }, [clearError, loadProgressOverview]);
 
     // ✅ Auto-load when child is selected OR when no child is selected (family level)

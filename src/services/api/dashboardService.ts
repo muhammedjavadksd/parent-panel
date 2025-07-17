@@ -5,7 +5,7 @@ import { DASHBOARD_CONSTANTS } from '@/shared/constants/dashboard';
 export class DashboardService {
     async getProgressOverview(
   child_id: number,
-  period: 'overall' | 'weekly' | 'monthly' | undefined = undefined
+  period: string, 
 ): Promise<{ status: boolean; msg: string; data?: DashboardHeaderStatsResponse }> {
   try {
     const params: Record<string, any> = {};

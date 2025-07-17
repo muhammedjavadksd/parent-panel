@@ -18,6 +18,7 @@ import { useChildren } from '@/hooks/useChildren';
 import { useBookings } from '@/hooks/useBookings';
 
 
+
 import LearningProgress from '@/components/dashboard/LearningProgress';
 import { useClasses } from "@/hooks/useClasses";
 
@@ -32,6 +33,9 @@ const DailyChallenges = React.lazy(() => import("@/components/DailyChallenges"))
 const Dashboard = () => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+
+  const [period, setPeriod] = useState<'month' | 'overall'>('month');
+
   const {
     user
   } = useAuth();
@@ -76,14 +80,24 @@ const Dashboard = () => {
     // This callback is mainly for logging and any additional dashboard-specific logic
   };
 
-  // Debug logging for classInfo
-  React.useEffect(() => {
-    if (selectedChild?.id) {
-      console.log('🔍 Classes: Loading data for child:', selectedChild.id);
-      loadProgressOverview(selectedChild.id);
-      loadClassesInfo(selectedChild.id.toString());
+React.useEffect(() => {
+    // Determine the child ID, which will be `null` for the family view.
+    const childId = selectedChild?.id || null;
+
+    // Create the parameters object based on the selected period.
+    const params = period === 'overall' ? { period: 'overall' } : {};
+    
+    console.log(`🔍 Dashboard: Loading progress for ${childId ? `child ${childId}` : 'family'} with period: '${period}'`, params);
+    
+    // Call the data fetching hook. This now works for both child and family views.
+    loadProgressOverview(childId, params);
+    
+    // Keep the conditional check for logic that should ONLY run for a specific child.
+    if (childId) {
+        loadClassesInfo(childId.toString());
     }
-  }, [selectedChild, loadProgressOverview, loadClassesInfo]);
+// The dependency array remains the same.
+}, [selectedChild, period, loadProgressOverview, loadClassesInfo]);
 
 
   useEffect(() => {
@@ -449,13 +463,16 @@ const Dashboard = () => {
         {/* 2. Learning Progress Component */}
         {/* <LearningProgress progressOverview={progressOverview} isLoading={isProgressLoading} /> */}
 
-        <div className="learning-progress">
-          <LearningProgress
-            progressOverview={progressOverview ?? null}
-            learningProgress={progressOverview?.learning_progress ?? null}
-            isLoading={isProgressLoading}
-          />
-        </div>
+                    {/* 3. UPDATE the LearningProgress component to pass down props */}
+                    <div className="learning-progress">
+                        <LearningProgress
+                            progressOverview={progressOverview ?? null}
+                            learningProgress={progressOverview?.learning_progress ?? null}
+                            isLoading={isProgressLoading}
+                            period={period}
+                            onPeriodChange={setPeriod}
+                        />
+                    </div>
 
 
 

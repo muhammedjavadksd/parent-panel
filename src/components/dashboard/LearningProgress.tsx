@@ -3,19 +3,23 @@ import { BookOpen, Clock, Trophy, Target, TrendingUp, Coins, Loader2 } from "luc
 import { ProgressOverview, LearningProgressData } from "@/lib/interface/dashboard";
 import { DASHBOARD_CONSTANTS } from "@/shared/constants/dashboard";
 import { DashboardHeaderStatsResponse } from "@/lib/interface/dashboard";
-import { Day } from "react-day-picker"; 
+import { Day } from "react-day-picker";
 import ToggleViewSelector from "./ToggleViewSelector";
+import { useState, useEffect } from "react";
 
 interface LearningProgressProps {
     progressOverview: DashboardHeaderStatsResponse | null;
     learningProgress?: LearningProgressData | null;
     isLoading?: boolean;
+    // 1. ADD these props to the interface
+    period: string;
+    onPeriodChange: (newPeriod: string) => void;
 }
 
 
 
 
-const LearningProgress = ({ progressOverview, learningProgress, isLoading = false }: LearningProgressProps) => {
+const LearningProgress = ({ progressOverview, learningProgress, isLoading = false, period, onPeriodChange }: LearningProgressProps) => {
     // Debug logging
     console.log('LearningProgress: progressOverview:', progressOverview);
     console.log('LearningProgress: learningProgress:', learningProgress);
@@ -98,6 +102,9 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
     ];
 
 
+
+
+
     if (isLoading) {
         return (
             <Card className="premium-card p-4 lg:p-5 rounded-3xl glass-card border-2 border-blue-100/50 shadow-2xl backdrop-blur-xl bg-white/95">
@@ -108,10 +115,10 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
                         </div>
                         <h2 className="text-lg lg:text-xl font-bold text-gray-900 tracking-tight">Learning Progress</h2>
                     </div>
-                    <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 rounded-2xl shadow-lg border border-yellow-300/50">
+                    {/* <div className="flex items-center space-x-2 bg-gradient-to-r from-yellow-400 to-amber-500 px-4 py-2 rounded-2xl shadow-lg border border-yellow-300/50">
                         <Loader2 className="w-4 h-4 text-white animate-spin" />
                         <span className="text-white font-bold text-sm">Loading...</span>
-                    </div>
+                    </div> */}
                 </div>
                 <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     {[1, 2, 3, 4].map((index) => (
@@ -126,6 +133,8 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
         );
     }
 
+
+
     return (
         <Card className="premium-card p-4 lg:p-5 rounded-3xl glass-card border-2 border-blue-100/50 shadow-2xl backdrop-blur-xl bg-white/95">
             <div className="flex items-center justify-between mb-4">
@@ -136,11 +145,12 @@ const LearningProgress = ({ progressOverview, learningProgress, isLoading = fals
                     <h2 className="text-lg lg:text-xl font-bold text-gray-900 tracking-tight">Learning Progress</h2>
                 </div>
                 <div className="flex items-center space-x-2  px-4 py-2 rounded-2xl ">
-                    {/* <Coins className="w-4 h-4 text-white" />
-                    <span className="text-white font-bold text-sm">{progress.coins || 0}</span> */}
 
                     <div className="flex justify-center">
-                        <ToggleViewSelector />
+                        <ToggleViewSelector
+                            selectedPeriod={period}
+                            onPeriodChange={onPeriodChange}
+                        />
                     </div>
 
                 </div>
