@@ -27,6 +27,9 @@ const UpcomingClasses = () => {
     getShiftingDate,
     changeBooking,
     reset,
+    getAvailableSlots, //new function to get available slots
+    availableSlots,  // new state for available slots
+    handleReschedule  //new function to handle rescheduling to another slot
   } = useBooking();
 
   useEffect(() => {
@@ -79,6 +82,7 @@ const handleJoinClick = useCallback((classItem: any) => {
     setModalMode('shift');
     setRescheduleOpen(true);
     await getShiftingDate({ schedulebooking_id });
+    await getAvailableSlots(schedulebooking_id);
   };
 
   const handleCancelClick = (schedulebooking_id: number) => {
@@ -272,6 +276,8 @@ const handleJoinClick = useCallback((classItem: any) => {
             success={success}
             schedulebooking_id={selectedBookingId || 0}
             mode={modalMode}
+            availableSlots={availableSlots} // Pass available slots to the modal
+            handleReschedule={handleReschedule} // Pass the new reschedule function
           />
         </main>
       </div>

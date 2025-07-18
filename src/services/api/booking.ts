@@ -40,6 +40,59 @@ export class BookingApiService {
             };
         }
     }
+
+
+
+
+
+
+
+    async getReschedulingSlots(schedulebooking_id: number): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.get(`/parent-panel/get-reschedule-teachers-and-slots/${schedulebooking_id}`
+            );
+            if (!response.data.success) {       
+                throw new Error(response.data.message || 'Failed to get rescheduling slots');
+            }
+            return {
+                status: response.data.success,
+                msg: response.data.message,
+                data: response.data,
+            };
+        } catch (error: any) {
+            return {
+                status: false,
+                msg: error.response?.data?.message || error.message || 'Failed to get rescheduling slots',
+            };
+        }
+    }
+
+
+
+
+    async rescheduleToOtherSlot(faculty_id : number,schedulebooking_id: number, dates: [string]): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.post('/parent-panel/reschedule-class-to-another-slot', {
+                faculty_id,
+                schedulebooking_id,
+                dates,
+            });
+            return {
+                status: response.data.success,
+                msg: response.data.message,
+                data: response.data,
+            };
+        } catch (error: any) {
+            return {
+                status: false,
+                msg: error.response?.data?.message || error.message || 'Failed to reschedule booking',
+            };
+        }
+    }
+
+
+
+
 }
 
 export const bookingApiService = new BookingApiService(); 
