@@ -16,6 +16,7 @@ import LearningProgress from "@/components/dashboard/LearningProgress";
 import { useDashboard } from '@/hooks/useDashboard';
 import { useBookings } from '@/hooks/useBookings';
 import { useChildren } from "@/contexts/ChildrenContext";
+import { useCallback } from "react";
 
 
 
@@ -23,12 +24,16 @@ import { useChildren } from "@/contexts/ChildrenContext";
 const StudentAnalytics = () => {
   const [timeRange, setTimeRange] = useState('1m');
   // 👇 ADD THIS STATE VARIABLE
-  const [period, setPeriod] = useState('month'); 
+  const [period, setPeriod] = useState('month');
+
+  const handlePeriodChange = useCallback((newPeriod: string) => {
+    setPeriod(newPeriod);
+  }, []);
 
   const { progressOverview, isLoading: isProgressLoading, loadProgressOverview } = useDashboard();
 
   const { bookings, isLoading, error: bookingsError, loadAllBookings, loadUpcomingClasses, loadPastClasses, clearBookingData } = useBookings();
-  
+
   const { selectedChild } = useChildren();
   useEffect(() => {
     const childId = selectedChild?.id || null;
@@ -37,7 +42,7 @@ const StudentAnalytics = () => {
     console.log('Loading progress overview for:', childId ? `child ${childId}` : 'family level');
     // loadProgressOverview(childId);
 
-    loadProgressOverview(childId, params); 
+    loadProgressOverview(childId, params);
   }, [selectedChild, loadProgressOverview, period]);
 
   const analyticsData = {
@@ -142,10 +147,10 @@ const StudentAnalytics = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-yellow-50 to-white">
       <Sidebar />
-      
+
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=> {}} />
-        
+        <Header onStartTour={() => { }} />
+
         <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
           <div className="mb-4 sm:mb-6">
             <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1 sm:mb-2">Enhanced Analytics Dashboard</h1>
@@ -154,7 +159,7 @@ const StudentAnalytics = () => {
 
           {/* Analytics Filters */}
           <div className="mb-6 sm:mb-8">
-            <AnalyticsFilters 
+            <AnalyticsFilters
               timeRange={timeRange}
               onTimeRangeChange={setTimeRange}
               onExport={handleExport}
@@ -163,13 +168,13 @@ const StudentAnalytics = () => {
           </div>
 
           {/* 👇 UPDATE THIS COMPONENT */}
-        <LearningProgress
-          progressOverview={progressOverview}
-          learningProgress={progressOverview?.learning_progress ?? null}
-          isLoading={isProgressLoading}
-          period={period}             // Pass the current state
-          onPeriodChange={setPeriod}  // Pass the function to update the state
-        />
+          <LearningProgress
+            progressOverview={progressOverview}
+            learningProgress={progressOverview?.learning_progress ?? null}
+            isLoading={isProgressLoading && !progressOverview}
+            period={period}             // Pass the current state
+            onPeriodChange={setPeriod}  // Pass the function to update the state
+          />
 
           {/* //replaced with learning progress for uniformity  */}
 
@@ -237,14 +242,14 @@ const StudentAnalytics = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
             <LearningVelocity data={velocityData} />
-            
+
             {/* Performance Trend */}
             <Card className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-gradient-to-br from-white to-blue-50 border-blue-200 shadow-xl">
               <div className="flex items-center mb-4 sm:mb-6">
                 <TrendingUp className="text-blue-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Performance Trend</h3>
               </div>
-              
+
               <ResponsiveContainer width="100%" height={200}>
                 <LineChart data={analyticsData.performanceTrend}>
                   <XAxis dataKey="month" />
@@ -267,7 +272,7 @@ const StudentAnalytics = () => {
                 <Brain className="text-purple-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Skills Assessment</h3>
               </div>
-              
+
               <ResponsiveContainer width="100%" height={250}>
                 <RadarChart data={analyticsData.skillsRadar}>
                   <PolarGrid />
@@ -284,7 +289,7 @@ const StudentAnalytics = () => {
                 <Target className="text-green-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Learning Goals</h3>
               </div>
-              
+
               <div className="space-y-3 sm:space-y-4">
                 {analyticsData.learningGoals.map((goal, index) => (
                   <div key={index} className="p-2 sm:p-3 bg-white rounded-lg shadow border">
@@ -305,7 +310,7 @@ const StudentAnalytics = () => {
                 <Trophy className="text-orange-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Recent Achievements</h3>
               </div>
-              
+
               <div className="space-y-2 sm:space-y-3">
                 {analyticsData.achievements.map((achievement, index) => (
                   <div key={index} className="flex items-center space-x-2 sm:space-x-3 p-2 sm:p-3 bg-white rounded-lg shadow">
@@ -328,7 +333,7 @@ const StudentAnalytics = () => {
                 <BarChart3 className="text-blue-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Weekly Activity</h3>
               </div>
-              
+
               <div className="space-y-3 sm:space-y-4">
                 {analyticsData.weeklyProgress.map((day, index) => (
                   <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-blue-50 rounded-lg">
@@ -353,16 +358,15 @@ const StudentAnalytics = () => {
                 <BookOpen className="text-green-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Subject Performance</h3>
               </div>
-              
+
               <div className="space-y-3 sm:space-y-4">
                 {analyticsData.subjects.map((subject, index) => (
                   <div key={index} className="p-3 sm:p-4 bg-white rounded-xl shadow border">
                     <div className="flex justify-between items-center mb-2 sm:mb-3">
                       <h4 className="font-semibold text-gray-800 text-sm sm:text-base">{subject.name}</h4>
                       <div className="flex items-center space-x-1 sm:space-x-2">
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                          subject.grade.startsWith('A') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium ${subject.grade.startsWith('A') ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
                           {subject.grade}
                         </span>
                         <span className="text-green-600 text-xs sm:text-sm font-medium">{subject.trend}</span>
@@ -386,7 +390,7 @@ const StudentAnalytics = () => {
                 <Zap className="text-red-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Areas for Improvement</h3>
               </div>
-              
+
               <div className="space-y-3 sm:space-y-4">
                 {analyticsData.weakAreas.map((area, index) => (
                   <div key={index} className="p-3 sm:p-4 bg-white rounded-lg shadow border">
@@ -409,17 +413,16 @@ const StudentAnalytics = () => {
                 <Star className="text-indigo-500 mr-2 sm:mr-3 w-5 h-5 sm:w-6 sm:h-6" />
                 <h3 className="text-lg sm:text-xl font-bold text-gray-800">Study Recommendations</h3>
               </div>
-              
+
               <div className="space-y-3 sm:space-y-4">
                 {analyticsData.studyRecommendations.map((rec, index) => (
                   <div key={index} className="p-3 sm:p-4 bg-white rounded-lg shadow border">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-800 text-sm sm:text-base">{rec.subject}</h4>
-                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                        rec.priority === 'High' ? 'bg-red-100 text-red-800' :
-                        rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                        'bg-green-100 text-green-800'
-                      }`}>
+                      <span className={`px-2 py-1 rounded-full text-xs font-medium ${rec.priority === 'High' ? 'bg-red-100 text-red-800' :
+                          rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                            'bg-green-100 text-green-800'
+                        }`}>
                         {rec.priority}
                       </span>
                     </div>

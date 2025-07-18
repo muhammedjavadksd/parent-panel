@@ -11,6 +11,7 @@ import { useClasses } from '@/hooks/useClasses';
 import LearningProgress from '@/components/dashboard/LearningProgress';
 import BookingPopup from '@/components/BookingPopup';
 import React, { useState } from 'react';
+import { useCallback } from 'react';
 
 const Classes = () => {
   const isMobile = useIsMobile();
@@ -23,6 +24,10 @@ const Classes = () => {
 
   // 👇 1. ADD THIS STATE VARIABLE
   const [period, setPeriod] = useState('month');
+
+  const handlePeriodChange = useCallback((newPeriod: string) => {
+    setPeriod(newPeriod);
+  }, []);
 
   // Fetch stats for selected child or family level
   // 👇 2. UPDATE THIS useEffect
@@ -405,7 +410,7 @@ const Classes = () => {
               <LearningProgress
                 progressOverview={progressOverview ?? null}
                 learningProgress={progressOverview?.learning_progress ?? null}
-                isLoading={isProgressLoading}
+                isLoading={isProgressLoading && !progressOverview}
                 // 👇 3. PASS THESE PROPS DOWN
                 period={period}
                 onPeriodChange={setPeriod}
