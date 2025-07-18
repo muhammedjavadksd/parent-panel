@@ -13,6 +13,8 @@ interface BookingRescheduleProps {
     success?: string | null;
     schedulebooking_id: number;
     mode: 'shift' | 'cancel';
+    availableSlots?: any; // New prop for available slots
+    handleReschedule?: (faculty_id: number, schedulebooking_id: number, dates: [string]) => Promise<void>; // New prop for rescheduling to another slot
 }
 
 export const BookingReschedule: FC<BookingRescheduleProps> = ({
@@ -25,12 +27,18 @@ export const BookingReschedule: FC<BookingRescheduleProps> = ({
     success,
     schedulebooking_id,
     mode,
+    availableSlots,
+    handleReschedule,
 }) => {
     if (!open) return null;
 
+    console.log('Available slots in Page checking:', availableSlots)
+
+
+
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-            
+
             <div className="bg-white rounded-xl shadow-lg w-full max-w-md p-6 relative">
                 <button
                     className="absolute top-3 right-3 text-gray-400 hover:text-gray-700"
@@ -43,12 +51,42 @@ export const BookingReschedule: FC<BookingRescheduleProps> = ({
                 <h2 className="text-xl font-bold mb-4 text-blue-800">
                     {mode === 'shift' ? 'Reschedule Class' : 'Cancel Class'}
                 </h2>
-                {mode === 'shift' && shiftingDate && (
+                {/* {mode === 'shift' && shiftingDate && (
                     <div
                         className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-blue-700 text-sm"
                         dangerouslySetInnerHTML={{ __html: shiftingDate }}
                     />
+                    
+                )} */}
+
+
+                {mode === 'shift' && shiftingDate && (
+                    <div className="mb-3">
+                        <div
+                            className="mb-3 p-2 bg-blue-50 border border-blue-200 rounded text-blue-700 text-sm"
+                            dangerouslySetInnerHTML={{ __html: shiftingDate }}
+                        />
+
+
+                    </div>
                 )}
+
+                {availableSlots && availableSlots.length > 0 && (
+                    <div>
+
+
+                        {/* Display available slots for rescheduling */}
+                    </div>
+                )}
+
+
+
+
+
+
+
+
+
                 {error && (
                     <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded text-red-700 text-sm">
                         {error}
