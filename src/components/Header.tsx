@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { useChildren } from "@/hooks/useChildren";
 import { Child } from "@/lib/types/children";
+import { useHeader } from "@/hooks/useHeader";
 
 interface HeaderProps {
   onStartTour: () => void;
@@ -16,6 +17,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
 
   const navigate = useNavigate();
   const { children, selectedChild, selectChild, isLoading } = useChildren();
+  const { headerData } = useHeader();
 
   console.log('🔍 Header: children context state:', { children, selectedChild, isLoading });
 
@@ -124,11 +126,42 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
         </div>
       </div>
 
-      <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
-        {/* Tour Button - Compact on mobile and tablet */}
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg sm:rounded-xl px-3 sm:px-3 lg:px-4 py-1.5 sm:py-2 flex items-center space-x-2 sm:space-x-2 lg:space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group h-8 sm:h-9 lg:h-10" onClick={onStartTour}>
+
+{/* --- MODIFIED RENEWAL SECTION --- */}
+      {headerData?.data?.renewal_section?.classes_left > 0 && (
+        <div 
+          className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg sm:rounded-xl px-3 sm:px-3 lg:px-4 py-1.5 sm:py-2 flex items-center space-x-2 sm:space-x-2 lg:space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group h-8 sm:h-9 lg:h-10"
+          // onClick={() => navigate("/classes")}
+          onClick={() => window.open("https://bambinos.live/pricings", "_blank")}
+        >
           <div className="flex items-center space-x-1 sm:space-x-2">
-            
+            <span className="font-bold  text-blue-800 group-hover:text-blue-900 transition-colors">
+              {headerData.data.renewal_section.classes_left}
+            </span>
+            <span className="text-xs lg:text-sm  font-semibold text-blue-800 group-hover:text-blue-900 transition-colors">
+              classes left
+            </span>
+          </div>
+
+          <Button
+            size="sm"
+            className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white text-xs font-bold px-2 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-lg shadow-md hover:shadow-lg transition-all duration-300 border-0 group-hover:scale-105 h-6 sm:h-7 lg:h-8"
+          >
+            <Sparkles className="w-3 h-3 sm:w-3 sm:h-3 lg:w-3 lg:h-3 mr-1 sm:mr-1" />
+            <span className="hidden lg:inline">Renew</span>
+            <span className="lg:hidden">Renew</span>
+          </Button>
+        </div>
+      )}
+
+
+
+
+      <div className="flex items-center space-x-2 sm:space-x-3 lg:space-x-4">
+        {/* Tour Button - only on desktop */}
+        <div className=" hidden lg:flex bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg sm:rounded-xl px-3 sm:px-3 lg:px-4 py-1.5 sm:py-2  items-center space-x-2 sm:space-x-2 lg:space-x-3 shadow-lg hover:shadow-xl transition-all duration-300 cursor-pointer group h-8 sm:h-9 lg:h-10" onClick={onStartTour}>
+          <div className="flex items-center space-x-1 sm:space-x-2">
+
 
             <span className="text-xs sm:text-sm font-semibold text-blue-800 group-hover:text-blue-900 transition-colors ">
               Get Tour
@@ -148,7 +181,7 @@ const Header: React.FC<HeaderProps> = ({ onStartTour }) => {
         <ProfileDropdown />
 
         {/* Removed Logout Button as its already in profile  */}
-        
+
         {/* <LogoutButton
           variant="outline"
           size="sm"

@@ -69,9 +69,10 @@ const UpcomingClasses = () => {
   };
 
   // Handle join class button click
-  const handleJoinClick = useCallback((classItem: any) => {
-    navigate(`/join-class/${classItem.schedulebooking_id}`);
-  }, [navigate]);
+const handleJoinClick = useCallback((classItem: any) => {
+  window.open(`/join-class/${classItem.schedulebooking_id}`, "_blank");
+}, []);
+
 
   const handleRescheduleClick = async (schedulebooking_id: number) => {
     setSelectedBookingId(schedulebooking_id);
