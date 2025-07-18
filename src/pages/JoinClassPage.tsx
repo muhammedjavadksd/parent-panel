@@ -639,7 +639,7 @@ const JoinClassPage: React.FC = () => {
                     </>
                   )}
                 </Button>
-                <Button
+                {/* <Button
                   onClick={handleGoBack}
                   variant="outline"
                   size="lg"
@@ -647,7 +647,7 @@ const JoinClassPage: React.FC = () => {
                 >
                   <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Back to Classes
-                </Button>
+                </Button> */}
               </div>
             </Card>
           </div>
