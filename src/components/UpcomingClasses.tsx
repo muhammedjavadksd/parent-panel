@@ -11,6 +11,8 @@ import { useChildren } from '@/hooks/useChildren';
 import BookingReschedule from '@/components/BookingReschedule/BookingReschedule';
 import { useAuth } from '@/hooks/useAuth';
 import { parse, differenceInHours, isBefore, differenceInMinutes } from "date-fns";
+import RescheduleBooking from '@/components/BookingReschedule/NewReschedule';
+import Portal from '@/components/portal';
 
 
 interface UpcomingClassesProps {
@@ -205,7 +207,7 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
               const isLessThan4Hours = hoursUntilClass < 4;
               //15 min check
               const minutesUntilClass = differenceInMinutes(classStartDateTime, new Date());
-              const isLessThan15min = minutesUntilClass <15;
+              const isLessThan15min = minutesUntilClass < 15;
 
               return (
                 <div key={classItem.id} className="  p-4 hover:bg-blue-50 rounded-xl transition-all duration-200 border border-blue-200 bg-white shadow-sm">
@@ -243,7 +245,7 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                   </div>
 
                   <div className="grid grid-cols-2 gap-2">
-                    
+
                     {isLessThan15min ? (
                       <Button
                         className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 shadow-md border-0 transition-all duration-200"
@@ -260,9 +262,9 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                         Join Class
                       </Button>
                     )}
-                    
-                    
-                    
+
+
+
 
 
                     <div className="grid grid-cols-1 gap-2">
@@ -293,7 +295,7 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                       )}
                     </div>
 
-                    <BookingReschedule
+                    {/* <BookingReschedule
                       open={rescheduleOpen}
                       onClose={handleModalClose}
                       onSubmit={handleRescheduleSubmit}
@@ -303,7 +305,24 @@ const UpcomingClasses = ({ bookings, isLoading, error }: UpcomingClassesProps) =
                       success={success}
                       schedulebooking_id={selectedBookingId || 0}
                       mode={modalMode}
+                    /> */}
+
+
+
+                    {/* {rescheduleOpen && selectedBookingId && (
+                      <RescheduleBooking schedulebooking_id={selectedBookingId} onClose={handleModalClose} />
+                    )} */}
+
+                     {rescheduleOpen && selectedBookingId && (
+                <Portal>
+                    <RescheduleBooking 
+                        schedulebooking_id={selectedBookingId} 
+                        onClose={handleModalClose} 
                     />
+                </Portal>
+            )}
+
+
                   </div>
                 </div>
               );

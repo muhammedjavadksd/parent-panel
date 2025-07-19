@@ -73,18 +73,24 @@ const UpcomingClasses = () => {
   };
 
   // Handle join class button click
-const handleJoinClick = useCallback((classItem: any) => {
-  window.open(`/join-class/${classItem.schedulebooking_id}`, "_blank");
-}, []);
+  const handleJoinClick = useCallback((classItem: any) => {
+    window.open(`/join-class/${classItem.schedulebooking_id}`, "_blank");
+  }, []);
 
+
+  // const handleRescheduleClick = async (schedulebooking_id: number) => {
+  //   setSelectedBookingId(schedulebooking_id);
+  //   // setModalMode('shift');
+  //   // setRescheduleOpen(true);
+  //   // await getShiftingDate({ schedulebooking_id });
+  //   // await getAvailableSlots(schedulebooking_id);
+  // };
 
   const handleRescheduleClick = async (schedulebooking_id: number) => {
     setSelectedBookingId(schedulebooking_id);
-    setModalMode('shift');
-    setRescheduleOpen(true);
-    await getShiftingDate({ schedulebooking_id });
-    await getAvailableSlots(schedulebooking_id);
+    setRescheduleOpen(true); // This triggers mounting
   };
+
 
   const handleCancelClick = (schedulebooking_id: number) => {
     setSelectedBookingId(schedulebooking_id);
@@ -123,7 +129,7 @@ const handleJoinClick = useCallback((classItem: any) => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-          <Header onStartTour={()=>{}}/>
+          <Header onStartTour={() => { }} />
           <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
             <div className="flex items-center justify-center h-32 sm:h-48 lg:h-64">
               <Loader2 className="w-6 h-6 sm:w-8 sm:h-8 animate-spin text-blue-600" />
@@ -140,7 +146,7 @@ const handleJoinClick = useCallback((classItem: any) => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-          <Header onStartTour={()=>{}}/>
+          <Header onStartTour={() => { }} />
           <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
             <div className="flex flex-col items-center justify-center h-32 sm:h-48 lg:h-64 text-gray-500">
               <Video className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 text-gray-300" />
@@ -160,7 +166,7 @@ const handleJoinClick = useCallback((classItem: any) => {
       <Sidebar />
 
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=>{}}/>
+        <Header onStartTour={() => { }} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
           <div className="mb-4 sm:mb-6">
@@ -267,7 +273,7 @@ const handleJoinClick = useCallback((classItem: any) => {
               ))
             )}
           </div>
-          <BookingReschedule
+          {/* <BookingReschedule
             open={rescheduleOpen}
             onClose={handleModalClose}
             onSubmit={handleRescheduleSubmit}
@@ -277,13 +283,16 @@ const handleJoinClick = useCallback((classItem: any) => {
             success={success}
             schedulebooking_id={selectedBookingId || 0}
             mode={modalMode}
-          />
+          /> */}
 
           {/* <RescheduleBooking
           schedulebooking_id={selectedBookingId || 0}
-
-          
           /> */}
+
+          {rescheduleOpen && selectedBookingId && (
+            <RescheduleBooking schedulebooking_id={selectedBookingId} onClose={handleModalClose} />
+          )}
+
         </main>
       </div>
 
