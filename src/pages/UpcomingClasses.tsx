@@ -80,10 +80,10 @@ const handleJoinClick = useCallback((classItem: any) => {
 
   const handleRescheduleClick = async (schedulebooking_id: number) => {
     setSelectedBookingId(schedulebooking_id);
-    // setModalMode('shift');
-    // setRescheduleOpen(true);
-    // await getShiftingDate({ schedulebooking_id });
-    // await getAvailableSlots(schedulebooking_id);
+    setModalMode('shift');
+    setRescheduleOpen(true);
+    await getShiftingDate({ schedulebooking_id });
+    await getAvailableSlots(schedulebooking_id);
   };
 
   const handleCancelClick = (schedulebooking_id: number) => {
@@ -279,11 +279,11 @@ const handleJoinClick = useCallback((classItem: any) => {
             mode={modalMode}
           />
 
-          <RescheduleBooking
+          {/* <RescheduleBooking
           schedulebooking_id={selectedBookingId || 0}
 
           
-          />
+          /> */}
         </main>
       </div>
 
