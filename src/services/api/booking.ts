@@ -70,7 +70,7 @@ export class BookingApiService {
 
 
 
-    async rescheduleToOtherSlot(faculty_id : number,schedulebooking_id: number, dates: [string]): Promise<{ status: boolean; msg: string; data?: any }> {
+    async rescheduleToOtherSlot(faculty_id : number,schedulebooking_id: number, dates: [string, string, string][]): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
             const response = await apiClient.post('/parent-panel/reschedule-class-to-another-slot', {
                 faculty_id,

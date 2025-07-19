@@ -25,6 +25,12 @@ export interface HomeworkAssignment {
   };
 }
 
+export interface SingleHomeworkData {
+  type: string;         // e.g., "pdf"
+  embed_url: string;    // The URL for embedding the content
+  download_url: string; // The URL for downloading the content
+}
+
 export interface PaginationLink {
   url: string | null;
   label: string;

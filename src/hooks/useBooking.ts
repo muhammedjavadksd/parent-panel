@@ -76,12 +76,16 @@ export function useBooking() {
 
     // new function to handle rescheduling to another slot
 
-    const handleReschedule = async (faculty_id : number,schedulebooking_id: number, dates: [string]) => {
+    const handleRescheduleNew = async (faculty_id : number,schedulebooking_id: number, dates: [string, string, string][]) => {
         setLoading(true);
         setError(null);
         setSuccess(null);
 
         try {
+
+            console.log('Rescheduling to dates:', faculty_id,
+                schedulebooking_id,
+                dates);
 
             const result = await bookingApiService.rescheduleToOtherSlot(
                 faculty_id,
@@ -119,7 +123,7 @@ export function useBooking() {
         changeBooking,
         reset,
         getAvailableSlots,
-        handleReschedule,
+        handleRescheduleNew,
         availableSlots
 
     };
