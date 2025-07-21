@@ -577,8 +577,6 @@ const Dashboard = () => {
               <Tabs defaultValue="upcoming" className="w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 space-y-2 sm:space-y-0">
 
-
-
                   <h2
                     onClick={() => navigate('/roadmap')}
                     className="text-xl sm:text-2xl font-extrabold tracking-tight text-indigo-700 flex items-center gap-2 cursor-pointer hover:underline hover:text-indigo-500 transition-colors"
