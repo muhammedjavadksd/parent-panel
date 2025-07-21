@@ -1,96 +1,54 @@
 import React, { useState, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
+import Sidebar from '@/components/Sidebar'; // Added for consistent layout
+import Header from '@/components/Header';   // Added for consistent layout
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { 
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog';
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from '@/components/ui/table';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
-import { 
-  ArrowLeft, 
-  BookOpen, 
-  CheckCircle,
-  Target,
-  Search,
-  Play,
-  User,
-  FileText,
-  Eye,
-  Edit,
-  Clock,
-  Bot,
-  GraduationCap,
-  ChevronDown,
-  ChevronRight,
-  Lock,
-  Shield,
-  ShieldCheck,
-  AlertCircle,
-  Sparkles,
-  Star,
-  TrendingUp,
-  Award,
-  Zap,
-  Heart,
-  Rocket
-} from 'lucide-react';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
+import { BookOpen, CheckCircle, Target, Search, Play, User, FileText, Eye, Edit, Clock, Bot, GraduationCap, ChevronDown, ChevronRight, Lock, Shield, ShieldCheck, AlertCircle, Sparkles, Star, TrendingUp, Award, Zap, Heart, Rocket } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import MobileHeader from '@/components/MobileHeader';
 
+// Interfaces (ClassItem, Module) and mock data (roadmapModules) remain the same
+// ... (Your existing interfaces and roadmapModules data should be here) ...
 interface ClassItem {
-  id: string;
-  serialNo: number;
-  name: string;
-  focusArea: string;
-  level: 'Beginner' | 'Intermediate' | 'Advanced';
-  status: 'completed' | 'enrolled' | 'available' | 'locked';
-  description: string;
-  classDate: string;
-  pptFile?: string;
-  reasonForChange?: string;
-  prerequisites?: string[];
-  instructor?: string;
-  rating?: number;
-  studentsEnrolled?: number;
-  estimatedHours?: number;
-  difficultyScore?: number;
+    id: string;
+    serialNo: number;
+    name: string;
+    focusArea: string;
+    level: 'Beginner' | 'Intermediate' | 'Advanced';
+    status: 'completed' | 'enrolled' | 'available' | 'locked';
+    description: string;
+    classDate: string;
+    pptFile?: string;
+    reasonForChange?: string;
+    prerequisites?: string[];
+    instructor?: string;
+    rating?: number;
+    studentsEnrolled?: number;
+    estimatedHours?: number;
+    difficultyScore?: number;
 }
-
+  
 interface Module {
-  id: string;
-  name: string;
-  description: string;
-  designer: 'teacher' | 'auto' | 'parent';
-  designer_name?: string;
-  classes: ClassItem[];
-  total_classes: number;
-  completed_classes: number;
-  enrolled_classes: number;
-  status: 'active' | 'completed' | 'locked';
-  created_date: string;
-  approval_status: 'approved' | 'pending' | 'rejected';
-  milestone: 1 | 2 | 3;
+    id: string;
+    name: string;
+    description: string;
+    designer: 'teacher' | 'auto' | 'parent';
+    designer_name?: string;
+    classes: ClassItem[];
+    total_classes: number;
+    completed_classes: number;
+    enrolled_classes: number;
+    status: 'active' | 'completed' | 'locked';
+    created_date: string;
+    approval_status: 'approved' | 'pending' | 'rejected';
+    milestone: 1 | 2 | 3;
 }
 
 const Roadmap = () => {
@@ -445,13 +403,13 @@ const Roadmap = () => {
     
     return roadmapModules.filter(module => {
       const matchesSearch = module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                           module.description.toLowerCase().includes(searchQuery.toLowerCase());
+                            module.description.toLowerCase().includes(searchQuery.toLowerCase());
       
       const matchesStatus = selectedStatus === 'all' || 
-                           (selectedStatus === 'completed' && module.status === 'completed') ||
-                           (selectedStatus === 'enrolled' && module.enrolled_classes > 0) ||
-                           (selectedStatus === 'available' && module.status === 'active') ||
-                           (selectedStatus === 'locked' && module.status === 'locked');
+                            (selectedStatus === 'completed' && module.status === 'completed') ||
+                            (selectedStatus === 'enrolled' && module.enrolled_classes > 0) ||
+                            (selectedStatus === 'available' && module.status === 'active') ||
+                            (selectedStatus === 'locked' && module.status === 'locked');
       
       // Filter by upcoming/past based on class dates
       const hasMatchingClasses = module.classes.some(classItem => {
@@ -469,6 +427,7 @@ const Roadmap = () => {
     }));
   }, [searchQuery, selectedStatus, showUpcoming]);
 
+  // ... (All your other functions like totalClasses, getDesignerIcon, handleChangeRequest, etc., remain the same) ...
   const totalClasses = roadmapModules.reduce((sum, module) => sum + module.total_classes, 0);
   const completedClasses = roadmapModules.reduce((sum, module) => sum + module.completed_classes, 0);
   const enrolledClasses = roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0);
@@ -720,335 +679,331 @@ const Roadmap = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50/30 via-white/20 to-blue-50/30">
-      <MobileHeader />
-      
-      <main className="pt-16 px-3 sm:px-6 max-w-7xl mx-auto pb-6">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4 min-h-[44px]">
-          <Button 
-            variant="ghost" 
-            size="sm" 
-            onClick={() => navigate('/profile')}
-            className="p-3 min-h-[44px] min-w-[44px] flex items-center justify-center hover:bg-blue-100/80 border-2 border-blue-200/60 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 backdrop-blur-sm bg-white/70"
-          >
-            <ArrowLeft className="w-5 h-5 mr-1 sm:mr-2 text-blue-600" />
-            <span className="hidden sm:inline text-blue-700 font-semibold">Back</span>
-          </Button>
-          <div className="text-center">
-            <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 bg-clip-text text-transparent mb-1">
-              Course Roadmap
-            </h1>
-            <div className="flex items-center justify-center gap-2">
-              <Award className="w-4 h-4 text-blue-500" />
-              <p className="text-blue-600/80 font-medium text-sm">Premium Learning Experience</p>
-              <Zap className="w-4 h-4 text-blue-500" />
-            </div>
-          </div>
-          <div className="w-[44px]"></div>
-        </div>
+    <div className="min-h-screen bg-white">
+      <Sidebar />
+      <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
+        <Header onStartTour={() => {}} />
 
-        {/* Learning Journey Map */}
-        <Card className="mb-4 border-0 shadow-lg overflow-hidden">
-          <LearningJourneyMap />
-        </Card>
-
-        {/* Toggle Switch */}
-        <Card className="p-3 rounded-2xl mb-4 bg-gradient-to-r from-white/80 via-blue-50/60 to-white/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
-          <div className="flex items-center justify-center gap-6">
-            <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm rounded-2xl p-2 border-2 border-blue-200/50 shadow-md">
-              <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${
-                showUpcoming 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105' 
-                  : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
-              }`}
-              onClick={() => setShowUpcoming(true)}
-              >
-                ✨ Upcoming Classes
-              </div>
-              <Switch
-                checked={!showUpcoming}
-                onCheckedChange={(checked) => setShowUpcoming(!checked)}
-                className="mx-2 scale-110"
-              />
-              <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${
-                !showUpcoming 
-                  ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105' 
-                  : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
-              }`}
-              onClick={() => setShowUpcoming(false)}
-              >
-                📚 Past Classes
-              </div>
-            </div>
-          </div>
-        </Card>
-
-        {/* Search and Filters */}
-        <Card className="p-3 rounded-2xl mb-4 bg-gradient-to-r from-white/80 via-blue-50/40 to-white/30 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-            <div className="relative sm:col-span-1">
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
-              <Input
-                placeholder="Search your learning modules..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-12 h-10 rounded-xl border-2 border-blue-200/60 bg-white/80 backdrop-blur-sm focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-medium shadow-md"
-              />
-            </div>
-            
-            <select
-              value={selectedLevel}
-              onChange={(e) => setSelectedLevel(e.target.value)}
-              className="px-4 py-2 h-10 border-2 border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-semibold shadow-md"
-            >
-              <option value="all">🎯 All Levels</option>
-              <option value="Beginner">🌱 Beginner</option>
-              <option value="Intermediate">🚀 Intermediate</option>
-              <option value="Advanced">⭐ Advanced</option>
-            </select>
-            
-            <select
-              value={selectedStatus}
-              onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-4 py-2 h-10 border-2 border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-semibold shadow-md"
-            >
-              <option value="all">📊 All Status</option>
-              <option value="completed">✅ Completed</option>
-              <option value="enrolled">🎓 Enrolled</option>
-              <option value="available">✨ Available</option>
-              <option value="locked">🔒 Locked</option>
-            </select>
-          </div>
-        </Card>
-
-        {/* Action Buttons */}
-        {selectedModules.length > 0 && showUpcoming && (
-          <Card className="p-3 rounded-2xl mb-4 bg-gradient-to-r from-blue-50/80 via-indigo-50/60 to-purple-50/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
-            <div className="flex flex-col sm:flex-row gap-3 items-center">
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md">
-                  <Edit className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <p className="text-blue-800 font-bold">
-                    🎯 {selectedModules.length} module(s) selected
-                  </p>
-                  <p className="text-blue-600/80 text-xs">Ready for modification request</p>
+        <main className="flex-1 p-2 sm:p-3 lg:p-4 md:p-4 bg-gradient-to-br from-blue-50/30 via-white/20 to-blue-50/30">
+          <div className="max-w-7xl mx-auto w-full space-y-4">
+           
+            <div className="flex items-center justify-center min-h-[44px]">
+              
+              <div className="text-center">
+                <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 bg-clip-text text-transparent mb-1">
+                  Course Roadmap
+                </h1>
+                <div className="flex items-center justify-center gap-2">
+                  <Award className="w-4 h-4 text-blue-500" />
+                  <p className="text-blue-600/80 font-medium text-sm">Premium Learning Experience</p>
+                  <Zap className="w-4 h-4 text-blue-500" />
                 </div>
               </div>
-              <div className="flex gap-3 w-full sm:w-auto">
-                <Button 
-                  onClick={handleChangeRequest}
-                  size="lg"
-                  className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-4 py-2 font-bold hover:scale-105"
+            </div>
+
+            {/* Learning Journey Map */}
+            <Card className="border-0 shadow-lg overflow-hidden">
+              <LearningJourneyMap />
+            </Card>
+
+            {/* Toggle Switch */}
+            <Card className="p-3 rounded-2xl bg-gradient-to-r from-white/80 via-blue-50/60 to-white/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
+                <div className="flex items-center justify-center gap-6">
+                    <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm rounded-2xl p-2 border-2 border-blue-200/50 shadow-md">
+                        <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${
+                            showUpcoming 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105' 
+                                : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
+                        }`}
+                        onClick={() => setShowUpcoming(true)}
+                        >
+                            ✨ Upcoming Classes
+                        </div>
+                        <Switch
+                            checked={!showUpcoming}
+                            onCheckedChange={(checked) => setShowUpcoming(!checked)}
+                            className="mx-2 scale-110"
+                        />
+                        <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${
+                            !showUpcoming 
+                                ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105' 
+                                : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
+                        }`}
+                        onClick={() => setShowUpcoming(false)}
+                        >
+                            📚 Past Classes
+                        </div>
+                    </div>
+                </div>
+            </Card>
+
+            {/* Search and Filters */}
+            <Card className="p-3 rounded-2xl bg-gradient-to-r from-white/80 via-blue-50/40 to-white/30 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <div className="relative sm:col-span-1">
+                  <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-blue-500 w-5 h-5" />
+                  <Input
+                    placeholder="Search your learning modules..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-12 h-10 rounded-xl border-2 border-blue-200/60 bg-white/80 backdrop-blur-sm focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-medium shadow-md"
+                  />
+                </div>
+                
+                <select
+                  value={selectedLevel}
+                  onChange={(e) => setSelectedLevel(e.target.value)}
+                  className="px-4 py-2 h-10 border-2 border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-semibold shadow-md"
                 >
-                  <Edit className="w-4 h-4 mr-2" />
-                  Request Changes ✨
-                </Button>
+                  <option value="all">🎯 All Levels</option>
+                  <option value="Beginner">🌱 Beginner</option>
+                  <option value="Intermediate">🚀 Intermediate</option>
+                  <option value="Advanced">⭐ Advanced</option>
+                </select>
+                
+                <select
+                  value={selectedStatus}
+                  onChange={(e) => setSelectedStatus(e.target.value)}
+                  className="px-4 py-2 h-10 border-2 border-blue-200/60 rounded-xl bg-white/80 backdrop-blur-sm text-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 font-semibold shadow-md"
+                >
+                  <option value="all">📊 All Status</option>
+                  <option value="completed">✅ Completed</option>
+                  <option value="enrolled">🎓 Enrolled</option>
+                  <option value="available">✨ Available</option>
+                  <option value="locked">🔒 Locked</option>
+                </select>
               </div>
-            </div>
-          </Card>
-        )}
+            </Card>
 
-        {/* Classes Table */}
-        <Card className="p-4 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-blue-200/50 shadow-lg">
-          <div className="mb-4">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md">
-                <BookOpen className="w-6 h-6 text-white" />
-              </div>
-              <div>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                  {showUpcoming ? '🌟 Upcoming' : '📖 Past'} Classes
-                </h2>
-                <p className="text-blue-600/80 font-medium text-sm">
-                  {showUpcoming 
-                    ? 'Discover your learning path ahead. Select modules to request changes.'
-                    : 'Review your learning journey and achievements.'
-                  }
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <div className="overflow-x-auto rounded-xl border-2 border-blue-100/50">
-            <Table>
-              <TableHeader>
-                <TableRow className="border-b-2 border-blue-200/50 bg-gradient-to-r from-blue-50/80 to-blue-50/40 hover:from-blue-100/60 hover:to-blue-100/40">
-                  <TableHead className="w-16 font-bold text-blue-700 py-3">
-                    {showUpcoming ? '✅' : ''}
-                  </TableHead>
-                  <TableHead className="w-20 font-bold text-blue-700">📋 S.No</TableHead>
-                  <TableHead className="min-w-[180px] font-bold text-blue-700">📚 Module</TableHead>
-                  <TableHead className="min-w-[220px] font-bold text-blue-700">🎯 Title</TableHead>
-                  <TableHead className="min-w-[200px] font-bold text-blue-700">🔍 Focus Area</TableHead>
-                  {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">✅ Approval</TableHead>}
-                  {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">📄 Document</TableHead>}
-                  <TableHead className="w-36 font-bold text-blue-700">📅 Class Date</TableHead>
-                  {!showUpcoming && <TableHead className="min-w-[220px] font-bold text-blue-700">💭 Reason for Change</TableHead>}
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredModules.map((module) => (
-                  <React.Fragment key={module.id}>
-                    {/* Module Header Row */}
-                    <TableRow className="bg-gradient-to-r from-blue-50/60 via-blue-50/40 to-blue-50/30 border-b-2 border-blue-200/30 hover:from-blue-100/50 hover:via-blue-100/40 hover:to-blue-100/30 transition-all duration-300">
-                      <TableCell>
-                        {showUpcoming && (
-                          <input
-                            type="checkbox"
-                            checked={selectedModules.includes(module.id)}
-                            onChange={() => handleModuleSelect(module.id)}
-                            className="w-4 h-4 text-blue-600 border-2 border-blue-300 rounded focus:ring-blue-200 focus:ring-4 transition-all scale-110"
-                          />
-                        )}
-                      </TableCell>
-                      <TableCell colSpan={showUpcoming ? 6 : 8}>
-                        <Collapsible>
-                          <CollapsibleTrigger 
-                            onClick={() => toggleModuleExpansion(module.id)}
-                            className="flex items-center gap-3 w-full text-left hover:bg-blue-100/60 p-2 rounded-xl transition-all duration-300 group"
-                          >
-                            <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md">
-                              {expandedModules.includes(module.id) ? 
-                                <ChevronDown className="w-4 h-4 text-white" /> : 
-                                <ChevronRight className="w-4 h-4 text-white" />
-                              }
-                            </div>
-                            <div className="flex items-center gap-4 flex-wrap">
-                              <Badge className="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl px-3 py-1 font-bold shadow-md">
-                                ✨ {module.name}
-                              </Badge>
-                              <div className="flex items-center gap-2">
-                                <div className="p-1.5 bg-white/80 rounded-lg shadow-sm">
-                                  {getDesignerIcon(module.designer)}
-                                </div>
-                                <span className="text-blue-700 font-semibold text-sm">
-                                  Designed by {module.designer_name || module.designer}
-                                </span>
-                              </div>
-                              {showUpcoming && getApprovalBadge(module.approval_status)}
-                            </div>
-                          </CollapsibleTrigger>
-                          
-                          <CollapsibleContent>
-                            {expandedModules.includes(module.id) && module.classes.map((classItem) => (
-                              <TableRow key={classItem.id} className="border-b border-blue-100/50 hover:bg-blue-50/40 transition-all duration-300">
-                                <TableCell></TableCell>
-                                <TableCell className="font-bold text-blue-700">{classItem.serialNo}</TableCell>
-                                <TableCell>
-                                  <Badge className="bg-blue-100/80 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold shadow-sm">
-                                    {module.name}
-                                  </Badge>
-                                </TableCell>
-                                <TableCell className="font-bold text-blue-800">{classItem.name}</TableCell>
-                                <TableCell className="text-blue-600 font-semibold">{classItem.focusArea}</TableCell>
-                                {!showUpcoming && (
-                                  <TableCell>
-                                    {classItem.reasonForChange ? getApprovalBadge(module.approval_status) : '—'}
-                                  </TableCell>
-                                )}
-                                {!showUpcoming && (
-                                  <TableCell>
-                                    <div className="flex items-center gap-2">
-                                      <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm">
-                                        <FileText className="w-4 h-4 text-blue-600" />
-                                      </div>
-                                      <Button 
-                                        variant="ghost" 
-                                        size="sm" 
-                                        className="p-2 h-auto hover:bg-blue-100 rounded-lg transition-all duration-300 font-semibold text-xs"
-                                        onClick={() => handlePPTView(classItem.pptFile || '')}
-                                      >
-                                        <Eye className="w-3 h-3 mr-1" />
-                                        View PPT
-                                      </Button>
-                                    </div>
-                                  </TableCell>
-                                )}
-                                <TableCell className="font-semibold text-blue-700">
-                                  {new Date(classItem.classDate).toLocaleDateString()}
-                                </TableCell>
-                                {!showUpcoming && (
-                                  <TableCell className="text-blue-600 italic font-medium">
-                                    {classItem.reasonForChange || '—'}
-                                  </TableCell>
-                                )}
-                              </TableRow>
-                            ))}
-                          </CollapsibleContent>
-                        </Collapsible>
-                      </TableCell>
-                    </TableRow>
-                  </React.Fragment>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
-        </Card>
-
-        {/* Reason Dialog */}
-        <Dialog open={showReasonDialog} onOpenChange={setShowReasonDialog}>
-          <DialogContent className="sm:max-w-md rounded-2xl border-2 border-blue-200/50 shadow-xl bg-gradient-to-br from-white via-blue-50/30 to-blue-50/20 backdrop-blur-sm">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                ✨ Request Module Change
-              </DialogTitle>
-              <DialogDescription className="text-blue-600 font-medium mt-2">
-                Share your thoughts! Help our team understand your needs better by providing a reason for your module change request.
-              </DialogDescription>
-            </DialogHeader>
-            <div className="grid gap-4 py-4">
-              <Textarea
-                placeholder="Tell us why you'd like to modify these modules... 💭"
-                value={reasonText}
-                onChange={(e) => setReasonText(e.target.value)}
-                className="min-h-[120px] rounded-xl border-2 border-blue-200/60 bg-white/80 backdrop-blur-sm focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 resize-none font-medium"
-              />
-            </div>
-            <DialogFooter className="gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => setShowReasonDialog(false)}
-                className="rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300 font-semibold px-4 py-2"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSubmitReason}
-                className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-bold px-6 py-2 hover:scale-105"
-              >
-                ✨ Submit Request
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-
-        {/* PPT View Dialog */}
-        <Dialog open={showPPTDialog} onOpenChange={setShowPPTDialog}>
-          <DialogContent className="sm:max-w-4xl rounded-2xl border-2 border-blue-200/50 shadow-xl bg-gradient-to-br from-white via-blue-50/20 to-blue-50/10 backdrop-blur-sm">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
-                📖 Class Presentation
-              </DialogTitle>
-            </DialogHeader>
-            <div className="py-4">
-              <div className="w-full aspect-video bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200/50 flex items-center justify-center shadow-md">
-                <div className="text-center text-blue-600">
-                  <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl inline-block mb-4 shadow-md">
-                    <FileText className="w-12 h-12 text-white" />
-                  </div>
-                  <p className="font-bold text-lg mb-2">📚 PPT Preview</p>
-                  <p className="font-medium bg-white/60 px-3 py-1.5 rounded-lg border border-blue-200/50">
-                    File: {selectedPPT}
-                  </p>
+            {/* ... (Rest of your component JSX, including the table and dialogs) ... */}
+            {selectedModules.length > 0 && showUpcoming && (
+            <Card className="p-3 rounded-2xl bg-gradient-to-r from-blue-50/80 via-indigo-50/60 to-purple-50/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
+                <div className="flex flex-col sm:flex-row gap-3 items-center">
+                    <div className="flex items-center gap-3">
+                        <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md">
+                            <Edit className="w-5 h-5 text-white" />
+                        </div>
+                        <div>
+                            <p className="text-blue-800 font-bold">
+                                🎯 {selectedModules.length} module(s) selected
+                            </p>
+                            <p className="text-blue-600/80 text-xs">Ready for modification request</p>
+                        </div>
+                    </div>
+                    <div className="flex gap-3 w-full sm:w-auto">
+                        <Button 
+                            onClick={handleChangeRequest}
+                            size="lg"
+                            className="flex-1 sm:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-4 py-2 font-bold hover:scale-105"
+                        >
+                            <Edit className="w-4 h-4 mr-2" />
+                            Request Changes ✨
+                        </Button>
+                    </div>
                 </div>
-              </div>
-            </div>
-          </DialogContent>
-        </Dialog>
-      </main>
+            </Card>
+            )}
+
+            {/* Classes Table */}
+            <Card className="p-4 rounded-2xl bg-white/90 backdrop-blur-sm border-2 border-blue-200/50 shadow-lg">
+                <div className="mb-4">
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className="p-2 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl shadow-md">
+                            <BookOpen className="w-6 h-6 text-white" />
+                        </div>
+                        <div>
+                            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                                {showUpcoming ? '🌟 Upcoming' : '📖 Past'} Classes
+                            </h2>
+                            <p className="text-blue-600/80 font-medium text-sm">
+                                {showUpcoming 
+                                    ? 'Discover your learning path ahead. Select modules to request changes.'
+                                    : 'Review your learning journey and achievements.'
+                                }
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="overflow-x-auto rounded-xl border-2 border-blue-100/50">
+                    <Table>
+                        <TableHeader>
+                            <TableRow className="border-b-2 border-blue-200/50 bg-gradient-to-r from-blue-50/80 to-blue-50/40 hover:from-blue-100/60 hover:to-blue-100/40">
+                                <TableHead className="w-16 font-bold text-blue-700 py-3">
+                                    {showUpcoming ? '✅' : ''}
+                                </TableHead>
+                                <TableHead className="w-20 font-bold text-blue-700">📋 S.No</TableHead>
+                                <TableHead className="min-w-[180px] font-bold text-blue-700">📚 Module</TableHead>
+                                <TableHead className="min-w-[220px] font-bold text-blue-700">🎯 Title</TableHead>
+                                <TableHead className="min-w-[200px] font-bold text-blue-700">🔍 Focus Area</TableHead>
+                                {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">✅ Approval</TableHead>}
+                                {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">📄 Document</TableHead>}
+                                <TableHead className="w-36 font-bold text-blue-700">📅 Class Date</TableHead>
+                                {!showUpcoming && <TableHead className="min-w-[220px] font-bold text-blue-700">💭 Reason for Change</TableHead>}
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredModules.map((module) => (
+                                <React.Fragment key={module.id}>
+                                    {/* Module Header Row */}
+                                    <TableRow className="bg-gradient-to-r from-blue-50/60 via-blue-50/40 to-blue-50/30 border-b-2 border-blue-200/30 hover:from-blue-100/50 hover:via-blue-100/40 hover:to-blue-100/30 transition-all duration-300">
+                                        <TableCell>
+                                            {showUpcoming && (
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedModules.includes(module.id)}
+                                                    onChange={() => handleModuleSelect(module.id)}
+                                                    className="w-4 h-4 text-blue-600 border-2 border-blue-300 rounded focus:ring-blue-200 focus:ring-4 transition-all scale-110"
+                                                />
+                                            )}
+                                        </TableCell>
+                                        <TableCell colSpan={showUpcoming ? 6 : 8}>
+                                            <Collapsible>
+                                                <CollapsibleTrigger 
+                                                    onClick={() => toggleModuleExpansion(module.id)}
+                                                    className="flex items-center gap-3 w-full text-left hover:bg-blue-100/60 p-2 rounded-xl transition-all duration-300 group"
+                                                >
+                                                    <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md">
+                                                        {expandedModules.includes(module.id) ? 
+                                                            <ChevronDown className="w-4 h-4 text-white" /> : 
+                                                            <ChevronRight className="w-4 h-4 text-white" />
+                                                        }
+                                                    </div>
+                                                    <div className="flex items-center gap-4 flex-wrap">
+                                                        <Badge className="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl px-3 py-1 font-bold shadow-md">
+                                                            ✨ {module.name}
+                                                        </Badge>
+                                                        <div className="flex items-center gap-2">
+                                                            <div className="p-1.5 bg-white/80 rounded-lg shadow-sm">
+                                                                {getDesignerIcon(module.designer)}
+                                                            </div>
+                                                            <span className="text-blue-700 font-semibold text-sm">
+                                                                Designed by {module.designer_name || module.designer}
+                                                            </span>
+                                                        </div>
+                                                        {showUpcoming && getApprovalBadge(module.approval_status)}
+                                                    </div>
+                                                </CollapsibleTrigger>
+                                                
+                                                <CollapsibleContent>
+                                                    {expandedModules.includes(module.id) && module.classes.map((classItem) => (
+                                                        <TableRow key={classItem.id} className="border-b border-blue-100/50 hover:bg-blue-50/40 transition-all duration-300">
+                                                            <TableCell></TableCell>
+                                                            <TableCell className="font-bold text-blue-700">{classItem.serialNo}</TableCell>
+                                                            <TableCell>
+                                                                <Badge className="bg-blue-100/80 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold shadow-sm">
+                                                                    {module.name}
+                                                                </Badge>
+                                                            </TableCell>
+                                                            <TableCell className="font-bold text-blue-800">{classItem.name}</TableCell>
+                                                            <TableCell className="text-blue-600 font-semibold">{classItem.focusArea}</TableCell>
+                                                            {!showUpcoming && (
+                                                                <TableCell>
+                                                                    {classItem.reasonForChange ? getApprovalBadge(module.approval_status) : '—'}
+                                                                </TableCell>
+                                                            )}
+                                                            {!showUpcoming && (
+                                                                <TableCell>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm">
+                                                                            <FileText className="w-4 h-4 text-blue-600" />
+                                                                        </div>
+                                                                        <Button 
+                                                                            variant="ghost" 
+                                                                            size="sm" 
+                                                                            className="p-2 h-auto hover:bg-blue-100 rounded-lg transition-all duration-300 font-semibold text-xs"
+                                                                            onClick={() => handlePPTView(classItem.pptFile || '')}
+                                                                        >
+                                                                            <Eye className="w-3 h-3 mr-1" />
+                                                                            View PPT
+                                                                        </Button>
+                                                                    </div>
+                                                                </TableCell>
+                                                            )}
+                                                            <TableCell className="font-semibold text-blue-700">
+                                                                {new Date(classItem.classDate).toLocaleDateString()}
+                                                            </TableCell>
+                                                            {!showUpcoming && (
+                                                                <TableCell className="text-blue-600 italic font-medium">
+                                                                    {classItem.reasonForChange || '—'}
+                                                                </TableCell>
+                                                            )}
+                                                        </TableRow>
+                                                    ))}
+                                                </CollapsibleContent>
+                                            </Collapsible>
+                                        </TableCell>
+                                    </TableRow>
+                                </React.Fragment>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </div>
+            </Card>
+
+            <Dialog open={showReasonDialog} onOpenChange={setShowReasonDialog}>
+              {/* Dialog Content remains the same */}
+              <DialogContent className="sm:max-w-md rounded-2xl border-2 border-blue-200/50 shadow-xl bg-gradient-to-br from-white via-blue-50/30 to-blue-50/20 backdrop-blur-sm">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                        ✨ Request Module Change
+                    </DialogTitle>
+                    <DialogDescription className="text-blue-600 font-medium mt-2">
+                        Share your thoughts! Help our team understand your needs better by providing a reason for your module change request.
+                    </DialogDescription>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                    <Textarea
+                        placeholder="Tell us why you'd like to modify these modules... 💭"
+                        value={reasonText}
+                        onChange={(e) => setReasonText(e.target.value)}
+                        className="min-h-[120px] rounded-xl border-2 border-blue-200/60 bg-white/80 backdrop-blur-sm focus:ring-4 focus:ring-blue-200/50 focus:border-blue-400 transition-all duration-300 resize-none font-medium"
+                    />
+                </div>
+                <DialogFooter className="gap-3">
+                    <Button 
+                        variant="outline" 
+                        onClick={() => setShowReasonDialog(false)}
+                        className="rounded-xl border-2 border-blue-200 hover:bg-blue-50 transition-all duration-300 font-semibold px-4 py-2"
+                    >
+                        Cancel
+                    </Button>
+                    <Button 
+                        onClick={handleSubmitReason}
+                        className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl font-bold px-6 py-2 hover:scale-105"
+                    >
+                        ✨ Submit Request
+                    </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+
+            <Dialog open={showPPTDialog} onOpenChange={setShowPPTDialog}>
+              {/* Dialog Content remains the same */}
+              <DialogContent className="sm:max-w-4xl rounded-2xl border-2 border-blue-200/50 shadow-xl bg-gradient-to-br from-white via-blue-50/20 to-blue-50/10 backdrop-blur-sm">
+                <DialogHeader>
+                    <DialogTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+                        📖 Class Presentation
+                    </DialogTitle>
+                </DialogHeader>
+                <div className="py-4">
+                    <div className="w-full aspect-video bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl border-2 border-blue-200/50 flex items-center justify-center shadow-md">
+                        <div className="text-center text-blue-600">
+                            <div className="p-3 bg-gradient-to-br from-blue-500 to-blue-600 rounded-xl inline-block mb-4 shadow-md">
+                                <FileText className="w-12 h-12 text-white" />
+                            </div>
+                            <p className="font-bold text-lg mb-2">📚 PPT Preview</p>
+                            <p className="font-medium bg-white/60 px-3 py-1.5 rounded-lg border border-blue-200/50">
+                                File: {selectedPPT}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+        </main>
+      </div>
     </div>
   );
 };
