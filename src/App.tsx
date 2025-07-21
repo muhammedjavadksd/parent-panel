@@ -42,6 +42,7 @@ import ClassFeedbackPage from '@/pages/ClassFeedbackPage';
 import JoinClassPage from '@/pages/JoinClassPage';
 import TutorialPage from './pages/TutorialPage';
 import Experience from './pages/Experience';
+import Roadmap from './pages/Roadmap';
 
 const queryClient = new QueryClient();
 
@@ -54,6 +55,7 @@ const AppRoutes = () => {
       <Route path="/" element={<AuthGuard><Dashboard /></AuthGuard>} />
       <Route path="/classes" element={<AuthGuard><Classes /></AuthGuard>} />
       <Route path="/experience" element={<AuthGuard><Experience /></AuthGuard>} />
+      <Route path="/roadmap" element={<AuthGuard><Roadmap /></AuthGuard>} />
       <Route path="/games" element={<AuthGuard><GamesPage /></AuthGuard>} />
       <Route path="/learning" element={<AuthGuard><MobileLearning /></AuthGuard>} />
       <Route path="/events" element={<AuthGuard><Events /></AuthGuard>} />
