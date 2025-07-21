@@ -8,7 +8,7 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { useNavigate } from "react-router-dom";
-import { BarChart3, Clock, Calendar, Users, Trophy, Target, BookOpen, Gamepad2, TrendingUp, Coins, Star, Sparkles, Video } from "lucide-react";
+import { BarChart3, Clock, Calendar, Users, Trophy, Target, BookOpen, Gamepad2, TrendingUp, Coins, Star, Sparkles, Video, Laptop } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -16,6 +16,8 @@ import { useCoins } from "@/contexts/CoinContext";
 import { useDashboard } from '@/hooks/useDashboard';
 import { useChildren } from '@/hooks/useChildren';
 import { useBookings } from '@/hooks/useBookings';
+import UpcomingRoadmap from "@/components/UpcomingROadmap";
+import PastRoadmap from "@/components/PastRoadmap";
 
 
 
@@ -532,6 +534,16 @@ const Dashboard = () => {
             <Card className="premium-card p-3 sm:p-4 lg:p-5 rounded-2xl sm:rounded-3xl glass-card bg-white/95 border-2 border-slate-200/50 shadow-2xl backdrop-blur-xl">
               <Tabs defaultValue="upcoming" className="w-full">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 space-y-2 sm:space-y-0">
+                  <h2
+                    onClick={() => navigate('/classes')}
+                    className="text-xl sm:text-2xl font-extrabold tracking-tight text-indigo-700 flex items-center gap-2 cursor-pointer hover:underline hover:text-indigo-500 transition-colors"
+                  >
+                    <span>Classes</span>
+                    <Laptop className="w-5 h-5 text-indigo-400 hover:text-amber-400 transition-colors" />
+                  </h2>
+
+                  
+
                   <div className="flex items-center space-x-2 sm:space-x-4">
                     <TabsList className="grid w-auto grid-cols-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200/50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm">
                       <TabsTrigger value="upcoming" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300">
@@ -542,10 +554,6 @@ const Dashboard = () => {
                       </TabsTrigger>
                     </TabsList>
                   </div>
-                  <button className="text-xs sm:text-sm text-blue-600 hover:text-blue-800 hover:underline cursor-pointer font-bold tracking-tight flex items-center space-x-1" onClick={() => navigate('/classes/?tab=upcoming')}>
-                    <span>See all</span>
-                    <Star className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
-                  </button>
                 </div>
 
                 <TabsContent value="upcoming">
@@ -561,6 +569,49 @@ const Dashboard = () => {
                     bookings={pastBookings}
                     isLoading={isLoading}
                     error={error}
+                  />
+                </TabsContent>
+              </Tabs>
+            </Card>
+            <Card className="premium-card p-3 sm:p-4 lg:p-5 rounded-2xl sm:rounded-3xl glass-card bg-white/95 border-2 border-slate-200/50 shadow-2xl backdrop-blur-xl mt-2">
+              <Tabs defaultValue="upcoming" className="w-full">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 space-y-2 sm:space-y-0">
+
+
+
+                  <h2
+                    onClick={() => navigate('/roadmap')}
+                    className="text-xl sm:text-2xl font-extrabold tracking-tight text-indigo-700 flex items-center gap-2 cursor-pointer hover:underline hover:text-indigo-500 transition-colors"
+                  >
+                    <span>Roadmap</span>
+                    <TrendingUp className="w-5 h-5 text-indigo-400 hover:text-amber-400 transition-colors" />
+                  </h2>
+
+
+                  <div className="flex items-center space-x-2 sm:space-x-4">
+                    <TabsList className="grid w-auto grid-cols-2 bg-gradient-to-r from-blue-50 to-indigo-50 border-2 border-blue-200/50 rounded-xl sm:rounded-2xl shadow-lg backdrop-blur-sm">
+                      <TabsTrigger value="upcoming" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300">
+                        Upcoming
+                      </TabsTrigger>
+                      <TabsTrigger value="past" className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-blue-600 data-[state=active]:to-indigo-600 data-[state=active]:text-white data-[state=active]:shadow-lg rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all duration-300">
+                        Past
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                  {/* <span className="">Roadmap</span> */}
+                  {/* <span className="text-xl font-semibold text-slate-700">
+                    Roadmap
+                  </span> */}
+
+                </div>
+
+                <TabsContent value="upcoming">
+                  <UpcomingRoadmap
+                  />
+                </TabsContent>
+
+                <TabsContent value="past">
+                  <PastRoadmap
                   />
                 </TabsContent>
               </Tabs>

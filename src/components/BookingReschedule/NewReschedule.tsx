@@ -70,6 +70,21 @@ function RescheduleBooking({ schedulebooking_id, onClose }: RescheduleBookingPro
         if (schedulebooking_id) getAvailableSlots(schedulebooking_id);
     }, [schedulebooking_id]);
 
+
+        // ✅ ADD THIS EFFECT
+    // This effect handles closing the modal on success
+    useEffect(() => {
+        if (success === 'Class rescheduled successfully.') {
+            // Wait 2 seconds to allow the user to see the success message
+            const timer = setTimeout(() => {
+                onClose();
+            }, 2000); 
+
+            // Clean up the timer if the component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [success, onClose]);
+
     const selectedTeacherData = useMemo(() => {
         return availableSlots?.data?.find(t => t.teacher.faculty_id === selectedTeacherId);
     }, [availableSlots, selectedTeacherId]);
