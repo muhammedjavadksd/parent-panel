@@ -6,17 +6,20 @@ import { Label } from '@/components/ui/label';
 import { InputOTP, InputOTPGroup, InputOTPSlot } from '@/components/ui/input-otp';
 import { loginOtpSchema, sendOtpSchema } from '@/lib/schemas/authSchemas';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 
 interface LoginOtpFormProps {
   onSubmit: (values: { mobile_number: string; otp: string }) => Promise<void>;
   isSubmitting: boolean;
-  initialMobileNumber?: string; // 👈 1. Add this prop
+  initialMobileNumber?: string;
 }
 
 const LoginOtpForm = ({ onSubmit, isSubmitting, initialMobileNumber = '' }: LoginOtpFormProps) => {
   const [otpSent, setOtpSent] = useState(false);
   const [mobileNumber, setMobileNumber] = useState('');
+  const [sendingOtp, setSendingOtp] = useState(false);
   const { toast } = useToast();
+  const { sendOtp } = useAuth();
 
   const handleSendOtp = async (mobileNumber: string) => {
     if (!mobileNumber) {
@@ -28,24 +31,44 @@ const LoginOtpForm = ({ onSubmit, isSubmitting, initialMobileNumber = '' }: Logi
       return;
     }
 
-    // TODO: Implement actual OTP sending when backend is ready
-    setOtpSent(true);
-    setMobileNumber(mobileNumber);
-    toast({
-      title: "OTP Sent",
-      description: `OTP sent to +91${mobileNumber}`,
-    });
+    setSendingOtp(true);
+    try {
+      const result = await sendOtp(mobileNumber);
+      
+      if (result.status) {
+        setOtpSent(true);
+        setMobileNumber(mobileNumber);
+        toast({
+          title: "OTP Sent",
+          description: `OTP sent to +91${mobileNumber}`,
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: result.msg || "Failed to send OTP",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send OTP. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setSendingOtp(false);
+    }
   };
 
   return (
     <Formik
       initialValues={{
-        mobile_number: initialMobileNumber, // 👈 2. Use the prop here
+        mobile_number: initialMobileNumber,
         otp: '',
       }}
       validationSchema={otpSent ? loginOtpSchema : sendOtpSchema}
       onSubmit={onSubmit}
-      enableReinitialize // 👈 3. Add this to update the form when the prop changes
+      enableReinitialize
     >
       {({ values, setFieldValue, isSubmitting: formikSubmitting, isValid }) => (
         <Form className="space-y-4">
@@ -66,10 +89,10 @@ const LoginOtpForm = ({ onSubmit, isSubmitting, initialMobileNumber = '' }: Logi
               <Button
                 type="button"
                 onClick={() => handleSendOtp(values.mobile_number)}
-                disabled={!values.mobile_number || otpSent}
+                disabled={!values.mobile_number || otpSent || sendingOtp}
                 className="bg-orange-500 hover:bg-orange-600 text-white px-4"
               >
-                {otpSent ? 'Sent' : 'Send OTP'}
+                {sendingOtp ? 'Sending...' : otpSent ? 'Sent' : 'Send OTP'}
               </Button>
             </div>
             <ErrorMessage

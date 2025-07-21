@@ -13,6 +13,11 @@ export interface LoginCredentials {
     password: string;
 }
 
+export interface LoginOtpCredentials {
+    mobile_number: string;
+    otp: string;
+}
+
 export interface LoginResponse {
     success: boolean;
     error: string;
@@ -22,6 +27,10 @@ export interface LoginResponse {
     expires_in: number;
     parent: Parent;
     refresh_token: string;
+}
+
+export interface LoginOtpResponse {
+    access_token: string;
 }
 
 export interface SendOtpResponse {

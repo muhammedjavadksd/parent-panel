@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { LoginCredentials, ResetPasswordRequest, Parent } from '@/lib/interface/auth';
+import { LoginCredentials, ResetPasswordRequest, Parent, LoginOtpCredentials } from '@/lib/interface/auth';
 import { authService } from '@/services';
 
 export const useAuth = () => {
@@ -31,6 +31,31 @@ export const useAuth = () => {
             }
         } catch (err) {
             const errorMessage = err instanceof Error ? err.message : 'Login failed';
+            setError(errorMessage);
+            return { status: false, msg: errorMessage };
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
+    const loginWithOtp = useCallback(async (credentials: LoginOtpCredentials) => {
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const result = await authService.loginWithOtp(credentials);
+
+            if (result.status) {
+                setUser(result.data.user);
+                // Use window.location for navigation to avoid dependency issues
+                window.location.href = '/';
+                return result;
+            } else {
+                setError(result.msg);
+                return result;
+            }
+        } catch (err) {
+            const errorMessage = err instanceof Error ? err.message : 'OTP login failed';
             setError(errorMessage);
             return { status: false, msg: errorMessage };
         } finally {
@@ -114,6 +139,7 @@ export const useAuth = () => {
         isLoading,
         error,
         login,
+        loginWithOtp,
         sendOtp,
         resetPassword,
         logout,
