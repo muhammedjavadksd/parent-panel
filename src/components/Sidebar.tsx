@@ -15,9 +15,14 @@ const navigationItems = [
     href: "/classes",
     icon: BookOpen
   },
+  // {
+  //   name: "Events",
+  //   href: "/events", 
+  //   icon: Users
+  // },
   {
-    name: "Events",
-    href: "/events", 
+    name: "Experience",
+    href: "/experience", 
     icon: Users
   },
   {
