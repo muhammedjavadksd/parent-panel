@@ -16,7 +16,7 @@ import { useCoins } from "@/contexts/CoinContext";
 import { useDashboard } from '@/hooks/useDashboard';
 import { useChildren } from '@/hooks/useChildren';
 import { useBookings } from '@/hooks/useBookings';
-import UpcomingRoadmap from "@/components/UpcomingROadmap";
+import UpcomingRoadmap from "@/components/UpcomingRoadmap";
 import PastRoadmap from "@/components/PastRoadmap";
 
 
