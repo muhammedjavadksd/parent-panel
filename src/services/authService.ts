@@ -47,18 +47,19 @@ export class AuthService {
 
     async loginWithOtp(credentials: LoginOtpCredentials): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.post<LoginOtpResponse>('http://localhost:3000/verify', credentials);
-
-            if (response.data.access_token) {
+            const response = await apiClient.post<LoginOtpResponse>('http://localhost:3000/auth/verify', credentials);
+            // console.log('Login with OTP response:', response.data);
+            if (response.data.data.access_token) {
                 // Store token in localStorage
-                localStorage.setItem('accessToken', response.data.access_token);
+                localStorage.setItem('accessToken', response.data.data.access_token);
+                // console.log('Access token stored:', response.data.access_token);
                 
                 // Try to get user data from the existing API
                 let user = null;
                 try {
                     const userResponse = await apiClient.get('/parent-panel/profile', {
                         headers: {
-                            Authorization: `Bearer ${response.data.access_token}`
+                            Authorization: `Bearer ${response.data.data.access_token}`
                         }
                     });
 
@@ -80,7 +81,7 @@ export class AuthService {
                     status: true,
                     msg: 'Login successful',
                     data: {
-                        access_token: response.data.access_token,
+                        access_token: response.data.data.access_token,
                         user: user
                     }
                 };
@@ -114,7 +115,7 @@ export class AuthService {
 
     async submitFeedback(feedback: FeedbackSubmission): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.post<FeedbackResponse>('http://localhost:3000/submit-feedback', feedback);
+            const response = await apiClient.post<FeedbackResponse>('http://localhost:3000/feedback/submit', feedback);
 
             if (response.data.success) {
                 return {
@@ -145,7 +146,7 @@ export class AuthService {
 
     async getFeedback(classschedule_id: number): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.get<FeedbackResponse>(`http://localhost:3000/get-feedback?classschedule_id=${classschedule_id}`);
+            const response = await apiClient.get<FeedbackResponse>(`http://localhost:3000/feedback/get?classschedule_id=${classschedule_id}`);
 
             if (response.data.success) {
                 return {
