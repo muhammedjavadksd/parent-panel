@@ -19,6 +19,7 @@ export const useBookings = () => {
             const response = await bookingService.getBookings(filters, child_id);
 
             if (response.status && response.data) {
+                console.log('Bookings loaded:', response.data.bookings);
                 setBookings(response.data.bookings.data || []);
                 setPagination(response.data.bookings);
             } else {

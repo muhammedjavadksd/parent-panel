@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import { LoginCredentials, LoginResponse, ResetPasswordRequest, ResetPasswordResponse, SendOtpResponse } from '@/lib/interface/auth';
+import { LoginCredentials, LoginResponse, ResetPasswordRequest, ResetPasswordResponse, SendOtpResponse, LoginOtpCredentials, LoginOtpResponse, FeedbackSubmission, FeedbackResponse } from '@/lib/interface/auth';
 
 export class AuthService {
     async login(credentials: LoginCredentials): Promise<{ status: boolean; msg: string; data?: any }> {
@@ -41,6 +41,135 @@ export class AuthService {
             return {
                 status: false,
                 msg: error.message || 'Login failed'
+            };
+        }
+    }
+
+    async loginWithOtp(credentials: LoginOtpCredentials): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.post<LoginOtpResponse>('http://localhost:3000/verify', credentials);
+
+            if (response.data.access_token) {
+                // Store token in localStorage
+                localStorage.setItem('accessToken', response.data.access_token);
+                
+                // Try to get user data from the existing API
+                let user = null;
+                try {
+                    const userResponse = await apiClient.get('/parent-panel/profile', {
+                        headers: {
+                            Authorization: `Bearer ${response.data.access_token}`
+                        }
+                    });
+
+                    user = userResponse.data.data || userResponse.data.parent;
+                } catch (profileError) {
+                    console.warn('Could not fetch user profile, creating minimal user object:', profileError);
+                    // Create a minimal user object if profile API is not available
+                    user = {
+                        id: 0, // This will be updated when profile is fetched
+                        parent_name: 'User',
+                        mobile_number: credentials.mobile_number,
+                        available_points: 0
+                    };
+                }
+
+                localStorage.setItem('user', JSON.stringify(user));
+
+                return {
+                    status: true,
+                    msg: 'Login successful',
+                    data: {
+                        access_token: response.data.access_token,
+                        user: user
+                    }
+                };
+            } else {
+                return {
+                    status: false,
+                    msg: 'Login failed - no access token received'
+                };
+            }
+        } catch (error: any) {
+            if (error.response?.data?.error) {
+                return {
+                    status: false,
+                    msg: error.response.data.error
+                };
+            }
+
+            if (error.response?.data?.message) {
+                return {
+                    status: false,
+                    msg: error.response.data.message
+                };
+            }
+
+            return {
+                status: false,
+                msg: error.message || 'Login failed'
+            };
+        }
+    }
+
+    async submitFeedback(feedback: FeedbackSubmission): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.post<FeedbackResponse>('http://localhost:3000/submit-feedback', feedback);
+
+            if (response.data.success) {
+                return {
+                    status: true,
+                    msg: response.data.message || 'Feedback submitted successfully',
+                    data: response.data.data
+                };
+            } else {
+                return {
+                    status: false,
+                    msg: response.data.message || 'Failed to submit feedback'
+                };
+            }
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                return {
+                    status: false,
+                    msg: error.response.data.message
+                };
+            }
+
+            return {
+                status: false,
+                msg: error.message || 'Failed to submit feedback'
+            };
+        }
+    }
+
+    async getFeedback(classschedule_id: number): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.get<FeedbackResponse>(`http://localhost:3000/get-feedback?classschedule_id=${classschedule_id}`);
+
+            if (response.data.success) {
+                return {
+                    status: true,
+                    msg: 'Feedback retrieved successfully',
+                    data: response.data.data
+                };
+            } else {
+                return {
+                    status: false,
+                    msg: response.data.message || 'No feedback found'
+                };
+            }
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                return {
+                    status: false,
+                    msg: error.response.data.message
+                };
+            }
+
+            return {
+                status: false,
+                msg: error.message || 'Failed to retrieve feedback'
             };
         }
     }

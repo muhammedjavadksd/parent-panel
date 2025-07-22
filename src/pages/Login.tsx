@@ -14,7 +14,7 @@ const Login = () => {
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [mobileNumber, setMobileNumber] = useState('');
   const [activeTab, setActiveTab] = useState('password');
-  const { login, isLoading, error, clearError } = useAuth();
+  const { login, loginWithOtp, isLoading, error, clearError } = useAuth();
   const navigate = useNavigate();
 
   const onSubmit = async (values: LoginCredentials) => {
@@ -25,8 +25,7 @@ const Login = () => {
 
   const onOtpSubmit = async (values: { mobile_number: string; otp: string }) => {
     clearError();
-    // TODO: Implement OTP login when backend is ready
-    console.log('OTP login:', values);
+    await loginWithOtp(values);
   };
 
   const handleForgotPassword = (currentMobileNumber: string) => {
@@ -73,7 +72,6 @@ const Login = () => {
               onSubmit={onSubmit}
               onForgotPassword={handleForgotPassword}
               isSubmitting={isLoading}
-              // 👇 Pass the state updater function down
               onMobileNumberChange={setMobileNumber}
             />
           </TabsContent>
@@ -82,7 +80,6 @@ const Login = () => {
             <LoginOtpForm
               onSubmit={onOtpSubmit}
               isSubmitting={isLoading}
-              // 👇 Pass the current mobile number state down
               initialMobileNumber={mobileNumber}
             />
           </TabsContent>
