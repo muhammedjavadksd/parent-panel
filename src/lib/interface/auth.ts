@@ -69,17 +69,17 @@ export interface FeedbackSubmission {
     parent_id: number;
     classschedulebooking_id: number;
     type: "class_feedback";
-    engagement: "Yes" | "No";
-    learning: "Yes" | "No";
-    instructor: "Yes" | "No";
-    classroom_platform: "Yes" | "No";
-    low_on_learning: "Yes" | "No";
-    low_on_engagement: "Yes" | "No";
-    instructor_not_prepared: "Yes" | "No";
-    system_issues: "Yes" | "No";
+    engagement: "Yes" | "No"|null;
+    learning: "Yes" | "No"|null;
+    instructor: "Yes" | "No"|null;
+    classroom_platform: "Yes" | "No"|null;
+    low_on_learning: "Yes" | "No"|null;
+    low_on_engagement: "Yes" | "No"|null;
+    instructor_not_prepared: "Yes" | "No"|null;
+    system_issues: "Yes" | "No"|null;
     other: string;
     rating: number;
-    ready_to_enroll: "Yes" | "No" | "Need_Details";
+    ready_to_enroll: "Yes" | "No" | "Need_Details"|null;
 }
 
 export interface FeedbackResponse {
