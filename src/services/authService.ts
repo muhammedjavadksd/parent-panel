@@ -1,5 +1,5 @@
 import { apiClient } from '@/services/api';
-import { LoginCredentials, LoginResponse, ResetPasswordRequest, ResetPasswordResponse, SendOtpResponse, LoginOtpCredentials, LoginOtpResponse } from '@/lib/interface/auth';
+import { LoginCredentials, LoginResponse, ResetPasswordRequest, ResetPasswordResponse, SendOtpResponse, LoginOtpCredentials, LoginOtpResponse, FeedbackSubmission, FeedbackResponse } from '@/lib/interface/auth';
 
 export class AuthService {
     async login(credentials: LoginCredentials): Promise<{ status: boolean; msg: string; data?: any }> {
@@ -108,6 +108,68 @@ export class AuthService {
             return {
                 status: false,
                 msg: error.message || 'Login failed'
+            };
+        }
+    }
+
+    async submitFeedback(feedback: FeedbackSubmission): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.post<FeedbackResponse>('http://localhost:3000/submit-feedback', feedback);
+
+            if (response.data.success) {
+                return {
+                    status: true,
+                    msg: response.data.message || 'Feedback submitted successfully',
+                    data: response.data.data
+                };
+            } else {
+                return {
+                    status: false,
+                    msg: response.data.message || 'Failed to submit feedback'
+                };
+            }
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                return {
+                    status: false,
+                    msg: error.response.data.message
+                };
+            }
+
+            return {
+                status: false,
+                msg: error.message || 'Failed to submit feedback'
+            };
+        }
+    }
+
+    async getFeedback(classschedule_id: number): Promise<{ status: boolean; msg: string; data?: any }> {
+        try {
+            const response = await apiClient.get<FeedbackResponse>(`http://localhost:3000/get-feedback?classschedule_id=${classschedule_id}`);
+
+            if (response.data.success) {
+                return {
+                    status: true,
+                    msg: 'Feedback retrieved successfully',
+                    data: response.data.data
+                };
+            } else {
+                return {
+                    status: false,
+                    msg: response.data.message || 'No feedback found'
+                };
+            }
+        } catch (error: any) {
+            if (error.response?.data?.message) {
+                return {
+                    status: false,
+                    msg: error.response.data.message
+                };
+            }
+
+            return {
+                status: false,
+                msg: error.message || 'Failed to retrieve feedback'
             };
         }
     }
