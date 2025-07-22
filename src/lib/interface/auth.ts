@@ -29,8 +29,16 @@ export interface LoginResponse {
     refresh_token: string;
 }
 
+// export interface LoginOtpResponse {
+//     access_token: string;
+// }
+
 export interface LoginOtpResponse {
+  success: boolean;
+  message: string;
+  data: {
     access_token: string;
+  };
 }
 
 export interface SendOtpResponse {
