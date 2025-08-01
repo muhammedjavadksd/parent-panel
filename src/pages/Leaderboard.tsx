@@ -12,6 +12,7 @@ import Leaderboard from '@/components/Leaderboard/Leaderboard';
 import { useLeaderboard } from '@/hooks/useLeaderboard';
 import { useChildren } from '@/contexts/ChildrenContext';
 import LeaderboardGuideCard from '@/components/Leaderboard/LeaderboardGuideCard';
+import WebsiteTour from '@/components/WebsiteTour';
 
 const LeaderboardPage = () => {
   const { loading, error, top3, allData, fetchTop3, childData, childScor } = useLeaderboard();
@@ -91,7 +92,7 @@ const LeaderboardPage = () => {
     <div className="min-h-screen bg-white">
       <Sidebar />
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={() => { }} />
+        <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
         <main className="flex-1 p-2 sm:p-3 lg:p-8 space-y-4 sm:space-y-6 lg:space-y-8 bg-gray-50 pb-20 sm:pb-0">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
             <div>
@@ -239,6 +240,9 @@ const LeaderboardPage = () => {
           </div>
         </main>
       </div>
+
+      {/* Website Tour */}
+      <WebsiteTour />
     </div>
   );
 };

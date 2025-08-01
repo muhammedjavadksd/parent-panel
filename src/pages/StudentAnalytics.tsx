@@ -17,6 +17,7 @@ import { useDashboard } from '@/hooks/useDashboard';
 import { useBookings } from '@/hooks/useBookings';
 import { useChildren } from "@/contexts/ChildrenContext";
 import { useCallback } from "react";
+import WebsiteTour from '@/components/WebsiteTour';
 
 
 
@@ -149,7 +150,8 @@ const StudentAnalytics = () => {
       <Sidebar />
 
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={() => { }} />
+
+        <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
           <div className="mb-4 sm:mb-6">
@@ -420,8 +422,8 @@ const StudentAnalytics = () => {
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium text-gray-800 text-sm sm:text-base">{rec.subject}</h4>
                       <span className={`px-2 py-1 rounded-full text-xs font-medium ${rec.priority === 'High' ? 'bg-red-100 text-red-800' :
-                          rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
-                            'bg-green-100 text-green-800'
+                        rec.priority === 'Medium' ? 'bg-yellow-100 text-yellow-800' :
+                          'bg-green-100 text-green-800'
                         }`}>
                         {rec.priority}
                       </span>
@@ -434,6 +436,9 @@ const StudentAnalytics = () => {
           </div>
         </main>
       </div>
+
+      {/* Website Tour */}
+      <WebsiteTour />
     </div>
   );
 };

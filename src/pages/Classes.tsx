@@ -10,6 +10,7 @@ import { useChildren } from '@/hooks/useChildren';
 import { useClasses } from '@/hooks/useClasses';
 import LearningProgress from '@/components/dashboard/LearningProgress';
 import BookingPopup from '@/components/BookingPopup';
+import WebsiteTour from '@/components/WebsiteTour';
 import React, { useState } from 'react';
 import { useCallback } from 'react';
 
@@ -100,7 +101,7 @@ const Classes = () => {
       <Sidebar />
 
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={() => { }} />
+        <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-4 md:p-4 space-y-2 sm:space-y-3 lg:space-y-4 md:space-y-4 max-w-7xl mx-auto w-full pb-20 sm:pb-0">
           <div className="p-4 sm:p-6 lg:p-8 md:p-6 bg-white border-b border-blue-100">
@@ -245,6 +246,9 @@ const Classes = () => {
         bookingType={bookingType}
         onBookingComplete={handleBookingComplete}
       />
+
+      {/* Website Tour */}
+      <WebsiteTour />
     </div>
   );
 };

@@ -12,6 +12,7 @@ import TransactionList from '@/components/transactions/TransactionList';
 import TransactionPagination from '@/components/transactions/TransactionPagination';
 import { TRANSACTION_CONSTANTS } from '@/shared/constants/transactions';
 import { toast } from 'sonner';
+import WebsiteTour from '@/components/WebsiteTour';
 
 const Transactions: React.FC = () => {
   const {
@@ -87,7 +88,7 @@ const Transactions: React.FC = () => {
     <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=> {}}/>
+        <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
           <div className="mb-4 sm:mb-6">
@@ -182,6 +183,9 @@ const Transactions: React.FC = () => {
           )}
         </main>
       </div>
+
+      {/* Website Tour */}
+      <WebsiteTour />
     </div>
   );
 };
