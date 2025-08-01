@@ -7,6 +7,7 @@ import { Phone, Mail, Ticket, Clock, CheckCircle, AlertCircle, MessageSquare, He
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 import { useSupport } from "@/hooks/useSupport";
+import WebsiteTour from "@/components/WebsiteTour";
 
 const faqData = [
   {
@@ -274,6 +275,9 @@ const Support = () => {
           </div>
         </main>
       </div>
+
+      {/* Website Tour */}
+      <WebsiteTour />
     </div>
   );
 };

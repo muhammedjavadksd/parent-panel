@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import Sidebar from "@/components/Sidebar"; // Assumed path
 import Header from "@/components/Header"; // Assumed path
 import BookingPopup from '@/components/BookingPopup'; // Assumed path
+import WebsiteTour from '@/components/WebsiteTour';
 
 /**
  * Experience Page
@@ -42,7 +43,7 @@ const Experience = () => {
             <Sidebar />
 
             <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-                <Header onStartTour={() => { }} />
+                <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
 
                 <main className="flex-1 p-2 sm:p-3 lg:p-4 md:p-4 space-y-2 sm:space-y-3 lg:space-y-4 md:space-y-4 max-w-7xl mx-auto w-full pb-20 sm:pb-0">
                     {/* Page Header */}
@@ -222,6 +223,9 @@ const Experience = () => {
                 bookingType={bookingType}
                 onBookingComplete={handleBookingComplete}
             />
+
+            {/* Website Tour */}
+            <WebsiteTour />
         </div>
     );
 }
