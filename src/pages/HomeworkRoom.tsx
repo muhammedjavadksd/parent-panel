@@ -7,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, BookOpen, Clock, HelpCircle, CheckCircle2, AlertCircle, CalendarIcon, Download, Upload, X, Loader2 } from "lucide-react";
+import { ArrowLeft, BookOpen, Clock, HelpCircle, CheckCircle2, AlertCircle, CalendarIcon, Download, Upload, X, Loader2, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "@/components/ui/use-toast";
 import { useHomework } from "@/hooks/useHomework";
 import { useChildren } from "@/hooks/useChildren";
+import CameraCaptureModal from "@/components/CameraCaptureModal";
 
 const HomeworkRoom = () => {
   const navigate = useNavigate();
@@ -23,17 +24,34 @@ const HomeworkRoom = () => {
   const [isRangeMode, setIsRangeMode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<{ [key: number]: File[] }>({});
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
+  const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [currentHomeworkId, setCurrentHomeworkId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
 
-  const { children: childrenData } = useChildren();
-  const { data, isLoading, error, loadHomework, clearError } = useHomework();
+  const { children: childrenData, selectedChild, isLoading: childrenLoading } = useChildren();
+  const { data, isLoading: homeworkLoading, error, loadHomework, clearError } = useHomework();
 
-  // Get the first child's ID for API calls
-  const currentChildId = childrenData?.[0]?.id || 1;
+  // Combined loading state
+  const isLoading = childrenLoading || homeworkLoading;
+
+  // Get the selected child's ID for API calls, or use first child if no specific child is selected
+  const currentChildId = selectedChild?.id || childrenData?.[0]?.id || 1;
+  
+  // Debug log for child ID
+  useEffect(() => {
+    console.log('🔍 HomeworkRoom: Using child ID:', currentChildId, 'for child:', selectedChild?.name || 'Family');
+  }, [currentChildId, selectedChild]);
 
   useEffect(() => {
-    // Load homework data when component mounts
+    // Reset to first page when child selection changes
+    if (selectedChild !== undefined) {
+      console.log('🔍 HomeworkRoom: Child selection changed to:', selectedChild?.name || 'Family');
+      setCurrentPage(1);
+    }
+  }, [selectedChild]);
+
+  useEffect(() => {
+    // Load homework data when component mounts or child selection changes
     loadHomework({
       child_id: currentChildId,
       page: currentPage,
@@ -221,6 +239,25 @@ const HomeworkRoom = () => {
     setIsSubmitDialogOpen(true);
   };
 
+  const openCameraModal = (homeworkId: number) => {
+    setCurrentHomeworkId(homeworkId);
+    setIsCameraModalOpen(true);
+  };
+
+  const handleCameraImagesCaptured = (images: File[]) => {
+    if (currentHomeworkId) {
+      // Add captured images to the selected files
+      setSelectedFiles(prev => ({
+        ...prev,
+        [currentHomeworkId]: [...(prev[currentHomeworkId] || []), ...images]
+      }));
+      
+      // Close camera modal and open file upload dialog
+      setIsCameraModalOpen(false);
+      setIsSubmitDialogOpen(true);
+    }
+  };
+
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
@@ -265,8 +302,18 @@ const HomeworkRoom = () => {
               <div>
                 <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-800 mb-1 sm:mb-2">
                   Homework Room
+                  {selectedChild && (
+                    <span className="text-lg sm:text-xl lg:text-2xl text-blue-600 ml-2 sm:ml-3">
+                      - {selectedChild.name}
+                    </span>
+                  )}
                 </h1>
-                <p className="text-blue-600 text-sm sm:text-base">Complete assignments and get help from teachers</p>
+                <p className="text-blue-600 text-sm sm:text-base">
+                  {selectedChild 
+                    ? `Complete assignments for ${selectedChild.name}` 
+                    : "Complete assignments and get help from teachers"
+                  }
+                </p>
               </div>
 
               {/* Date Filter */}
@@ -437,12 +484,22 @@ const HomeworkRoom = () => {
                     <div className="flex flex-col space-y-2 sm:space-y-3 lg:ml-8">
                       {parseInt(homework.pending_hw_count) > 0 ? (
                         <>
-                          <Button
-                            className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
-                            onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
-                          >
-                            Submit Work
-                          </Button>
+                          <div className="flex flex-col space-y-2">
+                            <Button
+                              className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
+                              onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
+                            >
+                              <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                              Upload Files
+                            </Button>
+                            <Button
+                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
+                              onClick={() => openCameraModal(homework.classschedulebooking_id)}
+                            >
+                              <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                              Camera Capture
+                            </Button>
+                          </div>
                           <Button
                             variant="outline"
                             className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
@@ -626,6 +683,15 @@ const HomeworkRoom = () => {
               </div>
             </DialogContent>
           </Dialog>
+
+          {/* Camera Capture Modal */}
+          <CameraCaptureModal
+            isOpen={isCameraModalOpen}
+            onClose={() => setIsCameraModalOpen(false)}
+            onImagesCaptured={handleCameraImagesCaptured}
+            homeworkId={currentHomeworkId || 0}
+            childId={currentChildId}
+          />
         </main>
       </div>
     </div>
