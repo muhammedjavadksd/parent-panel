@@ -16,6 +16,7 @@ import { toast } from "@/components/ui/use-toast";
 import { useHomework } from "@/hooks/useHomework";
 import { useChildren } from "@/hooks/useChildren";
 import CameraCaptureModal from "@/components/CameraCaptureModal";
+import { apiClient } from "@/services/api";
 
 const HomeworkRoom = () => {
   const navigate = useNavigate();
@@ -197,24 +198,25 @@ const HomeworkRoom = () => {
       // Add the classschedulebooking_id
       formData.append('classschedulebooking_id', homeworkId.toString());
       
-      // Add all files to the form data
+      // Add all files to the form data with unique names
       files.forEach((file, index) => {
-        formData.append('files', file);
+        // Create unique filename by appending classschedulebooking_id
+        const fileExtension = file.name.split('.').pop();
+        const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
+        const uniqueFileName = `${fileNameWithoutExtension}_${homeworkId}.${fileExtension}`;
+        
+        // Create new File object with unique name
+        const renamedFile = new File([file], uniqueFileName, { type: file.type });
+        formData.append('files', renamedFile);
       });
 
-      const response = await fetch('http://localhost:3000/api/homework/submit', {
-        method: 'POST',
+      const response = await apiClient.post(`${import.meta.env.VITE_BASE_URL}/api/homework/submit`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Homework submission failed.');
-      }
+      const result = response.data;
 
       if (result.status === 'success') {
         toast({
@@ -265,7 +267,7 @@ const HomeworkRoom = () => {
 
   const handleCameraImagesCaptured = (images: File[]) => {
     if (currentHomeworkId) {
-      // Add captured images to the selected files
+      // Add captured images to the selected files (they already have unique names from camera capture)
       setSelectedFiles(prev => ({
         ...prev,
         [currentHomeworkId]: [...(prev[currentHomeworkId] || []), ...images]

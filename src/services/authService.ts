@@ -47,7 +47,7 @@ export class AuthService {
 
     async loginWithOtp(credentials: LoginOtpCredentials): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.post<LoginOtpResponse>('http://localhost:3000/auth/verify', credentials);
+            const response = await apiClient.post<LoginOtpResponse>(`${import.meta.env.VITE_BASE_URL}/auth/verify`, credentials);
             // console.log('Login with OTP response:', response.data);
             if (response.data.data.access_token) {
                 // Store token in localStorage
@@ -115,7 +115,7 @@ export class AuthService {
 
     async submitFeedback(feedback: FeedbackSubmission): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.post<FeedbackResponse>('http://localhost:3000/feedback/submit', feedback);
+            const response = await apiClient.post<FeedbackResponse>(`${import.meta.env.VITE_BASE_URL}/feedback/submit`, feedback);
 
             if (response.data.success) {
                 return {
@@ -146,7 +146,7 @@ export class AuthService {
 
     async getFeedback(classschedule_id: number): Promise<{ status: boolean; msg: string; data?: any }> {
         try {
-            const response = await apiClient.get<FeedbackResponse>(`http://localhost:3000/feedback/get?classschedule_id=${classschedule_id}`);
+            const response = await apiClient.get<FeedbackResponse>(`${import.meta.env.VITE_BASE_URL}/feedback/get?classschedule_id=${classschedule_id}`);
 
             if (response.data.success) {
                 return {
