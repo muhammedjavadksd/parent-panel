@@ -194,17 +194,17 @@ const HomeworkRoom = () => {
 
     try {
       const formData = new FormData();
-      
+
       // Add the classschedulebooking_id
       formData.append('classschedulebooking_id', homeworkId.toString());
-      
+
       // Add all files to the form data with unique names
       files.forEach((file, index) => {
         // Create unique filename by appending classschedulebooking_id
         const fileExtension = file.name.split('.').pop();
         const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
         const uniqueFileName = `${fileNameWithoutExtension}_${homeworkId}.${fileExtension}`;
-        
+
         // Create new File object with unique name
         const renamedFile = new File([file], uniqueFileName, { type: file.type });
         formData.append('files', renamedFile);
@@ -466,7 +466,7 @@ const HomeworkRoom = () => {
           {!isLoading && (
             <div className="space-y-4 sm:space-y-6">
               {homeworkAvailable && filteredHomework.map((homework) => (
-                <Card key={homework.classschedulebooking_id} className="p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300">
+                <Card key={homework.classschedulebooking_id} className={`p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300 ${parseInt(homework.pending_hw_count) === 0 && 'border-2 border-green-200' }`}>
                   <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
@@ -569,13 +569,23 @@ const HomeworkRoom = () => {
                             <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             View Homework
                           </Button>
-                          <Button
+                          {/* <Button
                             variant="outline"
                             className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleDownloadHomework(homework)}
                           >
                             <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Download
+                          </Button> */}
+
+                          <Button
+                            variant="outline"
+                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            // onClick={() => handleDownloadHomework(homework)}
+                            onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
+                          >
+                            <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            Asses My Work
                           </Button>
                         </>
                       )}
