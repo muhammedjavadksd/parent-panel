@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Camera, X, Upload, RotateCcw, Settings, CheckCircle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
+import { apiClient } from '@/services/api';
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
@@ -186,7 +187,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     canvas.toBlob((blob) => {
       if (blob) {
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-        const fileName = `homework-capture-${timestamp}.jpg`;
+        const fileName = `homework-capture-${timestamp}_${homeworkId}.jpg`;
         const file = new File([blob], fileName, { type: 'image/jpeg' });
         
         setCapturedImages(prev => [...prev, file]);
@@ -239,24 +240,18 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       // Add the classschedulebooking_id (same as homeworkId)
       formData.append('classschedulebooking_id', homeworkId.toString());
       
-      // Add all captured images to the form data
+      // Add all captured images to the form data (already have unique names from capture)
       capturedImages.forEach((file) => {
         formData.append('files', file);
       });
 
-      const response = await fetch('http://localhost:3000/api/homework/submit', {
-        method: 'POST',
+      const response = await apiClient.post(`${import.meta.env.VITE_BASE_URL}/api/homework/submit`, formData, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Content-Type': 'multipart/form-data',
         },
-        body: formData,
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.message || 'Homework submission failed.');
-      }
+      const result = response.data;
 
       if (result.status === 'success') {
         toast({
