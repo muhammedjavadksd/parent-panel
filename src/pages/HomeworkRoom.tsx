@@ -7,7 +7,7 @@ import { Calendar } from "@/components/ui/calendar";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, BookOpen, Clock, HelpCircle, CheckCircle2, AlertCircle, CalendarIcon, Download, Upload, X, Loader2, Camera } from "lucide-react";
+import { Zap, ArrowLeft, BookOpen, Clock, HelpCircle, CheckCircle2, AlertCircle, CalendarIcon, Download, Upload, X, Loader2, Camera } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { format, parseISO } from "date-fns";
@@ -27,6 +27,7 @@ const HomeworkRoom = () => {
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [currentHomeworkId, setCurrentHomeworkId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const { children: childrenData, selectedChild, isLoading: childrenLoading } = useChildren();
   const { data, isLoading: homeworkLoading, error, loadHomework, clearError } = useHomework();
@@ -36,7 +37,7 @@ const HomeworkRoom = () => {
 
   // Get the selected child's ID for API calls, or use first child if no specific child is selected
   const currentChildId = selectedChild?.id || childrenData?.[0]?.id || 1;
-  
+
   // Debug log for child ID
   useEffect(() => {
     console.log('🔍 HomeworkRoom: Using child ID:', currentChildId, 'for child:', selectedChild?.name || 'Family');
@@ -106,7 +107,7 @@ const HomeworkRoom = () => {
 
   useEffect(() => {
     console.log("-------------------Homework available: ", homeworkAvailable);
-    
+
   }, [homeworkAvailable]);
 
   const handleDownloadHomework = (homework: any) => {
@@ -165,7 +166,9 @@ const HomeworkRoom = () => {
     }));
   };
 
-  const handleSubmitWork = (homeworkId: number) => {
+
+
+  const handleSubmitWork = async (homeworkId: number) => {
     const files = selectedFiles[homeworkId] || [];
     if (files.length === 0) {
       toast({
@@ -176,63 +179,79 @@ const HomeworkRoom = () => {
       return;
     }
 
-    // Create FormData for file upload
-    const formData = new FormData();
-    formData.append('homework_id', homeworkId.toString());
-    formData.append('child_id', currentChildId.toString());
+    // Check if files exceed the maximum limit
+    if (files.length > 10) {
+      toast({
+        title: "Too many files",
+        description: "Maximum 10 files allowed per submission.",
+        variant: "destructive"
+      });
+      return;
+    }
 
-    files.forEach((file, index) => {
-      formData.append(`files[${index}]`, file);
-    });
+    setIsSubmitting(true);
 
-    // Upload files to the server
-    fetch('https://admin.bambinos.live/api/parent-panel/submit-homework', {
-      method: 'POST',
-      body: formData,
-      headers: {
-        'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-    })
-      .then(response => response.json())
-      .then(data => {
-        if (data.success) {
-          toast({
-            title: "Homework Submitted Successfully!",
-            description: `${files.length} file(s) submitted for homework.`,
-          });
-
-          // Refresh homework data
-          loadHomework({
-            child_id: currentChildId,
-            page: currentPage,
-            limit: 10
-          });
-        } else {
-          toast({
-            title: "Submission Failed",
-            description: data.message || "Failed to submit homework.",
-            variant: "destructive"
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error submitting homework:', error);
-        toast({
-          title: "Submission Failed",
-          description: "An error occurred while submitting homework.",
-          variant: "destructive"
-        });
+    try {
+      const formData = new FormData();
+      
+      // Add the classschedulebooking_id
+      formData.append('classschedulebooking_id', homeworkId.toString());
+      
+      // Add all files to the form data
+      files.forEach((file, index) => {
+        formData.append('files', file);
       });
 
-    // Clear selected files after submission
-    setSelectedFiles(prev => ({
-      ...prev,
-      [homeworkId]: []
-    }));
+      const response = await fetch('http://localhost:3000/api/homework/submit', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+        },
+        body: formData,
+      });
 
-    setIsSubmitDialogOpen(false);
-    setCurrentHomeworkId(null);
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Homework submission failed.');
+      }
+
+      if (result.status === 'success') {
+        toast({
+          title: "Homework Submitted Successfully!",
+          description: `${files.length} file(s) uploaded successfully.`,
+        });
+
+        // Refresh homework data
+        loadHomework({
+          child_id: currentChildId,
+          page: currentPage,
+          limit: 10
+        });
+
+        // Cleanup
+        setSelectedFiles(prev => ({
+          ...prev,
+          [homeworkId]: []
+        }));
+        setIsSubmitDialogOpen(false);
+        setCurrentHomeworkId(null);
+      } else {
+        throw new Error(result.message || 'Homework submission failed.');
+      }
+    } catch (error) {
+      console.error('Error submitting homework:', error);
+      toast({
+        title: "Submission Failed",
+        description: error instanceof Error ? error.message : "An error occurred while submitting homework.",
+        variant: "destructive"
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
+
+
 
   const openSubmitDialog = (homeworkId: number) => {
     setCurrentHomeworkId(homeworkId);
@@ -251,7 +270,7 @@ const HomeworkRoom = () => {
         ...prev,
         [currentHomeworkId]: [...(prev[currentHomeworkId] || []), ...images]
       }));
-      
+
       // Close camera modal and open file upload dialog
       setIsCameraModalOpen(false);
       setIsSubmitDialogOpen(true);
@@ -267,7 +286,7 @@ const HomeworkRoom = () => {
       <div className="min-h-screen bg-white">
         <Sidebar />
         <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-          <Header onStartTour={()=> {}} />
+          <Header onStartTour={() => { }} />
           <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
             <div className="text-center py-8">
               <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
@@ -286,7 +305,7 @@ const HomeworkRoom = () => {
       <Sidebar />
 
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
-        <Header onStartTour={()=> {}} />
+        <Header onStartTour={() => { }} />
 
         <main className="flex-1 p-2 sm:p-3 lg:p-6 pb-20 sm:pb-0">
           <div className="mb-4 sm:mb-6">
@@ -309,8 +328,8 @@ const HomeworkRoom = () => {
                   )}
                 </h1>
                 <p className="text-blue-600 text-sm sm:text-base">
-                  {selectedChild 
-                    ? `Complete assignments for ${selectedChild.name}` 
+                  {selectedChild
+                    ? `Complete assignments for ${selectedChild.name}`
                     : "Complete assignments and get help from teachers"
                   }
                 </p>
@@ -518,10 +537,11 @@ const HomeworkRoom = () => {
                           <Button
                             variant="outline"
                             className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
-                            onClick={() => handleDownloadHomework(homework)}
+                            // onClick={() => handleDownloadHomework(homework)}
+                            onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
-                            <Download className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                            Download
+                            <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            Asses My Work
                           </Button>
                         </>
                       ) : (
@@ -630,10 +650,11 @@ const HomeworkRoom = () => {
                     multiple
                     onChange={(e) => currentHomeworkId && handleFileSelect(currentHomeworkId, e.target.files)}
                     className="cursor-pointer text-xs sm:text-sm"
-                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.txt"
+                    accept=".jpeg,.jpg,.png,.gif,.webp,.bmp,.tiff,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.mpeg,.wav,.mp3,.ogg,.aac,.zip,.rar,.7z,.json,.xml"
+
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Supported formats: PDF, DOC, DOCX, JPG, PNG, TXT
+                    Supported formats: PDF, MP4, DOC, DOCX, JPG, PNG, TXT (Max 10 files)
                   </p>
                 </div>
 
@@ -674,10 +695,19 @@ const HomeworkRoom = () => {
                   <Button
                     onClick={() => currentHomeworkId && handleSubmitWork(currentHomeworkId)}
                     className="flex-1 bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
-                    disabled={!currentHomeworkId || !selectedFiles[currentHomeworkId]?.length}
+                    disabled={!currentHomeworkId || !selectedFiles[currentHomeworkId]?.length || isSubmitting}
                   >
-                    <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                    Submit
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2 animate-spin" />
+                        Submitting...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                        Submit
+                      </>
+                    )}
                   </Button>
                 </div>
               </div>
@@ -690,7 +720,6 @@ const HomeworkRoom = () => {
             onClose={() => setIsCameraModalOpen(false)}
             onImagesCaptured={handleCameraImagesCaptured}
             homeworkId={currentHomeworkId || 0}
-            childId={currentChildId}
           />
         </main>
       </div>
