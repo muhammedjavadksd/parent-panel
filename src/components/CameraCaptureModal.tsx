@@ -10,7 +10,6 @@ interface CameraCaptureModalProps {
   onClose: () => void;
   onImagesCaptured: (images: File[]) => void;
   homeworkId: number;
-  childId: number;
 }
 
 interface CameraDevice {
@@ -23,8 +22,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   isOpen,
   onClose,
   onImagesCaptured,
-  homeworkId,
-  childId
+  homeworkId
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -223,49 +221,60 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       return;
     }
 
+    // Check if files exceed the maximum limit
+    if (capturedImages.length > 10) {
+      toast({
+        title: "Too many files",
+        description: "Maximum 10 files allowed per submission.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsLoading(true);
 
     try {
-      // Create FormData for upload
       const formData = new FormData();
-      formData.append('homework_id', homeworkId.toString());
-      formData.append('child_id', childId.toString());
-
-      capturedImages.forEach((file, index) => {
-        formData.append(`images[${index}]`, file);
+      
+      // Add the classschedulebooking_id (same as homeworkId)
+      formData.append('classschedulebooking_id', homeworkId.toString());
+      
+      // Add all captured images to the form data
+      capturedImages.forEach((file) => {
+        formData.append('files', file);
       });
 
-      // Upload to dummy API endpoint
-      const response = await fetch('https://admin.bambinos.live/api/parent-panel/submit-homework-camera', {
+      const response = await fetch('http://localhost:3000/api/homework/submit', {
         method: 'POST',
-        body: formData,
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
         },
+        body: formData,
       });
 
       const result = await response.json();
 
-      if (result.success) {
+      if (!response.ok) {
+        throw new Error(result.message || 'Homework submission failed.');
+      }
+
+      if (result.status === 'success') {
         toast({
           title: "Homework Submitted Successfully!",
-          description: `${capturedImages.length} image(s) submitted via camera.`,
+          description: `${capturedImages.length} image(s) uploaded successfully.`,
         });
-        
-        // Pass captured images to parent component for integration
-        onImagesCaptured(capturedImages);
         
         // Reset and close
         setCapturedImages([]);
         onClose();
       } else {
-        throw new Error(result.message || 'Upload failed');
+        throw new Error(result.message || 'Homework submission failed.');
       }
     } catch (error) {
       console.error('Error submitting homework:', error);
       toast({
         title: "Submission Failed",
-        description: "An error occurred while submitting homework images.",
+        description: error instanceof Error ? error.message : "An error occurred while submitting homework.",
         variant: "destructive"
       });
     } finally {
@@ -430,7 +439,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               className="bg-green-600 hover:bg-green-700 text-white"
             >
               <Upload className="w-4 h-4 mr-2" />
-              {isLoading ? 'Submitting...' : `Submit Directly (${capturedImages.length})`}
+              {isLoading ? 'Submitting...' : `Submit Homework (${capturedImages.length})`}
             </Button>
           </div>
         </div>
