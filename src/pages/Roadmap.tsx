@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Sidebar from '@/components/Sidebar'; // Added for consistent layout
 import Header from '@/components/Header';   // Added for consistent layout
@@ -16,6 +16,10 @@ import { useToast } from '@/hooks/use-toast';
 import WebsiteTour from '@/components/WebsiteTour';
 // import InlineGardenProgress from '@/components/InlineGardenProgress'; // Import the progress component
 import CreativeGrowthPath from '@/components/InlineGardenProgress'; // Import the aquarium progress component
+import { useChildren } from '@/hooks/useChildren';
+import { Child } from '@/lib/types/children';
+import RoadmapToggleViewSelector from '@/components/roadmap_toogle';
+import { motion } from 'framer-motion';
 
 // Interfaces (ClassItem, Module) and mock data (roadmapModules) remain the same
 // ... (Your existing interfaces and roadmapModules data should be here) ...
@@ -66,7 +70,21 @@ const Roadmap = () => {
   const [expandedModules, setExpandedModules] = useState<string[]>([]);
   const [showUpcoming, setShowUpcoming] = useState(true);
   const [showPPTDialog, setShowPPTDialog] = useState(false);
+  const [showChildSelectionPopup, setShowChildSelectionPopup] = useState(false);
+  const { children, selectedChild, selectChild } = useChildren();
   const [selectedPPT, setSelectedPPT] = useState<string | null>(null);
+  const [selectedSubject, setSelectedSubject] = useState<string>('English');  // Default subject is English
+
+  useEffect(() => {
+    if (!selectedChild) {
+      setShowChildSelectionPopup(true);
+    }
+  }, [selectedChild]);
+
+  const handleSelectChild = (child: Child) => {
+    selectChild(child);
+    setShowChildSelectionPopup(false);
+  };
 
   // Get current date for filtering
   const currentDate = new Date();
@@ -559,7 +577,9 @@ const Roadmap = () => {
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 mb-3">
             {/* Rocket Progress Animation */}
+
             
+
             <CreativeGrowthPath progress={20} />
 
             {/* Stats Grid */}
@@ -569,7 +589,7 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-green-100 rounded-lg">
                     <CheckCircle className="w-4 h-4 text-green-600" />
                   </div>
-                  <span className="font-semibold text-green-700 text-sm">Completed</span>
+                  <span className="font-semibold text-green-700 text-sm">Completed </span>
                 </div>
                 <div className="text-2xl font-bold text-green-600">{completedClasses}</div>
                 <div className="text-xs text-green-600/70">Classes finished</div>
@@ -630,16 +650,45 @@ const Roadmap = () => {
     );
   };
 
+  const SelectChildPopup = () => (
+    <Dialog open={showChildSelectionPopup} onOpenChange={setShowChildSelectionPopup}>
+      <DialogContent className="sm:max-w-md rounded-2xl border-2 border-blue-200/50 shadow-xl bg-gradient-to-br from-white via-blue-50/30 to-blue-50/20 backdrop-blur-sm">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-bold bg-gradient-to-r from-blue-600 to-blue-700 bg-clip-text text-transparent">
+            Please Select a Child
+          </DialogTitle>
+          <DialogDescription className="text-blue-600 font-medium mt-2">
+            To view the roadmap, please select a child from the list below.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          {children.map((child) => (
+            <div
+              key={child.id}
+              className="flex items-center p-4 rounded-xl border-2 border-blue-200/60 bg-white/80 backdrop-blur-sm cursor-pointer hover:bg-blue-100/50"
+              onClick={() => handleSelectChild(child)}
+            >
+              <div className="text-2xl mr-4">{child.name.charAt(0)}</div>
+              <div>
+                <p className="font-bold text-blue-800">{child.name}</p>
+                <p className="text-sm text-blue-600">Grade: {child.grade}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </DialogContent>
+    </Dialog>
+  );
+
   return (
     <div className="min-h-screen bg-white">
       <Sidebar />
       <div className="ml-0 sm:ml-16 md:ml-64 flex flex-col min-h-screen">
         <Header onStartTour={() => window.dispatchEvent(new Event('startTour'))} />
-
         <main className="flex-1 p-2 sm:p-3 lg:p-4 md:p-4 bg-gradient-to-br from-blue-50/30 via-white/20 to-blue-50/30">
+          <SelectChildPopup />
           <div className="max-w-7xl mx-auto w-full space-y-4">
-
-            <div className="flex items-center justify-center min-h-[44px]">
+            <div className="relative flex items-center justify-center min-h-[44px] px-4 sm:px-6">
 
               <div className="text-center">
                 <h1 className="text-xl sm:text-3xl font-bold bg-gradient-to-r from-blue-600 via-blue-700 to-blue-600 bg-clip-text text-transparent mb-1">
@@ -651,6 +700,11 @@ const Roadmap = () => {
                   <Zap className="w-4 h-4 text-blue-500" />
                 </div>
               </div>
+
+              <div className="absolute right-4 sm:right-6">
+                <RoadmapToggleViewSelector selectedSubject={selectedSubject} onSubjectChange={setSelectedSubject} />
+              </div>
+
             </div>
 
             {/* Learning Journey Map */}
@@ -658,29 +712,50 @@ const Roadmap = () => {
               <LearningJourneyMap />
             </Card>
 
+
             {/* Toggle Switch */}
-            <Card className="p-3 rounded-2xl bg-gradient-to-r from-white/80 via-blue-50/60 to-white/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
-              <div className="flex items-center justify-center gap-6">
-                <div className="flex items-center gap-4 bg-white/70 backdrop-blur-sm rounded-2xl p-2 border-2 border-blue-200/50 shadow-md">
-                  <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${showUpcoming
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
-                      : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
-                    }`}
+            <div className="p-3 rounded-2xl bg-gradient-to-r from-white/80 via-blue-50/60 to-white/40 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">
+              <div className="flex items-center justify-center">
+                {/* The container for the toggle buttons. It needs to be 'relative' for the animation to work. */}
+                <div className="relative flex items-center gap-2 bg-white/70 backdrop-blur-sm rounded-full p-2 border-2 border-blue-200/50 shadow-md">
+
+                  {/* --- Upcoming Classes Button --- */}
+                  <button
                     onClick={() => setShowUpcoming(true)}
+                    className="relative px-4 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none"
                   >
-                    ✨ Upcoming Classes
-                  </div>
-                  <div className={`px-4 py-2 rounded-xl text-sm font-bold transition-all duration-500 cursor-pointer ${!showUpcoming
-                      ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-lg transform scale-105'
-                      : 'text-blue-700 hover:text-blue-800 hover:bg-blue-50/80'
-                    }`}
+                    <span className={`relative z-10 transition-colors duration-300 ${showUpcoming ? 'text-white' : 'text-blue-700 hover:text-blue-800'}`}>
+                      ✨ Upcoming Classes
+                    </span>
+                    {showUpcoming && (
+                      <motion.div
+                        layoutId="active-toggle-highlight"
+                        className="absolute inset-0 z-0 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg"
+                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      />
+                    )}
+                  </button>
+
+                  {/* --- Past Classes Button --- */}
+                  <button
                     onClick={() => setShowUpcoming(false)}
+                    className="relative px-4 py-2 text-sm font-bold transition-colors duration-300 focus:outline-none"
                   >
-                    📚 Past Classes
-                  </div>
+                    <span className={`relative z-10 transition-colors duration-300 ${!showUpcoming ? 'text-white' : 'text-blue-700 hover:text-blue-800'}`}>
+                      📚 Past Classes
+                    </span>
+                    {!showUpcoming && (
+                      <motion.div
+                        layoutId="active-toggle-highlight"
+                        className="absolute inset-0 z-0 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 shadow-lg"
+                        transition={{ type: 'spring', stiffness: 300, damping: 25 }}
+                      />
+                    )}
+                  </button>
+
                 </div>
               </div>
-            </Card>
+            </div>
 
             {/* Search and Filters */}
             <Card className="p-3 rounded-2xl bg-gradient-to-r from-white/80 via-blue-50/40 to-white/30 border-2 border-blue-200/50 shadow-lg backdrop-blur-sm">

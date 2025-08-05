@@ -1,6 +1,8 @@
 import React, { useMemo } from 'react';
 import { Sprout, Flower, Mountain, Star, Leaf } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useChildren } from '@/hooks/useChildren';
+import { Child } from '@/lib/types/children';
 
 // Default steps remain the same
 const defaultSteps = [
@@ -13,6 +15,8 @@ const defaultSteps = [
 
 const CreativeGrowthPath = ({ progress, steps = defaultSteps }) => {
   const clampedProgress = Math.max(0, Math.min(100, progress));
+  const selectedChild = useChildren();
+
 
   // Memoize calculations to avoid re-computing on every render
   const activeStep = useMemo(() => {
@@ -44,7 +48,9 @@ const CreativeGrowthPath = ({ progress, steps = defaultSteps }) => {
     <div className="w-full max-w-2xl mx-auto bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
       <div className="mb-6">
         {/* IMPROVEMENT: Better typography for hierarchy */}
-        <h3 className="text-xl font-bold text-gray-800">Creative Growth Journey 🌱</h3>
+        <h3 className="text-xl font-bold text-gray-800">
+          <span className="text-indigo-600">{selectedChild?.selectedChild?.name}'s </span>
+          Creative Growth Journey 🌱</h3>
         <p className="text-base text-gray-500 mt-1">
           You are <span className="font-semibold text-purple-600">{clampedProgress}%</span> of the way there!
         </p>
