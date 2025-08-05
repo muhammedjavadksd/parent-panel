@@ -24,27 +24,35 @@ const HomeworkRoom = () => {
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({ from: undefined, to: undefined });
   const [isRangeMode, setIsRangeMode] = useState(false);
   const [selectedFiles, setSelectedFiles] = useState<{ [key: number]: File[] }>({});
+  const [homeworkComments, setHomeworkComments] = useState<{ [key: number]: string }>({});
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
   const [isViewSubmissionDialogOpen, setIsViewSubmissionDialogOpen] = useState(false);
+  const [isViewFeedbackDialogOpen, setIsViewFeedbackDialogOpen] = useState(false);
   const [currentHomeworkId, setCurrentHomeworkId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
   const { children: childrenData, selectedChild, isLoading: childrenLoading } = useChildren();
-  const {
-    data,
-    isLoading: homeworkLoading,
-    error,
-    loadHomework,
+    const { 
+    data, 
+    isLoading: homeworkLoading, 
+    error, 
+    loadHomework, 
     clearError,
     submittedFiles,
     isSubmittedFilesLoading,
     submittedFilesError,
     loadSubmittedHomeworkFiles,
     clearSubmittedFiles,
-    clearSubmittedFilesError
+    clearSubmittedFilesError,
+    feedbackData,
+    isFeedbackLoading,
+    feedbackError,
+    loadFeedback,
+    clearFeedback,
+    clearFeedbackError
   } = useHomework();
 
   // Combined loading state
@@ -185,6 +193,8 @@ const HomeworkRoom = () => {
 
   const handleSubmitWork = async (homeworkId: number) => {
     const files = selectedFiles[homeworkId] || [];
+    const comment = homeworkComments[homeworkId] || '';
+    
     if (files.length === 0) {
       toast({
         title: "No files selected",
@@ -213,6 +223,11 @@ const HomeworkRoom = () => {
       // Add the classschedulebooking_id
       formData.append('classschedulebooking_id', homeworkId.toString());
 
+      // Add comment if provided
+      if (comment.trim()) {
+        formData.append('comment', comment.trim());
+      }
+
       // Add all files to the form data with unique names
       files.forEach((file, index) => {
         // Create unique filename by appending classschedulebooking_id
@@ -225,7 +240,6 @@ const HomeworkRoom = () => {
         formData.append('files', renamedFile);
       });
 
-      // --- MODIFICATION HERE ---
       const response = await apiClient.post(
         `${import.meta.env.VITE_BASE_URL}/api/homework/submit`,
         formData,
@@ -263,6 +277,10 @@ const HomeworkRoom = () => {
           ...prev,
           [homeworkId]: []
         }));
+        setHomeworkComments(prev => ({
+          ...prev,
+          [homeworkId]: ''
+        }));
         setIsSubmitDialogOpen(false);
         setCurrentHomeworkId(null);
       } else {
@@ -294,12 +312,27 @@ const HomeworkRoom = () => {
     setIsCameraModalOpen(true);
   };
 
-  const openViewSubmissionDialog = async (homeworkId: number) => {
+    const openViewSubmissionDialog = async (homeworkId: number) => {
     setCurrentHomeworkId(homeworkId);
     setIsViewSubmissionDialogOpen(true);
-
+    
     // Load submitted homework files
     await loadSubmittedHomeworkFiles(homeworkId);
+  };
+
+  const openViewFeedbackDialog = async (homeworkId: number) => {
+    setCurrentHomeworkId(homeworkId);
+    setIsViewFeedbackDialogOpen(true);
+    
+    // Load homework feedback
+    await loadFeedback(homeworkId);
+  };
+
+  const handleCommentChange = (homeworkId: number, comment: string) => {
+    setHomeworkComments(prev => ({
+      ...prev,
+      [homeworkId]: comment
+    }));
   };
 
   const handleCameraImagesCaptured = (images: File[]) => {
@@ -601,6 +634,7 @@ const HomeworkRoom = () => {
                           <Button
                             variant="outline"
                             className="w-48 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            onClick={() => openViewFeedbackDialog(homework.classschedulebooking_id)}
                           >
                             View Feedback
                           </Button>
@@ -706,10 +740,26 @@ const HomeworkRoom = () => {
                     onChange={(e) => currentHomeworkId && handleFileSelect(currentHomeworkId, e.target.files)}
                     className="cursor-pointer text-xs sm:text-sm"
                     accept=".jpeg,.jpg,.png,.gif,.webp,.bmp,.tiff,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.mpeg,.wav,.mp3,.ogg,.aac,.zip,.rar,.7z,.json,.xml"
-
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Supported formats: PDF, MP4, DOC, DOCX, JPG, PNG, TXT (Max 10 files)
+                  </p>
+                </div>
+
+                {/* Comment Input */}
+                <div>
+                  <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                    Comment (Optional)
+                  </label>
+                  <textarea
+                    placeholder="Add a comment about your homework submission..."
+                    value={currentHomeworkId ? homeworkComments[currentHomeworkId] || '' : ''}
+                    onChange={(e) => currentHomeworkId && handleCommentChange(currentHomeworkId, e.target.value)}
+                    className="w-full p-2 border border-gray-300 rounded-md text-xs sm:text-sm resize-none"
+                    rows={3}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">
+                    Add any notes or comments about your submission
                   </p>
                 </div>
 
@@ -880,6 +930,173 @@ const HomeworkRoom = () => {
                       setIsViewSubmissionDialogOpen(false);
                       clearSubmittedFiles();
                       clearSubmittedFilesError();
+                    }}
+                    className="text-sm"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+
+          {/* View Feedback Dialog */}
+          <Dialog open={isViewFeedbackDialogOpen} onOpenChange={setIsViewFeedbackDialogOpen}>
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-lg sm:text-xl font-bold text-blue-800">
+                  Teacher Feedback
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {isFeedbackLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+                    <span className="text-sm text-gray-600">Loading feedback...</span>
+                  </div>
+                )}
+
+                {feedbackError && (
+                  <div className="text-center py-4">
+                    <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                    <p className="text-red-600 text-sm">{feedbackError}</p>
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      onClick={() => {
+                        clearFeedbackError();
+                        if (currentHomeworkId) {
+                          loadFeedback(currentHomeworkId);
+                        }
+                      }}
+                      className="mt-2"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                )}
+
+                {!isFeedbackLoading && !feedbackError && feedbackData?.data && (
+                  <div className="space-y-4">
+                    {feedbackData.data.homeworks.length === 0 ? (
+                      <div className="text-center py-6 text-gray-500">
+                        <BookOpen className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                        <p className="font-medium">No feedback available</p>
+                        <p className="text-sm text-gray-400 mt-1">No feedback has been provided for this assignment yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <p className="text-sm text-gray-600 mb-3">
+                          Feedback for {feedbackData.data.homeworks.length} submission(s):
+                        </p>
+                        {feedbackData.data.homeworks.map((homework, index) => {
+                          const fileName = homework.homework_file.split('/').pop() || 'Unknown File';
+                          const hasTeacherFeedback = homework.teacher_comment || homework.teacher_file || homework.teacher_recording;
+                          
+                          return (
+                            <div key={index} className="border rounded-lg p-4 bg-gray-50">
+                              {/* Student Submission */}
+                              <div className="mb-4">
+                                <h4 className="font-semibold text-gray-800 mb-2">Your Submission</h4>
+                                <div className="flex items-center justify-between p-3 bg-white rounded border">
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-sm font-medium text-gray-800 truncate">
+                                      {fileName}
+                                    </p>
+                                    {homework.comment && (
+                                      <p className="text-xs text-gray-600 mt-1">
+                                        <span className="font-medium">Your comment:</span> {homework.comment}
+                                      </p>
+                                    )}
+                                  </div>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => window.open(`https://bambinos.live/${homework.homework_file}`, '_blank')}
+                                    className="ml-3 flex-shrink-0"
+                                  >
+                                    <BookOpen className="w-3 h-3 mr-1" />
+                                    View
+                                  </Button>
+                                </div>
+                              </div>
+
+                              {/* Teacher Feedback */}
+                              {hasTeacherFeedback ? (
+                                <div>
+                                  <h4 className="font-semibold text-gray-800 mb-2">Teacher Feedback</h4>
+                                  
+                                  {/* Teacher Comment */}
+                                  {homework.teacher_comment && (
+                                    <div className="mb-3 p-3 bg-blue-50 rounded border-l-4 border-blue-400">
+                                      <p className="text-sm text-gray-800">
+                                        <span className="font-medium">Comment:</span> {homework.teacher_comment}
+                                      </p>
+                                    </div>
+                                  )}
+
+                                  {/* Teacher File */}
+                                  {homework.teacher_file && (
+                                    <div className="mb-3 flex items-center justify-between p-3 bg-white rounded border">
+                                      <div className="flex-1 min-w-0">
+                                        <p className="text-sm font-medium text-gray-800 truncate">
+                                          Teacher's File: {homework.teacher_file.split('/').pop() || 'Unknown File'}
+                                        </p>
+                                      </div>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => window.open(`https://bambinos.live/${homework.teacher_file}`, '_blank')}
+                                        className="ml-3 flex-shrink-0"
+                                      >
+                                        <Download className="w-3 h-3 mr-1" />
+                                        Download
+                                      </Button>
+                                    </div>
+                                  )}
+
+                                  {/* Teacher Recording */}
+                                  {homework.teacher_recording && (
+                                    <div className="mb-3 p-3 bg-white rounded border">
+                                      <p className="text-sm font-medium text-gray-800 mb-2">Audio Feedback</p>
+                                      <audio controls className="w-full">
+                                        <source src={`https://bambinos.live/${homework.teacher_recording}`} type="audio/mpeg" />
+                                        Your browser does not support the audio element.
+                                      </audio>
+                                      <Button
+                                        variant="outline"
+                                        size="sm"
+                                        onClick={() => window.open(`https://bambinos.live/${homework.teacher_recording}`, '_blank')}
+                                        className="mt-2"
+                                      >
+                                        <Download className="w-3 h-3 mr-1" />
+                                        Download Audio
+                                      </Button>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <div className="text-center py-4 text-gray-500">
+                                  <p className="text-sm">No feedback provided yet</p>
+                                  <p className="text-xs text-gray-400 mt-1">Your teacher will provide feedback soon.</p>
+                                </div>
+                              )}
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex justify-end pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewFeedbackDialogOpen(false);
+                      clearFeedback();
+                      clearFeedbackError();
                     }}
                     className="text-sm"
                   >

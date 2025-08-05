@@ -22,6 +22,28 @@ export interface SubmittedHomeworkFilesResponse {
   }>;
 }
 
+/**
+ * Interface for homework feedback response.
+ */
+export interface HomeworkFeedbackResponse {
+  status: string;
+  message: string;
+  data: {
+    classschedulebooking_id: string;
+    homeworks: Array<{
+      homework_file: string;
+      comment: string;
+      created_at: string;
+      updated_at: string;
+      deleted_at: string | null;
+      teacher_comment: string | null;
+      teacher_file: string | null;
+      teacher_recording: string | null;
+      faculty_id: number | null;
+    }>;
+  };
+}
+
 export class HomeworkService {
   /**
    * Fetches the list of all homework assignments.
@@ -105,6 +127,39 @@ export class HomeworkService {
       return {
         status: false,
         msg: error.response?.data?.message || 'Failed to fetch submitted homework files'
+      };
+    }
+  }
+
+  /**
+   * Fetches homework feedback for a specific class schedule booking ID.
+   */
+  static async getHomeworkFeedback(classschedulebookingId: number): Promise<{
+    status: boolean;
+    msg: string;
+    data?: HomeworkFeedbackResponse;
+  }> {
+    try {
+      // Use VITE_BASE_URL for this specific endpoint
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/homework/get-feedback/${classschedulebookingId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+
+      return {
+        status: response.data.status === 'success',
+        msg: response.data.message || '',
+        data: response.data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        msg: error.response?.data?.message || 'Failed to fetch homework feedback'
       };
     }
   }

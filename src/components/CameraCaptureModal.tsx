@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { Camera, X, Upload, RotateCcw, Settings, CheckCircle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { apiClient } from '@/services/api';
@@ -36,6 +37,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const [isCapturing, setIsCapturing] = useState(false);
   const [preferredCamera, setPreferredCamera] = useState<string>('');
   const [uploadProgress, setUploadProgress] = useState(0);
+  const [comment, setComment] = useState<string>('');
 
   // Load preferred camera from localStorage
   useEffect(() => {
@@ -241,6 +243,11 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       // Add the classschedulebooking_id (same as homeworkId)
       formData.append('classschedulebooking_id', homeworkId.toString());
 
+      // Add comment if provided
+      if (comment.trim()) {
+        formData.append('comment', comment.trim());
+      }
+
       // Add all captured images to the form data (already have unique names from capture)
       capturedImages.forEach((file) => {
         formData.append('files', file);
@@ -270,6 +277,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
         // Reset and close
         setCapturedImages([]);
+        setComment('');
         onClose();
       } else {
         throw new Error(result.message || 'Homework submission failed.');
@@ -292,6 +300,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     if (capturedImages.length > 0) {
       onImagesCaptured(capturedImages);
       setCapturedImages([]);
+      setComment('');
       onClose();
     }
   };
@@ -299,6 +308,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const handleClose = () => {
     stopCamera();
     setCapturedImages([]);
+    setComment('');
     onClose();
   };
 
@@ -416,6 +426,26 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
                     </div>
                   </div>
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Comment Input */}
+          {capturedImages.length > 0 && (
+            <div className="space-y-2">
+              <label htmlFor="comment" className="text-sm font-medium text-gray-700">
+                Add a comment (optional):
+              </label>
+              <Textarea
+                id="comment"
+                placeholder="Add any additional notes or comments about your homework submission..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+                className="min-h-[80px] resize-none"
+                maxLength={500}
+              />
+              <div className="text-xs text-gray-500 text-right">
+                {comment.length}/500 characters
               </div>
             </div>
           )}
