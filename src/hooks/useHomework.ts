@@ -2,6 +2,7 @@ import { useState, useCallback } from 'react';
 import { HomeworkService } from '@/services/api/homeworkService';
 // Make sure to export SingleHomeworkData from your interface file
 import { HomeworkResponse, HomeworkFilters, SingleHomeworkData } from '@/lib/interface/homework';
+import { SubmittedHomeworkFilesResponse } from '@/services/api/homeworkService';
 
 export const useHomework = () => {
   // --- State for Homework List ---
@@ -13,6 +14,11 @@ export const useHomework = () => {
   const [singleData, setSingleData] = useState<SingleHomeworkData | null>(null);
   const [isSingleLoading, setIsSingleLoading] = useState(false);
   const [singleError, setSingleError] = useState<string | null>(null);
+
+  // --- State for Submitted Homework Files ---
+  const [submittedFiles, setSubmittedFiles] = useState<SubmittedHomeworkFilesResponse | null>(null);
+  const [isSubmittedFilesLoading, setIsSubmittedFilesLoading] = useState(false);
+  const [submittedFilesError, setSubmittedFilesError] = useState<string | null>(null);
 
   /**
    * Loads a list of homework based on filters.
@@ -54,13 +60,33 @@ export const useHomework = () => {
     }
   }, []);
 
+  /**
+   * Loads submitted homework files for a specific class schedule booking ID.
+   */
+  const loadSubmittedHomeworkFiles = useCallback(async (classschedulebookingId: number) => {
+    setIsSubmittedFilesLoading(true);
+    setSubmittedFilesError(null);
+    try {
+      const response = await HomeworkService.getSubmittedHomeworkFiles(classschedulebookingId);
+      if (response.status && response.data) {
+        setSubmittedFiles(response.data);
+      } else {
+        setSubmittedFilesError(response.msg);
+      }
+    } catch (err: any) {
+      setSubmittedFilesError(err.message || 'Failed to load submitted homework files');
+    } finally {
+      setIsSubmittedFilesLoading(false);
+    }
+  }, []);
 
   // --- Utility Functions ---
   const clearError = useCallback(() => setError(null), []);
   const clearData = useCallback(() => setData(null), []);
   const clearSingleError = useCallback(() => setSingleError(null), []);
   const clearSingleData = useCallback(() => setSingleData(null), []);
-
+  const clearSubmittedFilesError = useCallback(() => setSubmittedFilesError(null), []);
+  const clearSubmittedFiles = useCallback(() => setSubmittedFiles(null), []);
 
   return {
     // Homework List properties
@@ -78,5 +104,13 @@ export const useHomework = () => {
     loadSingleHomework,
     clearSingleData,
     clearSingleError,
+
+    // Submitted Homework Files properties
+    submittedFiles,
+    isSubmittedFilesLoading,
+    submittedFilesError,
+    loadSubmittedHomeworkFiles,
+    clearSubmittedFiles,
+    clearSubmittedFilesError,
   };
 };

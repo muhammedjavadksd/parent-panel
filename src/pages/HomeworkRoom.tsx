@@ -26,12 +26,26 @@ const HomeworkRoom = () => {
   const [selectedFiles, setSelectedFiles] = useState<{ [key: number]: File[] }>({});
   const [isSubmitDialogOpen, setIsSubmitDialogOpen] = useState(false);
   const [isCameraModalOpen, setIsCameraModalOpen] = useState(false);
+  const [isViewSubmissionDialogOpen, setIsViewSubmissionDialogOpen] = useState(false);
   const [currentHomeworkId, setCurrentHomeworkId] = useState<number | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   const { children: childrenData, selectedChild, isLoading: childrenLoading } = useChildren();
-  const { data, isLoading: homeworkLoading, error, loadHomework, clearError } = useHomework();
+  const {
+    data,
+    isLoading: homeworkLoading,
+    error,
+    loadHomework,
+    clearError,
+    submittedFiles,
+    isSubmittedFilesLoading,
+    submittedFilesError,
+    loadSubmittedHomeworkFiles,
+    clearSubmittedFiles,
+    clearSubmittedFilesError
+  } = useHomework();
 
   // Combined loading state
   const isLoading = childrenLoading || homeworkLoading;
@@ -191,6 +205,7 @@ const HomeworkRoom = () => {
     }
 
     setIsSubmitting(true);
+    setUploadProgress(0);
 
     try {
       const formData = new FormData();
@@ -210,11 +225,23 @@ const HomeworkRoom = () => {
         formData.append('files', renamedFile);
       });
 
-      const response = await apiClient.post(`${import.meta.env.VITE_BASE_URL}/api/homework/submit`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      // --- MODIFICATION HERE ---
+      const response = await apiClient.post(
+        `${import.meta.env.VITE_BASE_URL}/api/homework/submit`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(percentCompleted);
+              console.log(`Upload Progress: ${percentCompleted}%`); // For debugging
+            }
+          },
+        }
+      );
 
       const result = response.data;
 
@@ -250,6 +277,8 @@ const HomeworkRoom = () => {
       });
     } finally {
       setIsSubmitting(false);
+      // Optionally reset progress to 0 after a short delay
+      setTimeout(() => setUploadProgress(0), 1000);
     }
   };
 
@@ -263,6 +292,14 @@ const HomeworkRoom = () => {
   const openCameraModal = (homeworkId: number) => {
     setCurrentHomeworkId(homeworkId);
     setIsCameraModalOpen(true);
+  };
+
+  const openViewSubmissionDialog = async (homeworkId: number) => {
+    setCurrentHomeworkId(homeworkId);
+    setIsViewSubmissionDialogOpen(true);
+
+    // Load submitted homework files
+    await loadSubmittedHomeworkFiles(homeworkId);
   };
 
   const handleCameraImagesCaptured = (images: File[]) => {
@@ -466,8 +503,8 @@ const HomeworkRoom = () => {
           {!isLoading && (
             <div className="space-y-4 sm:space-y-6">
               {homeworkAvailable && filteredHomework.map((homework) => (
-                <Card key={homework.classschedulebooking_id} className={`p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300 ${parseInt(homework.pending_hw_count) === 0 && 'border-2 border-green-200' }`}>
-                  <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
+                <Card key={homework.classschedulebooking_id} className={`p-3 sm:p-4 lg:p-6 rounded-xl sm:rounded-2xl bg-white shadow-lg border-2 border-yellow-200 hover:shadow-xl transition-all duration-300 ${parseInt(homework.pending_hw_count) === 0 && 'border-2 border-green-200'}`}>
+                  <div className="flex flex-col  lg:justify-between space-y-4 lg:space-y-0">
                     <div className="flex-1">
                       <div className="flex flex-col sm:flex-row sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 mb-3 sm:mb-4">
                         <div className="w-10 h-10 sm:w-12 sm:h-12 lg:w-14 lg:h-14 bg-yellow-400 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-md">
@@ -502,35 +539,34 @@ const HomeworkRoom = () => {
                       </div>
                     </div>
 
-                    <div className="flex flex-col space-y-2 sm:space-y-3 lg:ml-8">
+                    <div className="flex flex-col w-full gap-7 pt-5 lg:flex-row lg:flex-wrap lg:w-auto lg:justify-start">
                       {parseInt(homework.pending_hw_count) > 0 ? (
                         <>
-                          <div className="flex flex-col space-y-2">
-                            <Button
-                              className="bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
-                              onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
-                            >
-                              <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                              Upload Files
-                            </Button>
-                            <Button
-                              className="bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
-                              onClick={() => openCameraModal(homework.classschedulebooking_id)}
-                            >
-                              <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                              Camera Capture
-                            </Button>
-                          </div>
+
+                          <Button
+                            className="w-48 bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
+                            onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
+                          >
+                            <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            Upload Files
+                          </Button>
+                          <Button
+                            className="w-48 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
+                            onClick={() => openCameraModal(homework.classschedulebooking_id)}
+                          >
+                            <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
+                            Camera Capture
+                          </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                           >
                             <HelpCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Ask Doubt
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
                           >
                             <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -538,7 +574,7 @@ const HomeworkRoom = () => {
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             // onClick={() => handleDownloadHomework(homework)}
                             onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
@@ -550,20 +586,27 @@ const HomeworkRoom = () => {
                         <>
                           <Button
                             variant="outline"
-                            className="border-2 border-green-300 text-green-700 hover:bg-green-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-green-300 text-green-700 hover:bg-green-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             disabled
                           >
-                            ✓ Submitted
+                            Submitted ✨
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-green-400 text-green-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            onClick={() => openViewSubmissionDialog(homework.classschedulebooking_id)}
+                          >
+                            View Submission
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="w-48 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                           >
                             View Feedback
                           </Button>
                           <Button
                             variant="outline"
-                            className="border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
                           >
                             <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -580,7 +623,7 @@ const HomeworkRoom = () => {
 
                           <Button
                             variant="outline"
-                            className="border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            className="w-48 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             // onClick={() => handleDownloadHomework(homework)}
                             onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
@@ -696,6 +739,16 @@ const HomeworkRoom = () => {
                   </div>
                 )}
 
+                {isSubmitting && (
+                  <div className="w-full bg-gray-200 rounded-full h-2.5 my-3">
+                    <div
+                      className="bg-blue-600 h-2.5 rounded-full transition-all duration-300"
+                      style={{ width: `${uploadProgress}%` }}
+                    ></div>
+                    <p className="text-center text-xs text-gray-600 mt-1">{uploadProgress}% Complete</p>
+                  </div>
+                )}
+
                 <div className="flex space-x-2 sm:space-x-3 pt-3 sm:pt-4">
                   <Button
                     variant="outline"
@@ -704,6 +757,7 @@ const HomeworkRoom = () => {
                   >
                     Cancel
                   </Button>
+
                   <Button
                     onClick={() => currentHomeworkId && handleSubmitWork(currentHomeworkId)}
                     className="flex-1 bg-green-600 hover:bg-green-700 text-xs sm:text-sm"
@@ -722,6 +776,7 @@ const HomeworkRoom = () => {
                     )}
                   </Button>
                 </div>
+
               </div>
             </DialogContent>
           </Dialog>
@@ -733,6 +788,107 @@ const HomeworkRoom = () => {
             onImagesCaptured={handleCameraImagesCaptured}
             homeworkId={currentHomeworkId || 0}
           />
+
+          {/* View Submission Dialog */}
+          <Dialog open={isViewSubmissionDialogOpen} onOpenChange={setIsViewSubmissionDialogOpen}>
+            <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+              <DialogHeader>
+                <DialogTitle className="text-lg sm:text-xl font-bold text-blue-800">
+                  Your Submitted Homework Files
+                </DialogTitle>
+              </DialogHeader>
+
+              <div className="space-y-4">
+                {isSubmittedFilesLoading && (
+                  <div className="flex items-center justify-center py-8">
+                    <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+                    <span className="text-sm text-gray-600">Loading submitted files...</span>
+                  </div>
+                )}
+
+                {submittedFilesError && (
+                  <div className="text-center py-4">
+                    <AlertCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
+                    <p className="text-red-600 text-sm">{submittedFilesError}</p>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        clearSubmittedFilesError();
+                        if (currentHomeworkId) {
+                          loadSubmittedHomeworkFiles(currentHomeworkId);
+                        }
+                      }}
+                      className="mt-2"
+                    >
+                      Try Again
+                    </Button>
+                  </div>
+                )}
+
+                {!isSubmittedFilesLoading && !submittedFilesError && submittedFiles?.data && (
+                  <div className="space-y-3">
+                    {submittedFiles.data.length === 0 ? (
+                      <div className="text-center py-6 text-gray-500">
+                        <BookOpen className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                        <p className="font-medium">No submitted files found</p>
+                        <p className="text-sm text-gray-400 mt-1">No homework files have been submitted for this assignment yet.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <p className="text-sm text-gray-600 mb-3">
+                          Found {submittedFiles.data.length} submitted file(s):
+                        </p>
+                        {submittedFiles.data.map((file, index) => {
+                          const fullUrl = `https://bambinos.live/${file.homework_file}`;
+                          const fileName = file.homework_file.split('/').pop() || 'Unknown File';
+
+                          return (
+                            <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-gray-800 truncate">
+                                  {fileName}
+                                </p>
+
+                                {/* No need to show file path */}
+
+                                {/* <p className="text-xs text-gray-500 truncate">
+                                  {file.homework_file}
+                                </p> */}
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(fullUrl, '_blank')}
+                                className="ml-3 flex-shrink-0"
+                              >
+                                <BookOpen className="w-3 h-3 mr-1" />
+                                View
+                              </Button>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                <div className="flex justify-end pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setIsViewSubmissionDialogOpen(false);
+                      clearSubmittedFiles();
+                      clearSubmittedFilesError();
+                    }}
+                    className="text-sm"
+                  >
+                    Close
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
         </main>
       </div>
     </div>

@@ -28,13 +28,14 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  
+
   const [cameras, setCameras] = useState<CameraDevice[]>([]);
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [capturedImages, setCapturedImages] = useState<File[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isCapturing, setIsCapturing] = useState(false);
   const [preferredCamera, setPreferredCamera] = useState<string>('');
+  const [uploadProgress, setUploadProgress] = useState(0);
 
   // Load preferred camera from localStorage
   useEffect(() => {
@@ -65,10 +66,10 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     try {
       // First, request camera permission to get device labels
       await navigator.mediaDevices.getUserMedia({ video: true });
-      
+
       const devices = await navigator.mediaDevices.enumerateDevices();
       const videoDevices = devices.filter(device => device.kind === 'videoinput');
-      
+
       if (videoDevices.length === 0) {
         toast({
           title: "No Cameras Found",
@@ -77,22 +78,22 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         });
         return;
       }
-      
+
       const cameraList: CameraDevice[] = videoDevices.map(device => {
         const label = device.label || `Camera ${device.deviceId.slice(0, 8)}`;
         const lowerLabel = label.toLowerCase();
-        
+
         // More comprehensive external camera detection
-        const isExternal = lowerLabel.includes('usb') || 
-                          lowerLabel.includes('external') ||
-                          lowerLabel.includes('webcam') ||
-                          lowerLabel.includes('logitech') ||
-                          lowerLabel.includes('hd') ||
-                          lowerLabel.includes('1080p') ||
-                          lowerLabel.includes('720p') ||
-                          (lowerLabel.includes('camera') && !lowerLabel.includes('built-in')) ||
-                          (lowerLabel.includes('cam') && !lowerLabel.includes('built-in'));
-        
+        const isExternal = lowerLabel.includes('usb') ||
+          lowerLabel.includes('external') ||
+          lowerLabel.includes('webcam') ||
+          lowerLabel.includes('logitech') ||
+          lowerLabel.includes('hd') ||
+          lowerLabel.includes('1080p') ||
+          lowerLabel.includes('720p') ||
+          (lowerLabel.includes('camera') && !lowerLabel.includes('built-in')) ||
+          (lowerLabel.includes('cam') && !lowerLabel.includes('built-in'));
+
         return {
           deviceId: device.deviceId,
           label: label,
@@ -108,7 +109,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         const external = cameraList.find(cam => cam.isExternal);
         const defaultCamera = preferred || external || cameraList[0];
         setSelectedCamera(defaultCamera.deviceId);
-        
+
         // Show success message
         if (external) {
           toast({
@@ -130,7 +131,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   const startCamera = async () => {
     try {
       stopCamera();
-      
+
       const constraints = {
         video: {
           deviceId: selectedCamera ? { exact: selectedCamera } : undefined,
@@ -141,7 +142,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
       const stream = await navigator.mediaDevices.getUserMedia(constraints);
       streamRef.current = stream;
-      
+
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
@@ -169,7 +170,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
     if (!videoRef.current || !canvasRef.current) return;
 
     setIsCapturing(true);
-    
+
     const video = videoRef.current;
     const canvas = canvasRef.current;
     const context = canvas.getContext('2d');
@@ -189,9 +190,9 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
         const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
         const fileName = `homework-capture-${timestamp}_${homeworkId}.jpg`;
         const file = new File([blob], fileName, { type: 'image/jpeg' });
-        
+
         setCapturedImages(prev => [...prev, file]);
-        
+
         toast({
           title: "Image Captured!",
           description: `Added to capture stack (${capturedImages.length + 1} images)`,
@@ -236,20 +237,28 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
 
     try {
       const formData = new FormData();
-      
+
       // Add the classschedulebooking_id (same as homeworkId)
       formData.append('classschedulebooking_id', homeworkId.toString());
-      
+
       // Add all captured images to the form data (already have unique names from capture)
       capturedImages.forEach((file) => {
         formData.append('files', file);
       });
 
-      const response = await apiClient.post(`${import.meta.env.VITE_BASE_URL}/api/homework/submit`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      });
+      const response = await apiClient.post(
+        `${import.meta.env.VITE_BASE_URL}/api/homework/submit`,
+        formData,
+        {
+          headers: { 'Content-Type': 'multipart/form-data' },
+          onUploadProgress: (progressEvent) => {
+            if (progressEvent.total) {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(percentCompleted);
+            }
+          },
+        }
+      );
 
       const result = response.data;
 
@@ -258,7 +267,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           title: "Homework Submitted Successfully!",
           description: `${capturedImages.length} image(s) uploaded successfully.`,
         });
-        
+
         // Reset and close
         setCapturedImages([]);
         onClose();
@@ -274,6 +283,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       });
     } finally {
       setIsLoading(false);
+      setTimeout(() => setUploadProgress(0), 1000);
     }
   };
 
@@ -346,7 +356,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               </div>
             )}
             <canvas ref={canvasRef} className="hidden" />
-            
+
             {/* Camera Status Indicator */}
             {selectedCamera && (
               <div className="absolute top-4 right-4 bg-green-500 text-white px-2 py-1 rounded-full text-xs font-medium flex items-center gap-1">
@@ -366,7 +376,7 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
               <Camera className="w-4 h-4 mr-2" />
               {isCapturing ? 'Capturing...' : 'Capture'}
             </Button>
-            
+
             <Button
               onClick={() => setCapturedImages([])}
               variant="outline"

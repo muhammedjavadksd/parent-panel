@@ -1,4 +1,5 @@
 import { apiClient } from '@/services/api';
+import axios from 'axios';
 import { HomeworkResponse, HomeworkFilters } from '@/lib/interface/homework';
 
 /**
@@ -8,6 +9,17 @@ export interface SingleHomeworkData {
   type: string;
   embed_url: string;
   download_url: string;
+}
+
+/**
+ * Interface for submitted homework files response.
+ */
+export interface SubmittedHomeworkFilesResponse {
+  status: string;
+  message: string;
+  data: Array<{
+    homework_file: string;
+  }>;
 }
 
 export class HomeworkService {
@@ -60,6 +72,39 @@ export class HomeworkService {
       return {
         status: false,
         msg: error.response?.data?.message || 'Failed to fetch single homework data'
+      };
+    }
+  }
+
+  /**
+   * Fetches submitted homework files for a specific class schedule booking ID.
+   */
+  static async getSubmittedHomeworkFiles(classschedulebookingId: number): Promise<{
+    status: boolean;
+    msg: string;
+    data?: SubmittedHomeworkFilesResponse;
+  }> {
+    try {
+      // Use VITE_BASE_URL for this specific endpoint
+      const response = await axios.get(
+        `${import.meta.env.VITE_BASE_URL}/api/homework/get-homework/${classschedulebookingId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+          }
+        }
+      );
+
+      return {
+        status: response.data.status === 'success',
+        msg: response.data.message || '',
+        data: response.data
+      };
+    } catch (error: any) {
+      return {
+        status: false,
+        msg: error.response?.data?.message || 'Failed to fetch submitted homework files'
       };
     }
   }
