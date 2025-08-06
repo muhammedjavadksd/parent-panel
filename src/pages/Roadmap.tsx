@@ -11,7 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { BookOpen, CheckCircle, Target, Search, Play, User, FileText, Eye, Edit, Clock, Bot, GraduationCap, ChevronDown, ChevronRight, Lock, Shield, ShieldCheck, AlertCircle, Sparkles, Star, TrendingUp, Award, Zap, Heart, Rocket } from 'lucide-react';
+import { BookOpen, CheckCircle, Target, Search, Play, User, FileText, Eye, Edit, Clock, Bot, GraduationCap, ChevronDown, ChevronRight, Lock, Shield, ShieldCheck, AlertCircle, Sparkles, Star, TrendingUp, Award, Zap, Heart, Rocket, Loader2 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import WebsiteTour from '@/components/WebsiteTour';
 // import InlineGardenProgress from '@/components/InlineGardenProgress'; // Import the progress component
@@ -20,6 +20,8 @@ import { useChildren } from '@/hooks/useChildren';
 import { Child } from '@/lib/types/children';
 import RoadmapToggleViewSelector from '@/components/roadmap_toogle';
 import { motion } from 'framer-motion';
+import { useBookings } from '@/hooks/useBookings';
+import { useRoadmap } from '@/hooks/useRoadmap';
 
 // Interfaces (ClassItem, Module) and mock data (roadmapModules) remain the same
 // ... (Your existing interfaces and roadmapModules data should be here) ...
@@ -74,12 +76,55 @@ const Roadmap = () => {
   const { children, selectedChild, selectChild } = useChildren();
   const [selectedPPT, setSelectedPPT] = useState<string | null>(null);
   const [selectedSubject, setSelectedSubject] = useState<string>('English');  // Default subject is English
+  
+  // Past classes hooks
+  const { bookings, isLoading: areBookingsLoading, loadPastClasses, clearBookingData } = useBookings();
+  const { groupedModules, isLoading: isRoadmapLoading, error: roadmapError, loadPastClassRoadmap, clearRoadmapData } = useRoadmap();
 
   useEffect(() => {
     if (!selectedChild) {
       setShowChildSelectionPopup(true);
     }
   }, [selectedChild]);
+
+  // Clear data when child changes to prevent stale data issues
+  useEffect(() => {
+    console.log('👶 Child changed, clearing booking and roadmap data');
+    clearBookingData();
+    clearRoadmapData();
+  }, [selectedChild?.id, clearBookingData, clearRoadmapData]);
+
+  // Load past classes when toggling to past classes view
+  useEffect(() => {
+    if (!showUpcoming && selectedChild) {
+      console.log('📋 Loading past classes for child:', selectedChild.id);
+      loadPastClasses(undefined, selectedChild.id);
+    }
+  }, [showUpcoming, selectedChild, loadPastClasses]);
+
+  // Load roadmap data when past classes are loaded and not loading
+  useEffect(() => {
+    console.log('🔄 Roadmap useEffect triggered:', {
+      showUpcoming,
+      areBookingsLoading,
+      bookingsLength: bookings.length,
+      selectedChildId: selectedChild?.id,
+      bookings: bookings.map(b => b.schedulebooking_id)
+    });
+    
+    if (!showUpcoming && !areBookingsLoading && selectedChild) {
+      if (bookings.length > 0) {
+        const csbIds = bookings.map(booking => booking.schedulebooking_id);
+        console.log('✅ Conditions met, calling loadPastClassRoadmap with csbIds:', csbIds);
+        loadPastClassRoadmap(csbIds);
+      } else {
+        console.log('⚠️ No bookings found, clearing roadmap data to prevent stale data');
+        clearRoadmapData();
+      }
+    } else {
+      console.log('❌ Conditions not met for loadPastClassRoadmap');
+    }
+  }, [showUpcoming, bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap, clearRoadmapData]);
 
   const handleSelectChild = (child: Child) => {
     selectChild(child);
@@ -420,6 +465,40 @@ const Roadmap = () => {
   ];
 
   const filteredModules = useMemo(() => {
+    if (!showUpcoming) {
+      // For past classes, use the grouped modules from API
+      return groupedModules.map((groupedModule, index) => ({
+        id: `past-${index}`,
+        name: groupedModule.moduleName,
+        description: `Past classes for ${groupedModule.moduleName}`,
+        designer: 'teacher' as const,
+        designer_name: 'Past Classes',
+        total_classes: groupedModule.topics.length,
+        completed_classes: groupedModule.topics.length,
+        enrolled_classes: 0,
+        status: 'completed' as const,
+        created_date: new Date().toISOString().split('T')[0],
+        approval_status: 'approved' as const,
+        milestone: 1 as const,
+        classes: groupedModule.topics.map((topic, topicIndex) => ({
+          id: `topic-${topic.id}`,
+          serialNo: topicIndex + 1,
+          name: topic.curriculum_topic,
+          focusArea: groupedModule.moduleName,
+          level: 'Beginner' as const,
+          status: 'completed' as const,
+          description: `Completed topic: ${topic.curriculum_topic}`,
+          classDate: new Date().toISOString().split('T')[0], // We don't have actual class date from roadmap API
+          instructor: 'Past Class',
+        }))
+      })).filter(module => {
+        const matchesSearch = module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          module.description.toLowerCase().includes(searchQuery.toLowerCase());
+        return matchesSearch;
+      });
+    }
+
+    // For upcoming classes, use the original logic
     const currentDate = new Date();
 
     return roadmapModules.filter(module => {
@@ -446,12 +525,18 @@ const Roadmap = () => {
         return showUpcoming ? classDate >= currentDate : classDate < currentDate;
       })
     }));
-  }, [searchQuery, selectedStatus, showUpcoming]);
+  }, [searchQuery, selectedStatus, showUpcoming, groupedModules]);
 
   // ... (All your other functions like totalClasses, getDesignerIcon, handleChangeRequest, etc., remain the same) ...
-  const totalClasses = roadmapModules.reduce((sum, module) => sum + module.total_classes, 0);
-  const completedClasses = roadmapModules.reduce((sum, module) => sum + module.completed_classes, 0);
-  const enrolledClasses = roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0);
+  const totalClasses = showUpcoming 
+    ? roadmapModules.reduce((sum, module) => sum + module.total_classes, 0)
+    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
+  const completedClasses = showUpcoming
+    ? roadmapModules.reduce((sum, module) => sum + module.completed_classes, 0)
+    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
+  const enrolledClasses = showUpcoming
+    ? roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0)
+    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
 
   const getDesignerIcon = (designer: string) => {
     switch (designer) {
@@ -580,7 +665,7 @@ const Roadmap = () => {
 
             
 
-            <CreativeGrowthPath progress={20} />
+            <CreativeGrowthPath progress={showUpcoming ? 20 : Math.round((completedClasses / totalClasses) * 100) || 0} />
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-2">
@@ -600,10 +685,12 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-blue-100 rounded-lg">
                     <Play className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="font-semibold text-blue-700 text-sm">Active</span>
+                  <span className="font-semibold text-blue-700 text-sm">{showUpcoming ? 'Active' : 'Topics'}</span>
                 </div>
                 <div className="text-2xl font-bold text-blue-600">{enrolledClasses}</div>
-                <div className="text-xs text-blue-600/70">Currently enrolled</div>
+                <div className="text-xs text-blue-600/70">
+                  {showUpcoming ? 'Currently enrolled' : 'Completed topics'}
+                </div>
               </div>
 
               <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl border border-white/50 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
@@ -611,10 +698,14 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-purple-100 rounded-lg">
                     <Sparkles className="w-4 h-4 text-purple-600" />
                   </div>
-                  <span className="font-semibold text-purple-700 text-sm">Available</span>
+                  <span className="font-semibold text-purple-700 text-sm">{showUpcoming ? 'Available' : 'Modules'}</span>
                 </div>
-                <div className="text-2xl font-bold text-purple-600">{totalClasses - completedClasses - enrolledClasses}</div>
-                <div className="text-xs text-purple-600/70">Ready to start</div>
+                <div className="text-2xl font-bold text-purple-600">
+                  {showUpcoming ? totalClasses - completedClasses - enrolledClasses : groupedModules.length}
+                </div>
+                <div className="text-xs text-purple-600/70">
+                  {showUpcoming ? 'Ready to start' : 'Completed modules'}
+                </div>
               </div>
 
               <div className="bg-white/70 backdrop-blur-sm p-3 rounded-xl border border-white/50 shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105">
@@ -845,120 +936,151 @@ const Roadmap = () => {
                 </div>
               </div>
 
-              <div className="overflow-x-auto rounded-xl border-2 border-blue-100/50">
-                <Table>
-                  <TableHeader>
-                    <TableRow className="border-b-2 border-blue-200/50 bg-gradient-to-r from-blue-50/80 to-blue-50/40 hover:from-blue-100/60 hover:to-blue-100/40">
-                      <TableHead className="w-16 font-bold text-blue-700 py-3">
-                        {showUpcoming ? '✅' : ''}
-                      </TableHead>
-                      <TableHead className="w-20 font-bold text-blue-700">📋 S.No</TableHead>
-                      <TableHead className="min-w-[180px] font-bold text-blue-700">📚 Module</TableHead>
-                      <TableHead className="min-w-[220px] font-bold text-blue-700">🎯 Title</TableHead>
-                      <TableHead className="min-w-[200px] font-bold text-blue-700">🔍 Focus Area</TableHead>
-                      {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">✅ Approval</TableHead>}
-                      {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">📄 Document</TableHead>}
-                      <TableHead className="w-36 font-bold text-blue-700">📅 Class Date</TableHead>
-                      {!showUpcoming && <TableHead className="min-w-[220px] font-bold text-blue-700">💭 Reason for Change</TableHead>}
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {filteredModules.map((module) => (
-                      <React.Fragment key={module.id}>
-                        {/* Module Header Row */}
-                        <TableRow className="bg-gradient-to-r from-blue-50/60 via-blue-50/40 to-blue-50/30 border-b-2 border-blue-200/30 hover:from-blue-100/50 hover:via-blue-100/40 hover:to-blue-100/30 transition-all duration-300">
-                          <TableCell>
-                            {showUpcoming && (
-                              <input
-                                type="checkbox"
-                                checked={selectedModules.includes(module.id)}
-                                onChange={() => handleModuleSelect(module.id)}
-                                className="w-4 h-4 text-blue-600 border-2 border-blue-300 rounded focus:ring-blue-200 focus:ring-4 transition-all scale-110"
-                              />
-                            )}
-                          </TableCell>
-                          <TableCell colSpan={showUpcoming ? 6 : 8}>
-                            <Collapsible>
-                              <CollapsibleTrigger
-                                onClick={() => toggleModuleExpansion(module.id)}
-                                className="flex items-center gap-3 w-full text-left hover:bg-blue-100/60 p-2 rounded-xl transition-all duration-300 group"
-                              >
-                                <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md">
-                                  {expandedModules.includes(module.id) ?
-                                    <ChevronDown className="w-4 h-4 text-white" /> :
-                                    <ChevronRight className="w-4 h-4 text-white" />
-                                  }
-                                </div>
-                                <div className="flex items-center gap-4 flex-wrap">
-                                  <Badge className="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl px-3 py-1 font-bold shadow-md">
-                                    ✨ {module.name}
-                                  </Badge>
-                                  <div className="flex items-center gap-2">
-                                    <div className="p-1.5 bg-white/80 rounded-lg shadow-sm">
-                                      {getDesignerIcon(module.designer)}
-                                    </div>
-                                    <span className="text-blue-700 font-semibold text-sm">
-                                      Designed by {module.designer_name || module.designer}
-                                    </span>
-                                  </div>
-                                  {showUpcoming && getApprovalBadge(module.approval_status)}
-                                </div>
-                              </CollapsibleTrigger>
+              {/* Loading State for Past Classes */}
+              {!showUpcoming && (areBookingsLoading || isRoadmapLoading) && (
+                <div className="flex items-center justify-center py-8">
+                  <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
+                  <span className="text-blue-600 font-medium">
+                    {areBookingsLoading ? 'Loading past classes...' : 'Loading past classes roadmap...'}
+                  </span>
+                </div>
+              )}
 
-                              <CollapsibleContent>
-                                {expandedModules.includes(module.id) && module.classes.map((classItem) => (
-                                  <TableRow key={classItem.id} className="border-b border-blue-100/50 hover:bg-blue-50/40 transition-all duration-300">
-                                    <TableCell></TableCell>
-                                    <TableCell className="font-bold text-blue-700">{classItem.serialNo}</TableCell>
-                                    <TableCell>
-                                      <Badge className="bg-blue-100/80 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold shadow-sm">
-                                        {module.name}
-                                      </Badge>
-                                    </TableCell>
-                                    <TableCell className="font-bold text-blue-800">{classItem.name}</TableCell>
-                                    <TableCell className="text-blue-600 font-semibold">{classItem.focusArea}</TableCell>
-                                    {!showUpcoming && (
+              {/* Error State for Past Classes */}
+              {!showUpcoming && roadmapError && (
+                <div className="text-center py-8">
+                  <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
+                  <p className="text-red-600 font-medium mb-2">Error loading past classes roadmap</p>
+                  <p className="text-red-500 text-sm">{roadmapError}</p>
+                </div>
+              )}
+
+              {/* No Data State for Past Classes */}
+              {!showUpcoming && !areBookingsLoading && !isRoadmapLoading && !roadmapError && filteredModules.length === 0 && (
+                <div className="text-center py-8">
+                  <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <p className="text-gray-600 font-medium">No past classes found</p>
+                  <p className="text-gray-500 text-sm">Complete some classes to see your learning roadmap</p>
+                </div>
+              )}
+
+              {/* Table - Only show when there's data and not in loading/error states */}
+              {((showUpcoming && filteredModules.length > 0) || (!showUpcoming && !areBookingsLoading && !isRoadmapLoading && !roadmapError && filteredModules.length > 0)) && (
+                <div className="overflow-x-auto rounded-xl border-2 border-blue-100/50">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="border-b-2 border-blue-200/50 bg-gradient-to-r from-blue-50/80 to-blue-50/40 hover:from-blue-100/60 hover:to-blue-100/40">
+                        <TableHead className="w-16 font-bold text-blue-700 py-3">
+                          {showUpcoming ? '✅' : ''}
+                        </TableHead>
+                        <TableHead className="w-20 font-bold text-blue-700">📋 S.No</TableHead>
+                        <TableHead className="min-w-[180px] font-bold text-blue-700">📚 Module</TableHead>
+                        <TableHead className="min-w-[220px] font-bold text-blue-700">🎯 Title</TableHead>
+                        <TableHead className="min-w-[200px] font-bold text-blue-700">🔍 Focus Area</TableHead>
+                        {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">✅ Approval</TableHead>}
+                        {!showUpcoming && <TableHead className="w-32 font-bold text-blue-700">📄 Document</TableHead>}
+                        <TableHead className="w-36 font-bold text-blue-700">📅 Class Date</TableHead>
+                        {!showUpcoming && <TableHead className="min-w-[220px] font-bold text-blue-700">💭 Reason for Change</TableHead>}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {filteredModules.map((module) => (
+                        <React.Fragment key={module.id}>
+                          {/* Module Header Row */}
+                          <TableRow className="bg-gradient-to-r from-blue-50/60 via-blue-50/40 to-blue-50/30 border-b-2 border-blue-200/30 hover:from-blue-100/50 hover:via-blue-100/40 hover:to-blue-100/30 transition-all duration-300">
+                            <TableCell>
+                              {showUpcoming && (
+                                <input
+                                  type="checkbox"
+                                  checked={selectedModules.includes(module.id)}
+                                  onChange={() => handleModuleSelect(module.id)}
+                                  className="w-4 h-4 text-blue-600 border-2 border-blue-300 rounded focus:ring-blue-200 focus:ring-4 transition-all scale-110"
+                                />
+                              )}
+                            </TableCell>
+                            <TableCell colSpan={showUpcoming ? 6 : 8}>
+                              <Collapsible>
+                                <CollapsibleTrigger
+                                  onClick={() => toggleModuleExpansion(module.id)}
+                                  className="flex items-center gap-3 w-full text-left hover:bg-blue-100/60 p-2 rounded-xl transition-all duration-300 group"
+                                >
+                                  <div className="p-1.5 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg group-hover:from-blue-600 group-hover:to-blue-700 transition-all duration-300 shadow-md">
+                                    {expandedModules.includes(module.id) ?
+                                      <ChevronDown className="w-4 h-4 text-white" /> :
+                                      <ChevronRight className="w-4 h-4 text-white" />
+                                    }
+                                  </div>
+                                  <div className="flex items-center gap-4 flex-wrap">
+                                    <Badge className="bg-gradient-to-r from-blue-100 to-blue-50 text-blue-800 border-2 border-blue-200 rounded-xl px-3 py-1 font-bold shadow-md">
+                                      ✨ {module.name}
+                                    </Badge>
+                                    <div className="flex items-center gap-2">
+                                      <div className="p-1.5 bg-white/80 rounded-lg shadow-sm">
+                                        {getDesignerIcon(module.designer)}
+                                      </div>
+                                      <span className="text-blue-700 font-semibold text-sm">
+                                        Designed by {module.designer_name || module.designer}
+                                      </span>
+                                    </div>
+                                    {showUpcoming && getApprovalBadge(module.approval_status)}
+                                  </div>
+                                </CollapsibleTrigger>
+
+                                <CollapsibleContent>
+                                  {expandedModules.includes(module.id) && module.classes.map((classItem) => (
+                                    <TableRow key={classItem.id} className="border-b border-blue-100/50 hover:bg-blue-50/40 transition-all duration-300">
+                                      <TableCell></TableCell>
+                                      <TableCell className="font-bold text-blue-700">{classItem.serialNo}</TableCell>
                                       <TableCell>
-                                        {classItem.reasonForChange ? getApprovalBadge(module.approval_status) : '—'}
+                                        <Badge className="bg-blue-100/80 text-blue-700 border border-blue-200 rounded-lg text-xs font-semibold shadow-sm">
+                                          {module.name}
+                                        </Badge>
                                       </TableCell>
-                                    )}
-                                    {!showUpcoming && (
-                                      <TableCell>
-                                        <div className="flex items-center gap-2">
-                                          <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm">
-                                            <FileText className="w-4 h-4 text-blue-600" />
+                                      <TableCell className="font-bold text-blue-800">{classItem.name}</TableCell>
+                                      <TableCell className="text-blue-600 font-semibold">{classItem.focusArea}</TableCell>
+                                      {!showUpcoming && (
+                                        <TableCell>
+                                          {classItem.reasonForChange ? getApprovalBadge(module.approval_status) : '—'}
+                                        </TableCell>
+                                      )}
+                                      {!showUpcoming && (
+                                        <TableCell>
+                                          <div className="flex items-center gap-2">
+                                            <div className="p-1.5 bg-blue-100 rounded-lg shadow-sm">
+                                              <FileText className="w-4 h-4 text-blue-600" />
+                                            </div>
+                                            <Button
+                                              variant="ghost"
+                                              size="sm"
+                                              className="p-2 h-auto hover:bg-blue-100 rounded-lg transition-all duration-300 font-semibold text-xs"
+                                              onClick={() => handlePPTView(classItem.pptFile || '')}
+                                            >
+                                              <Eye className="w-3 h-3 mr-1" />
+                                              View PPT
+                                            </Button>
                                           </div>
-                                          <Button
-                                            variant="ghost"
-                                            size="sm"
-                                            className="p-2 h-auto hover:bg-blue-100 rounded-lg transition-all duration-300 font-semibold text-xs"
-                                            onClick={() => handlePPTView(classItem.pptFile || '')}
-                                          >
-                                            <Eye className="w-3 h-3 mr-1" />
-                                            View PPT
-                                          </Button>
-                                        </div>
+                                        </TableCell>
+                                      )}
+                                      <TableCell className="font-semibold text-blue-700">
+                                        {new Date(classItem.classDate).toLocaleDateString()}
                                       </TableCell>
-                                    )}
-                                    <TableCell className="font-semibold text-blue-700">
-                                      {new Date(classItem.classDate).toLocaleDateString()}
-                                    </TableCell>
-                                    {!showUpcoming && (
-                                      <TableCell className="text-blue-600 italic font-medium">
-                                        {classItem.reasonForChange || '—'}
-                                      </TableCell>
-                                    )}
-                                  </TableRow>
-                                ))}
-                              </CollapsibleContent>
-                            </Collapsible>
-                          </TableCell>
-                        </TableRow>
-                      </React.Fragment>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                                      {!showUpcoming && (
+                                        <TableCell className="text-blue-600 italic font-medium">
+                                          {classItem.reasonForChange || '—'}
+                                        </TableCell>
+                                      )}
+                                    </TableRow>
+                                  ))}
+                                </CollapsibleContent>
+                              </Collapsible>
+                            </TableCell>
+                          </TableRow>
+                        </React.Fragment>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </div>
+              )}
             </Card>
 
             <Dialog open={showReasonDialog} onOpenChange={setShowReasonDialog}>
