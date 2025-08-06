@@ -12,25 +12,40 @@ export const useBookings = () => {
     const { selectedChild } = useChildren();
 
     const loadBookings = useCallback(async (filters: BookingFilters, child_id?: number) => {
+        console.log('📋 loadBookings called with filters:', filters, 'child_id:', child_id, 'selectedChild.id:', selectedChild?.id);
+        
+        // Check if the requested child_id matches the currently selected child
+        if (child_id && selectedChild && child_id !== selectedChild.id) {
+            console.log('⚠️ Child mismatch detected! Requested:', child_id, 'Selected:', selectedChild.id);
+            console.log('⚠️ Skipping this booking load to prevent stale data');
+            return;
+        }
+        
         setIsLoading(true);
         setError(null);
 
         try {
+            console.log('📡 Making API call to get-bookings...');
             const response = await bookingService.getBookings(filters, child_id);
 
             if (response.status && response.data) {
-                console.log('Bookings loaded:', response.data.bookings);
-                setBookings(response.data.bookings.data || []);
+                console.log('✅ Bookings loaded successfully:', response.data.bookings);
+                const bookingsData = response.data.bookings.data || [];
+                console.log('📊 Setting bookings data:', bookingsData.map(b => b.schedulebooking_id));
+                setBookings(bookingsData);
                 setPagination(response.data.bookings);
             } else {
+                console.log('❌ Bookings loading failed:', response.msg);
                 setError(response.msg);
             }
         } catch (err: any) {
+            console.log('💥 Bookings loading error:', err.message);
             setError(err.message || 'Failed to load bookings');
         } finally {
+            console.log('🏁 Bookings loading finished, setting isLoading to false');
             setIsLoading(false);
         }
-    }, []);
+    }, [selectedChild]);
 
     const loadUpcomingClasses = useCallback((additionalFilters?: Partial<BookingFilters>, child_id?: number) => {
         const upcomingFilters: BookingFilters = {
