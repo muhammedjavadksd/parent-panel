@@ -17,6 +17,7 @@ import { useHomework } from "@/hooks/useHomework";
 import { useChildren } from "@/hooks/useChildren";
 import CameraCaptureModal from "@/components/CameraCaptureModal";
 import { apiClient } from "@/services/api";
+import axios from "axios";
 
 const HomeworkRoom = () => {
   const navigate = useNavigate();
@@ -189,12 +190,14 @@ const HomeworkRoom = () => {
     }));
   };
 
-
+  // Helper to get homework object by booking id
+  const getHomeworkById = (homeworkId: number) => {
+    return data?.homework?.data?.find(hw => hw.classschedulebooking_id === homeworkId);
+  };
 
   const handleSubmitWork = async (homeworkId: number) => {
     const files = selectedFiles[homeworkId] || [];
     const comment = homeworkComments[homeworkId] || '';
-    
     if (files.length === 0) {
       toast({
         title: "No files selected",
@@ -203,8 +206,6 @@ const HomeworkRoom = () => {
       });
       return;
     }
-
-    // Check if files exceed the maximum limit
     if (files.length > 10) {
       toast({
         title: "Too many files",
@@ -213,33 +214,40 @@ const HomeworkRoom = () => {
       });
       return;
     }
-
     setIsSubmitting(true);
     setUploadProgress(0);
-
     try {
+      // 1. Get classschedule_id for this homework
+      const homeworkObj = getHomeworkById(homeworkId);
+      if (!homeworkObj || !homeworkObj.classschedule_id) {
+        throw new Error("Could not find classschedule_id for this homework.");
+      }
+      // 2. Fetch faculty_id from new API
+      const facultyRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/faculty/get-faculty-id`, {
+        params: { classschedule_id: homeworkObj.classschedule_id },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+      const faculty_id = facultyRes?.data?.data?.faculty_id;
+      if (!faculty_id) {
+        throw new Error("Could not retrieve faculty_id for this homework.");
+      }
+      // 3. Prepare FormData
       const formData = new FormData();
-
-      // Add the classschedulebooking_id
       formData.append('classschedulebooking_id', homeworkId.toString());
-
-      // Add comment if provided
+      formData.append('faculty_id', faculty_id);
       if (comment.trim()) {
         formData.append('comment', comment.trim());
       }
-
-      // Add all files to the form data with unique names
       files.forEach((file, index) => {
-        // Create unique filename by appending classschedulebooking_id
         const fileExtension = file.name.split('.').pop();
         const fileNameWithoutExtension = file.name.replace(/\.[^/.]+$/, '');
         const uniqueFileName = `${fileNameWithoutExtension}_${homeworkId}.${fileExtension}`;
-
-        // Create new File object with unique name
         const renamedFile = new File([file], uniqueFileName, { type: file.type });
         formData.append('files', renamedFile);
       });
-
+      // 4. Submit homework
       const response = await apiClient.post(
         `${import.meta.env.VITE_BASE_URL}/api/homework/submit`,
         formData,
@@ -256,31 +264,19 @@ const HomeworkRoom = () => {
           },
         }
       );
-
       const result = response.data;
-
       if (result.status === 'success') {
         toast({
           title: "Homework Submitted Successfully!",
           description: `${files.length} file(s) uploaded successfully.`,
         });
-
-        // Refresh homework data
         loadHomework({
           child_id: currentChildId,
           page: currentPage,
           limit: 10
         });
-
-        // Cleanup
-        setSelectedFiles(prev => ({
-          ...prev,
-          [homeworkId]: []
-        }));
-        setHomeworkComments(prev => ({
-          ...prev,
-          [homeworkId]: ''
-        }));
+        setSelectedFiles(prev => ({ ...prev, [homeworkId]: [] }));
+        setHomeworkComments(prev => ({ ...prev, [homeworkId]: '' }));
         setIsSubmitDialogOpen(false);
         setCurrentHomeworkId(null);
       } else {
@@ -295,7 +291,6 @@ const HomeworkRoom = () => {
       });
     } finally {
       setIsSubmitting(false);
-      // Optionally reset progress to 0 after a short delay
       setTimeout(() => setUploadProgress(0), 1000);
     }
   };
@@ -579,6 +574,7 @@ const HomeworkRoom = () => {
                           <Button
                             className="w-48 bg-green-600 hover:bg-green-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
                             onClick={() => openSubmitDialog(homework.classschedulebooking_id)}
+                            disabled={isSubmitting}
                           >
                             <Upload className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Upload Files
@@ -586,6 +582,7 @@ const HomeworkRoom = () => {
                           <Button
                             className="w-48 bg-blue-600 hover:bg-blue-700 text-white px-3 sm:px-4 lg:px-6 py-2 shadow-md border-0 transition-all duration-200 text-xs sm:text-sm"
                             onClick={() => openCameraModal(homework.classschedulebooking_id)}
+                            disabled={isSubmitting}
                           >
                             <Camera className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Camera Capture
@@ -593,6 +590,7 @@ const HomeworkRoom = () => {
                           <Button
                             variant="outline"
                             className="w-48 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
+                            disabled={isSubmitting}
                           >
                             <HelpCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             Ask Doubt
@@ -601,6 +599,7 @@ const HomeworkRoom = () => {
                             variant="outline"
                             className="w-48 border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
+                            disabled={isSubmitting}
                           >
                             <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             View Homework
@@ -608,7 +607,7 @@ const HomeworkRoom = () => {
                           <Button
                             variant="outline"
                             className="w-48 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
-                            // onClick={() => handleDownloadHomework(homework)}
+                            disabled={isSubmitting}
                             onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
                             <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -628,6 +627,7 @@ const HomeworkRoom = () => {
                             variant="outline"
                             className="w-48 border-2 border-green-400 text-green-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => openViewSubmissionDialog(homework.classschedulebooking_id)}
+                            disabled={isSubmitting}
                           >
                             View Submission
                           </Button>
@@ -635,6 +635,7 @@ const HomeworkRoom = () => {
                             variant="outline"
                             className="w-48 border-2 border-blue-300 text-blue-700 hover:bg-blue-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => openViewFeedbackDialog(homework.classschedulebooking_id)}
+                            disabled={isSubmitting}
                           >
                             View Feedback
                           </Button>
@@ -642,6 +643,7 @@ const HomeworkRoom = () => {
                             variant="outline"
                             className="w-48 border-2 border-orange-300 text-orange-700 hover:bg-orange-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
                             onClick={() => handleViewHomework(homework)}
+                            disabled={isSubmitting}
                           >
                             <BookOpen className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                             View Homework
@@ -658,7 +660,7 @@ const HomeworkRoom = () => {
                           <Button
                             variant="outline"
                             className="w-48 border-2 border-purple-300 text-purple-700 hover:bg-purple-50 px-3 sm:px-4 lg:px-6 py-2 shadow-sm text-xs sm:text-sm"
-                            // onClick={() => handleDownloadHomework(homework)}
+                            disabled={isSubmitting}
                             onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
                             <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
@@ -740,6 +742,7 @@ const HomeworkRoom = () => {
                     onChange={(e) => currentHomeworkId && handleFileSelect(currentHomeworkId, e.target.files)}
                     className="cursor-pointer text-xs sm:text-sm"
                     accept=".jpeg,.jpg,.png,.gif,.webp,.bmp,.tiff,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv,.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.mpeg,.wav,.mp3,.ogg,.aac,.zip,.rar,.7z,.json,.xml"
+                    disabled={isSubmitting}
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Supported formats: PDF, MP4, DOC, DOCX, JPG, PNG, TXT (Max 10 files)
@@ -757,6 +760,7 @@ const HomeworkRoom = () => {
                     onChange={(e) => currentHomeworkId && handleCommentChange(currentHomeworkId, e.target.value)}
                     className="w-full p-2 border border-gray-300 rounded-md text-xs sm:text-sm resize-none"
                     rows={3}
+                    disabled={isSubmitting}
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     Add any notes or comments about your submission
@@ -780,6 +784,7 @@ const HomeworkRoom = () => {
                             size="sm"
                             onClick={() => currentHomeworkId && removeFile(currentHomeworkId, index)}
                             className="h-6 w-6 p-0 text-gray-500 hover:text-red-500"
+                            disabled={isSubmitting}
                           >
                             <X className="w-3 h-3" />
                           </Button>
@@ -804,6 +809,7 @@ const HomeworkRoom = () => {
                     variant="outline"
                     onClick={() => setIsSubmitDialogOpen(false)}
                     className="flex-1 text-xs sm:text-sm"
+                    disabled={isSubmitting}
                   >
                     Cancel
                   </Button>
@@ -837,6 +843,7 @@ const HomeworkRoom = () => {
             onClose={() => setIsCameraModalOpen(false)}
             onImagesCaptured={handleCameraImagesCaptured}
             homeworkId={currentHomeworkId || 0}
+            classscheduleId={getHomeworkById(currentHomeworkId || 0)?.classschedule_id || 0}
           />
 
           {/* View Submission Dialog */}

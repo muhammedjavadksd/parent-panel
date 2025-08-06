@@ -6,12 +6,14 @@ import { Textarea } from '@/components/ui/textarea';
 import { Camera, X, Upload, RotateCcw, Settings, CheckCircle } from 'lucide-react';
 import { toast } from '@/components/ui/use-toast';
 import { apiClient } from '@/services/api';
+import axios from "axios";
 
 interface CameraCaptureModalProps {
   isOpen: boolean;
   onClose: () => void;
   onImagesCaptured: (images: File[]) => void;
   homeworkId: number;
+  classscheduleId: number; // <-- new prop
 }
 
 interface CameraDevice {
@@ -24,7 +26,8 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
   isOpen,
   onClose,
   onImagesCaptured,
-  homeworkId
+  homeworkId,
+  classscheduleId,
 }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -224,8 +227,6 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       });
       return;
     }
-
-    // Check if files exceed the maximum limit
     if (capturedImages.length > 10) {
       toast({
         title: "Too many files",
@@ -234,25 +235,33 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
       });
       return;
     }
-
     setIsLoading(true);
-
     try {
+      // 1. Fetch faculty_id from new API
+      if (!classscheduleId) {
+        throw new Error("Could not find classschedule_id for this homework.");
+      }
+      const facultyRes = await axios.get(`${import.meta.env.VITE_BASE_URL}/api/faculty/get-faculty-id`, {
+        params: { classschedule_id: classscheduleId },
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`
+        }
+      });
+      const faculty_id = facultyRes?.data?.data?.faculty_id;
+      if (!faculty_id) {
+        throw new Error("Could not retrieve faculty_id for this homework.");
+      }
+      // 2. Prepare FormData
       const formData = new FormData();
-
-      // Add the classschedulebooking_id (same as homeworkId)
       formData.append('classschedulebooking_id', homeworkId.toString());
-
-      // Add comment if provided
+      formData.append('faculty_id', faculty_id);
       if (comment.trim()) {
         formData.append('comment', comment.trim());
       }
-
-      // Add all captured images to the form data (already have unique names from capture)
       capturedImages.forEach((file) => {
         formData.append('files', file);
       });
-
+      // 3. Submit homework
       const response = await apiClient.post(
         `${import.meta.env.VITE_BASE_URL}/api/homework/submit`,
         formData,
@@ -266,16 +275,12 @@ const CameraCaptureModal: React.FC<CameraCaptureModalProps> = ({
           },
         }
       );
-
       const result = response.data;
-
       if (result.status === 'success') {
         toast({
           title: "Homework Submitted Successfully!",
           description: `${capturedImages.length} image(s) uploaded successfully.`,
         });
-
-        // Reset and close
         setCapturedImages([]);
         setComment('');
         onClose();
