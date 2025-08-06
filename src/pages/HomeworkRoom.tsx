@@ -612,7 +612,7 @@ const HomeworkRoom = () => {
                             onClick={() => window.open(`https://www.bambinos.live`, '_blank')}
                           >
                             <Zap className="w-3 h-3 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
-                            Asses My Work
+                            Assess My Work
                           </Button>
                         </>
                       ) : (
