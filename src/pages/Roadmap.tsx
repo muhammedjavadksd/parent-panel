@@ -528,15 +528,9 @@ const Roadmap = () => {
   }, [searchQuery, selectedStatus, showUpcoming, groupedModules]);
 
   // ... (All your other functions like totalClasses, getDesignerIcon, handleChangeRequest, etc., remain the same) ...
-  const totalClasses = showUpcoming 
-    ? roadmapModules.reduce((sum, module) => sum + module.total_classes, 0)
-    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
-  const completedClasses = showUpcoming
-    ? roadmapModules.reduce((sum, module) => sum + module.completed_classes, 0)
-    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
-  const enrolledClasses = showUpcoming
-    ? roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0)
-    : groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
+  const totalClasses = 140;
+  const completedClasses = groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
+  const enrolledClasses =  roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0)
 
   const getDesignerIcon = (designer: string) => {
     switch (designer) {
@@ -685,11 +679,11 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-blue-100 rounded-lg">
                     <Play className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="font-semibold text-blue-700 text-sm">{showUpcoming ? 'Active' : 'Topics'}</span>
+                  <span className="font-semibold text-blue-700 text-sm">Active</span>
                 </div>
                 <div className="text-2xl font-bold text-blue-600">{enrolledClasses}</div>
                 <div className="text-xs text-blue-600/70">
-                  {showUpcoming ? 'Currently enrolled' : 'Completed topics'}
+                  Currently enrolled
                 </div>
               </div>
 
@@ -698,13 +692,13 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-purple-100 rounded-lg">
                     <Sparkles className="w-4 h-4 text-purple-600" />
                   </div>
-                  <span className="font-semibold text-purple-700 text-sm">{showUpcoming ? 'Available' : 'Modules'}</span>
+                  <span className="font-semibold text-purple-700 text-sm">Available</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-600">
-                  {showUpcoming ? totalClasses - completedClasses - enrolledClasses : groupedModules.length}
+                  {totalClasses - completedClasses - enrolledClasses}
                 </div>
                 <div className="text-xs text-purple-600/70">
-                  {showUpcoming ? 'Ready to start' : 'Completed modules'}
+                  Ready to start
                 </div>
               </div>
 
@@ -721,21 +715,7 @@ const Roadmap = () => {
             </div>
           </div>
 
-          {/* Motivational Message */}
-          {/* <div className="text-center p-2 bg-white/50 backdrop-blur-sm rounded-xl border border-white/60">
-            <div className="flex items-center justify-center gap-1 mb-1">
-              <Heart className="w-4 h-4 text-red-500" />
-              <Star className="w-4 h-4 text-yellow-500" />
-              <TrendingUp className="w-4 h-4 text-green-500" />
-            </div>
-            <p className="text-blue-700 font-medium text-sm">
-              {overallProgress < 25 ? "🌱 Your learning journey has begun! Every expert was once a beginner." :
-                overallProgress < 50 ? "🚀 You're making great progress! Keep up the momentum!" :
-                  overallProgress < 75 ? "⭐ Fantastic work! You're more than halfway there!" :
-                    overallProgress < 100 ? "🎯 Almost there! The finish line is in sight!" :
-                      "🏆 Congratulations! You've completed your learning journey!"}
-            </p>
-          </div> */}
+          
         </div>
       </div>
     );

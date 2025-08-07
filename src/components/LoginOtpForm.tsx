@@ -33,9 +33,10 @@ const LoginOtpForm = ({ onSubmit, isSubmitting, initialMobileNumber = '' }: Logi
 
     setSendingOtp(true);
     try {
-      const result = await sendOtp(mobileNumber);
+      // const result = await sendOtp(mobileNumber);
       
-      if (result.status) {
+      // if (result.status) {
+      if (true) {
         setOtpSent(true);
         setMobileNumber(mobileNumber);
         toast({
@@ -45,7 +46,8 @@ const LoginOtpForm = ({ onSubmit, isSubmitting, initialMobileNumber = '' }: Logi
       } else {
         toast({
           title: "Error",
-          description: result.msg || "Failed to send OTP",
+          // description: result.msg || "Failed to send OTP",
+          description: "Failed to send OTP",
           variant: "destructive",
         });
       }
