@@ -79,7 +79,7 @@ const Roadmap = () => {
   
   // Past classes hooks
   const { bookings, isLoading: areBookingsLoading, loadPastClasses, clearBookingData } = useBookings();
-  const { groupedModules, isLoading: isRoadmapLoading, error: roadmapError, loadPastClassRoadmap, clearRoadmapData } = useRoadmap();
+  const { groupedModules, upcomingModuleStructure, isLoading: isRoadmapLoading, error: roadmapError, loadPastClassRoadmap, loadUpcomingModuleStructure, clearRoadmapData } = useRoadmap();
 
   useEffect(() => {
     if (!selectedChild) {
@@ -94,13 +94,21 @@ const Roadmap = () => {
     clearRoadmapData();
   }, [selectedChild?.id, clearBookingData, clearRoadmapData]);
 
-  // Load past classes when toggling to past classes view
+  // Load past classes data whenever a child is selected (regardless of current view)
   useEffect(() => {
-    if (!showUpcoming && selectedChild) {
+    if (selectedChild) {
       console.log('📋 Loading past classes for child:', selectedChild.id);
       loadPastClasses(undefined, selectedChild.id);
     }
-  }, [showUpcoming, selectedChild, loadPastClasses]);
+  }, [selectedChild, loadPastClasses]);
+
+  // Load upcoming module structure when toggling to upcoming classes view
+  useEffect(() => {
+    if (showUpcoming && selectedChild) {
+      console.log('📋 Loading upcoming module structure for child:', selectedChild.id);
+      loadUpcomingModuleStructure();
+    }
+  }, [showUpcoming, selectedChild, loadUpcomingModuleStructure]);
 
   // Load roadmap data when past classes are loaded and not loading
   useEffect(() => {
@@ -112,7 +120,7 @@ const Roadmap = () => {
       bookings: bookings.map(b => b.schedulebooking_id)
     });
     
-    if (!showUpcoming && !areBookingsLoading && selectedChild) {
+    if (!areBookingsLoading && selectedChild) {
       if (bookings.length > 0) {
         const csbIds = bookings.map(booking => booking.schedulebooking_id);
         console.log('✅ Conditions met, calling loadPastClassRoadmap with csbIds:', csbIds);
@@ -124,7 +132,7 @@ const Roadmap = () => {
     } else {
       console.log('❌ Conditions not met for loadPastClassRoadmap');
     }
-  }, [showUpcoming, bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap, clearRoadmapData]);
+  }, [bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap, clearRoadmapData]);
 
   const handleSelectChild = (child: Child) => {
     selectChild(child);
@@ -140,329 +148,42 @@ const Roadmap = () => {
   const nextMonth = new Date(currentDate);
   nextMonth.setMonth(nextMonth.getMonth() + 1);
 
-  const roadmapModules: Module[] = [
-    {
-      id: '1',
-      name: 'Foundation Math',
-      description: 'Basic mathematical concepts and operations',
-      designer: 'teacher',
-      designer_name: 'Ms. Sarah Johnson',
-      total_classes: 4,
-      completed_classes: 2,
-      enrolled_classes: 1,
-      status: 'active',
-      created_date: '2024-01-01',
-      approval_status: 'approved',
-      milestone: 1,
-      classes: [
-        {
-          id: '1',
-          serialNo: 1,
-          name: 'Introduction to Numbers',
-          focusArea: 'Number Recognition & Counting',
-          level: 'Beginner',
-          status: 'completed',
-          description: 'Learn basic number concepts and counting',
-          classDate: '2024-01-15',
-          pptFile: 'intro-numbers.pptx',
-          instructor: 'Ms. Sarah Johnson',
-        },
-        {
-          id: '2',
-          serialNo: 2,
-          name: 'Addition & Subtraction',
-          focusArea: 'Basic Arithmetic Operations',
-          level: 'Beginner',
-          status: 'completed',
-          description: 'Master basic arithmetic operations',
-          classDate: '2024-01-22',
-          pptFile: 'addition-subtraction.pptx',
-          instructor: 'Ms. Sarah Johnson',
-        },
-        {
-          id: '3',
-          serialNo: 3,
-          name: 'Multiplication Tables',
-          focusArea: 'Times Tables & Patterns',
-          level: 'Beginner',
-          status: 'enrolled',
-          description: 'Learn multiplication through patterns',
-          classDate: tomorrow.toISOString().split('T')[0],
-          pptFile: 'multiplication-tables.pptx',
-          instructor: 'Ms. Sarah Johnson',
-          reasonForChange: 'Student requested additional practice time'
-        },
-        {
-          id: '4',
-          serialNo: 4,
-          name: 'Division Basics',
-          focusArea: 'Division Concepts & Methods',
-          level: 'Beginner',
-          status: 'available',
-          description: 'Understanding division fundamentals',
-          classDate: nextWeek.toISOString().split('T')[0],
-          pptFile: 'division-basics.pptx',
-          instructor: 'Ms. Sarah Johnson',
-        }
-      ]
-    },
-    {
-      id: '2',
-      name: 'Advanced Math',
-      description: 'Complex mathematical concepts and problem solving',
-      designer: 'auto',
-      designer_name: 'AI Learning System',
-      total_classes: 4,
-      completed_classes: 0,
-      enrolled_classes: 1,
-      status: 'active',
-      created_date: '2024-02-01',
-      approval_status: 'pending',
-      milestone: 2,
-      classes: [
-        {
-          id: '5',
-          serialNo: 5,
-          name: 'Fractions Introduction',
-          focusArea: 'Fraction Concepts & Operations',
-          level: 'Intermediate',
-          status: 'enrolled',
-          description: 'Understanding fractions and basic operations',
-          classDate: new Date(currentDate.getTime() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'fractions-intro.pptx',
-          instructor: 'Dr. Michael Thompson',
-        },
-        {
-          id: '6',
-          serialNo: 6,
-          name: 'Decimal Numbers',
-          focusArea: 'Decimal System & Operations',
-          level: 'Intermediate',
-          status: 'available',
-          description: 'Working with decimal numbers',
-          classDate: new Date(currentDate.getTime() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'decimal-numbers.pptx',
-          instructor: 'Dr. Michael Thompson',
-        },
-        {
-          id: '7',
-          serialNo: 7,
-          name: 'Percentage Calculations',
-          focusArea: 'Percentage & Ratio',
-          level: 'Intermediate',
-          status: 'available',
-          description: 'Understanding percentages in real life',
-          classDate: new Date(currentDate.getTime() + 17 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'percentage-calc.pptx',
-          instructor: 'Dr. Michael Thompson',
-        },
-        {
-          id: '8',
-          serialNo: 8,
-          name: 'Basic Algebra',
-          focusArea: 'Variables & Equations',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Introduction to algebraic thinking',
-          classDate: new Date(currentDate.getTime() + 24 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'basic-algebra.pptx',
-          instructor: 'Dr. Michael Thompson',
-        }
-      ]
-    },
-    {
-      id: '3',
-      name: 'Geometry Fundamentals',
-      description: 'Shapes, measurements, and spatial reasoning',
-      designer: 'teacher',
-      designer_name: 'Prof. Emily Davis',
-      total_classes: 4,
-      completed_classes: 0,
-      enrolled_classes: 0,
-      status: 'active',
-      created_date: '2024-03-01',
-      approval_status: 'approved',
-      milestone: 2,
-      classes: [
-        {
-          id: '9',
-          serialNo: 9,
-          name: 'Basic Shapes',
-          focusArea: '2D Shapes & Properties',
-          level: 'Beginner',
-          status: 'available',
-          description: 'Identifying and understanding basic shapes',
-          classDate: new Date(currentDate.getTime() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'basic-shapes.pptx',
-          instructor: 'Prof. Emily Davis',
-        },
-        {
-          id: '10',
-          serialNo: 10,
-          name: 'Area & Perimeter',
-          focusArea: 'Measurement & Calculation',
-          level: 'Intermediate',
-          status: 'available',
-          description: 'Calculating area and perimeter of shapes',
-          classDate: new Date(currentDate.getTime() + 12 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'area-perimeter.pptx',
-          instructor: 'Prof. Emily Davis',
-        },
-        {
-          id: '11',
-          serialNo: 11,
-          name: '3D Shapes',
-          focusArea: 'Solid Geometry',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Understanding three-dimensional shapes',
-          classDate: new Date(currentDate.getTime() + 19 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: '3d-shapes.pptx',
-          instructor: 'Prof. Emily Davis',
-        },
-        {
-          id: '12',
-          serialNo: 12,
-          name: 'Volume & Surface Area',
-          focusArea: '3D Measurements',
-          level: 'Advanced',
-          status: 'locked',
-          description: 'Calculating volume and surface area',
-          classDate: new Date(currentDate.getTime() + 26 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-          pptFile: 'volume-surface.pptx',
-          instructor: 'Prof. Emily Davis',
-        }
-      ]
-    },
-    {
-      id: '4',
-      name: 'Statistics & Data',
-      description: 'Data analysis and statistical concepts',
-      designer: 'parent',
-      designer_name: 'John Smith',
-      total_classes: 4,
-      completed_classes: 0,
-      enrolled_classes: 0,
-      status: 'locked',
-      created_date: '2024-04-01',
-      approval_status: 'rejected',
-      milestone: 3,
-      classes: [
-        {
-          id: '13',
-          serialNo: 13,
-          name: 'Data Collection',
-          focusArea: 'Surveys & Sampling',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Methods of collecting and organizing data',
-          classDate: '2024-04-16',
-          pptFile: 'data-collection.pptx',
-          instructor: 'Dr. Lisa Chen',
-        },
-        {
-          id: '14',
-          serialNo: 14,
-          name: 'Charts & Graphs',
-          focusArea: 'Data Visualization',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Creating and interpreting visual data',
-          classDate: '2024-04-23',
-          pptFile: 'charts-graphs.pptx',
-          instructor: 'Dr. Lisa Chen',
-        },
-        {
-          id: '15',
-          serialNo: 15,
-          name: 'Mean, Median, Mode',
-          focusArea: 'Central Tendency',
-          level: 'Advanced',
-          status: 'locked',
-          description: 'Understanding measures of central tendency',
-          classDate: '2024-04-30',
-          pptFile: 'central-tendency.pptx',
-          instructor: 'Dr. Lisa Chen',
-        },
-        {
-          id: '16',
-          serialNo: 16,
-          name: 'Probability Basics',
-          focusArea: 'Chance & Likelihood',
-          level: 'Advanced',
-          status: 'locked',
-          description: 'Introduction to probability concepts',
-          classDate: '2024-05-07',
-          pptFile: 'probability-basics.pptx',
-          instructor: 'Dr. Lisa Chen',
-        }
-      ]
-    },
-    {
-      id: '5',
-      name: 'Applied Mathematics',
-      description: 'Real-world applications of mathematical concepts',
-      designer: 'auto',
-      designer_name: 'Smart Learning AI',
-      total_classes: 4,
-      completed_classes: 0,
-      enrolled_classes: 0,
-      status: 'locked',
-      created_date: '2024-05-01',
-      approval_status: 'pending',
-      milestone: 3,
-      classes: [
-        {
-          id: '17',
-          serialNo: 17,
-          name: 'Money & Finance',
-          focusArea: 'Financial Literacy',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Understanding money, budgets, and savings',
-          classDate: '2024-05-14',
-          pptFile: 'money-finance.pptx',
-          instructor: 'Mr. Robert Wilson',
-        },
-        {
-          id: '18',
-          serialNo: 18,
-          name: 'Time & Schedules',
-          focusArea: 'Time Management',
-          level: 'Beginner',
-          status: 'locked',
-          description: 'Working with time, calendars, and schedules',
-          classDate: '2024-05-21',
-          pptFile: 'time-schedules.pptx',
-          instructor: 'Mr. Robert Wilson',
-        },
-        {
-          id: '19',
-          serialNo: 19,
-          name: 'Measurement Units',
-          focusArea: 'Units & Conversions',
-          level: 'Intermediate',
-          status: 'locked',
-          description: 'Understanding different units of measurement',
-          classDate: '2024-05-28',
-          pptFile: 'measurement-units.pptx',
-          instructor: 'Mr. Robert Wilson',
-        },
-        {
-          id: '20',
-          serialNo: 20,
-          name: 'Problem Solving',
-          focusArea: 'Critical Thinking',
-          level: 'Advanced',
-          status: 'locked',
-          description: 'Applying math to solve real-world problems',
-          classDate: '2024-06-04',
-          pptFile: 'problem-solving.pptx',
-          instructor: 'Mr. Robert Wilson',
-        }
-      ]
+  // Helper function to filter upcoming classes based on past attended classes
+  const filterUpcomingClasses = (upcomingModules: any[], pastModules: any[]) => {
+    if (pastModules.length === 0) {
+      return upcomingModules;
     }
-  ];
+    // Create a set of all attended topics for quick lookup
+    const attendedTopics = new Set<string>();
+    const attendedModules = new Set<string>();
+    
+    // Collect all attended topics and modules from past classes
+    pastModules.forEach(pastModule => {
+      attendedModules.add(pastModule.moduleName);
+      pastModule.topics.forEach((topic: any) => {
+        attendedTopics.add(topic.curriculum_topic);
+      });
+    });
+
+    // Filter upcoming modules and their topics
+    return upcomingModules
+      .map(upcomingModule => {
+        // Filter out topics that have already been attended
+        const filteredTopics = upcomingModule.topics.filter((topic: string) => 
+          !attendedTopics.has(topic)
+        );
+
+        // Only include the module if it has remaining topics
+        if (filteredTopics.length > 0) {
+          return {
+            ...upcomingModule,
+            topics: filteredTopics
+          };
+        }
+        return null; // Module will be filtered out
+      })
+      .filter(module => module !== null); // Remove modules with no remaining topics
+  };
 
   const filteredModules = useMemo(() => {
     if (!showUpcoming) {
@@ -498,39 +219,49 @@ const Roadmap = () => {
       });
     }
 
-    // For upcoming classes, use the original logic
-    const currentDate = new Date();
-
-    return roadmapModules.filter(module => {
+    // For upcoming classes, filter based on past attended classes and use the API data
+    const filteredUpcomingModules = filterUpcomingClasses(upcomingModuleStructure, groupedModules);
+    
+    return filteredUpcomingModules.map((module, index) => ({
+      id: `upcoming-${index}`,
+      name: module.moduleName,
+      description: `Upcoming classes for ${module.moduleName}`,
+      designer: 'teacher' as const,
+      designer_name: 'Upcoming Classes',
+      total_classes: module.topics.length,
+      completed_classes: 0,
+      enrolled_classes: 0,
+      status: 'active' as const,
+      created_date: new Date().toISOString().split('T')[0],
+      approval_status: 'approved' as const,
+      milestone: 1 as const,
+      classes: module.topics.map((topic, topicIndex) => ({
+        id: `upcoming-topic-${index}-${topicIndex}`,
+        serialNo: topicIndex + 1,
+        name: topic,
+        focusArea: module.moduleName,
+        level: 'Beginner' as const,
+        status: 'available' as const,
+        description: `Upcoming topic: ${topic}`,
+        classDate: new Date(Date.now() + (topicIndex + 1) * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Generate future dates
+        instructor: 'Upcoming Class',
+      }))
+    })).filter(module => {
       const matchesSearch = module.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         module.description.toLowerCase().includes(searchQuery.toLowerCase());
-
-      const matchesStatus = selectedStatus === 'all' ||
-        (selectedStatus === 'completed' && module.status === 'completed') ||
-        (selectedStatus === 'enrolled' && module.enrolled_classes > 0) ||
-        (selectedStatus === 'available' && module.status === 'active') ||
-        (selectedStatus === 'locked' && module.status === 'locked');
-
-      // Filter by upcoming/past based on class dates
-      const hasMatchingClasses = module.classes.some(classItem => {
-        const classDate = new Date(classItem.classDate);
-        return showUpcoming ? classDate >= currentDate : classDate < currentDate;
-      });
-
-      return matchesSearch && matchesStatus && hasMatchingClasses;
-    }).map(module => ({
-      ...module,
-      classes: module.classes.filter(classItem => {
-        const classDate = new Date(classItem.classDate);
-        return showUpcoming ? classDate >= currentDate : classDate < currentDate;
-      })
-    }));
-  }, [searchQuery, selectedStatus, showUpcoming, groupedModules]);
+      return matchesSearch;
+    });
+  }, [searchQuery, selectedStatus, showUpcoming, groupedModules, upcomingModuleStructure]);
 
   // ... (All your other functions like totalClasses, getDesignerIcon, handleChangeRequest, etc., remain the same) ...
   const totalClasses = 140;
   const completedClasses = groupedModules.reduce((sum, module) => sum + module.topics.length, 0);
-  const enrolledClasses =  roadmapModules.reduce((sum, module) => sum + module.enrolled_classes, 0)
+  
+  // Calculate upcoming classes based on filtered data (excluding already attended topics)
+  const filteredUpcomingModules = filterUpcomingClasses(upcomingModuleStructure, groupedModules);
+  const upcomingClasses = filteredUpcomingModules.reduce((sum, module) => sum + module.topics.length, 0);
+  
+  const enrolledClasses = showUpcoming ? upcomingClasses : 0; // No static roadmapModules data anymore
 
   const getDesignerIcon = (designer: string) => {
     switch (designer) {
@@ -659,7 +390,7 @@ const Roadmap = () => {
 
             
 
-            <CreativeGrowthPath progress={showUpcoming ? 20 : Math.round((completedClasses / totalClasses) * 100) || 0} />
+            <CreativeGrowthPath progress={showUpcoming ? Math.round((upcomingClasses / totalClasses) * 100) || 0 : Math.round((completedClasses / totalClasses) * 100) || 0} />
 
             {/* Stats Grid */}
             <div className="grid grid-cols-2 gap-2">
@@ -679,11 +410,11 @@ const Roadmap = () => {
                   <div className="p-1.5 bg-blue-100 rounded-lg">
                     <Play className="w-4 h-4 text-blue-600" />
                   </div>
-                  <span className="font-semibold text-blue-700 text-sm">Active</span>
+                  <span className="font-semibold text-blue-700 text-sm">{showUpcoming ? 'Upcoming' : 'Active'}</span>
                 </div>
                 <div className="text-2xl font-bold text-blue-600">{enrolledClasses}</div>
                 <div className="text-xs text-blue-600/70">
-                  Currently enrolled
+                  {showUpcoming ? 'Available classes' : 'Currently enrolled'}
                 </div>
               </div>
 
@@ -695,10 +426,10 @@ const Roadmap = () => {
                   <span className="font-semibold text-purple-700 text-sm">Available</span>
                 </div>
                 <div className="text-2xl font-bold text-purple-600">
-                  {totalClasses - completedClasses - enrolledClasses}
+                  {showUpcoming ? (totalClasses - upcomingClasses) : (totalClasses - completedClasses - enrolledClasses)}
                 </div>
                 <div className="text-xs text-purple-600/70">
-                  Ready to start
+                  {showUpcoming ? 'Future modules' : 'Ready to start'}
                 </div>
               </div>
 
@@ -916,36 +647,48 @@ const Roadmap = () => {
                 </div>
               </div>
 
-              {/* Loading State for Past Classes */}
-              {!showUpcoming && (areBookingsLoading || isRoadmapLoading) && (
+              {/* Loading State */}
+              {(showUpcoming ? isRoadmapLoading : (areBookingsLoading || isRoadmapLoading)) && (
                 <div className="flex items-center justify-center py-8">
                   <Loader2 className="w-6 h-6 animate-spin text-blue-600 mr-2" />
                   <span className="text-blue-600 font-medium">
-                    {areBookingsLoading ? 'Loading past classes...' : 'Loading past classes roadmap...'}
+                    {showUpcoming 
+                      ? 'Loading upcoming module structure...' 
+                      : (areBookingsLoading ? 'Loading past classes...' : 'Loading past classes roadmap...')
+                    }
                   </span>
                 </div>
               )}
 
-              {/* Error State for Past Classes */}
-              {!showUpcoming && roadmapError && (
+              {/* Error State */}
+              {roadmapError && (
                 <div className="text-center py-8">
                   <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-                  <p className="text-red-600 font-medium mb-2">Error loading past classes roadmap</p>
+                  <p className="text-red-600 font-medium mb-2">
+                    Error loading {showUpcoming ? 'upcoming' : 'past'} classes roadmap
+                  </p>
                   <p className="text-red-500 text-sm">{roadmapError}</p>
                 </div>
               )}
 
-              {/* No Data State for Past Classes */}
-              {!showUpcoming && !areBookingsLoading && !isRoadmapLoading && !roadmapError && filteredModules.length === 0 && (
+              {/* No Data State */}
+              {!isRoadmapLoading && !roadmapError && filteredModules.length === 0 && (
                 <div className="text-center py-8">
                   <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
-                  <p className="text-gray-600 font-medium">No past classes found</p>
-                  <p className="text-gray-500 text-sm">Complete some classes to see your learning roadmap</p>
+                  <p className="text-gray-600 font-medium">
+                    No {showUpcoming ? 'upcoming' : 'past'} classes found
+                  </p>
+                  <p className="text-gray-500 text-sm">
+                    {showUpcoming 
+                      ? 'Module structure will appear here once available' 
+                      : 'Complete some classes to see your learning roadmap'
+                    }
+                  </p>
                 </div>
               )}
 
               {/* Table - Only show when there's data and not in loading/error states */}
-              {((showUpcoming && filteredModules.length > 0) || (!showUpcoming && !areBookingsLoading && !isRoadmapLoading && !roadmapError && filteredModules.length > 0)) && (
+              {!isRoadmapLoading && !roadmapError && filteredModules.length > 0 && (
                 <div className="overflow-x-auto rounded-xl border-2 border-blue-100/50">
                   <Table>
                     <TableHeader>
