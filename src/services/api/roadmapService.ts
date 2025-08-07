@@ -2,6 +2,7 @@ import axios from 'axios';
 
 interface PastClassRoadmapRequest {
   csb_id: number | number[];
+  category_id: number;
 }
 
 interface PastClassRoadmapItem {
@@ -34,10 +35,11 @@ interface ModuleStructureResponse {
 }
 
 export class RoadmapService {
-  async getPastClassRoadmap(csbIds: number[]): Promise<{ status: boolean; msg: string; data?: PastClassRoadmapItem[] }> {
+  async getPastClassRoadmap(csbIds: number[], categoryId: number): Promise<{ status: boolean; msg: string; data?: PastClassRoadmapItem[] }> {
     try {
       const requestBody: PastClassRoadmapRequest = {
-        csb_id: csbIds.length === 1 ? csbIds[0] : csbIds
+        csb_id: csbIds.length === 1 ? csbIds[0] : csbIds,
+        category_id: categoryId
       };
 
       const response = await axios.post<PastClassRoadmapResponse>(

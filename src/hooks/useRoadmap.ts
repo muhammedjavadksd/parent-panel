@@ -35,8 +35,8 @@ export const useRoadmap = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const loadPastClassRoadmap = useCallback(async (csbIds: number[]) => {
-    console.log('🚀 loadPastClassRoadmap called with csbIds:', csbIds);
+  const loadPastClassRoadmap = useCallback(async (csbIds: number[], categoryId: number) => {
+    console.log('🚀 loadPastClassRoadmap called with csbIds:', csbIds, 'categoryId:', categoryId);
     
     if (!csbIds || csbIds.length === 0) {
       console.log('⚠️ No csbIds provided, clearing roadmap data');
@@ -62,8 +62,8 @@ export const useRoadmap = () => {
     setError(null);
 
     try {
-      console.log('📡 Making API call to pastClassRoadmap with csbIds:', validCsbIds);
-      const response = await roadmapService.getPastClassRoadmap(validCsbIds);
+      console.log('📡 Making API call to pastClassRoadmap with csbIds:', validCsbIds, 'categoryId:', categoryId);
+      const response = await roadmapService.getPastClassRoadmap(validCsbIds, categoryId);
 
       if (response.status && response.data) {
         setPastClassRoadmap(response.data);
