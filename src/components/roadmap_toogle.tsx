@@ -6,16 +6,16 @@ import { motion } from 'framer-motion';
 // 1. DEFINE the props interface
 interface RoadmapToggleViewSelectorProps {
     selectedSubject: string;
-    onSubjectChange: (subject: 'English' | 'Math' | 'Gita') => void;
+    onSubjectChange: (subject: 'English' | 'Maths' | 'Gita') => void;
 }
 
 const RoadmapToggleViewSelector = ({ selectedSubject, onSubjectChange }: RoadmapToggleViewSelectorProps) => {
     // 2. REMOVE the internal state
     // const [selected, setSelected] = useState<'month' | 'overall'>('month');
 
-    const options: { key: 'English' | 'Math' | 'Gita'; label: string }[] = [
+    const options: { key: 'English' | 'Maths' | 'Gita'; label: string }[] = [
         { key: 'English', label: 'English' },
-        { key: 'Math', label: 'Math' },
+        { key: 'Maths', label: 'Maths' },
         { key: 'Gita', label: 'Gita' },
     ];
 

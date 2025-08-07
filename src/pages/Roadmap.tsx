@@ -81,6 +81,20 @@ const Roadmap = () => {
   const { bookings, isLoading: areBookingsLoading, loadPastClasses, clearBookingData } = useBookings();
   const { groupedModules, upcomingModuleStructure, isLoading: isRoadmapLoading, error: roadmapError, loadPastClassRoadmap, loadUpcomingModuleStructure, clearRoadmapData } = useRoadmap();
 
+  // Function to get category_id based on selected subject
+  const getCategoryId = (subject: string): number => {
+    switch (subject) {
+      case 'English':
+        return 24;
+      case 'Gita':
+        return 26;
+      case 'Maths':
+        return 34;
+      default:
+        return 24; // Default to English
+    }
+  };
+
   useEffect(() => {
     if (!selectedChild) {
       setShowChildSelectionPopup(true);
@@ -125,24 +139,28 @@ const Roadmap = () => {
       areBookingsLoading,
       bookingsLength: bookings.length,
       selectedChildId: selectedChild?.id,
+      selectedSubject,
+      categoryId: getCategoryId(selectedSubject),
       bookings: bookings.map(b => b.schedulebooking_id)
     });
     
     if (!areBookingsLoading && selectedChild) {
       if (bookings.length > 0) {
         const csbIds = bookings.map(booking => booking.schedulebooking_id);
-        console.log('✅ Conditions met, calling loadPastClassRoadmap with csbIds:', csbIds);
-        loadPastClassRoadmap(csbIds);
+        const categoryId = getCategoryId(selectedSubject);
+        console.log('✅ Conditions met, calling loadPastClassRoadmap with csbIds:', csbIds, 'categoryId:', categoryId);
+        loadPastClassRoadmap(csbIds, categoryId);
       } else {
         console.log('⚠️ No past bookings found, clearing past roadmap data but keeping upcoming data');
         // Only clear past class data, not upcoming module structure
         // We'll handle this by calling loadPastClassRoadmap with empty array
-        loadPastClassRoadmap([]);
+        const categoryId = getCategoryId(selectedSubject);
+        loadPastClassRoadmap([], categoryId);
       }
     } else {
       console.log('❌ Conditions not met for loadPastClassRoadmap');
     }
-  }, [bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap]);
+  }, [bookings, areBookingsLoading, selectedChild, selectedSubject, loadPastClassRoadmap]);
 
   const handleSelectChild = (child: Child) => {
     selectChild(child);
