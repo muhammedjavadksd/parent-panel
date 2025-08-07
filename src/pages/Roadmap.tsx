@@ -102,13 +102,21 @@ const Roadmap = () => {
     }
   }, [selectedChild, loadPastClasses]);
 
-  // Load upcoming module structure when toggling to upcoming classes view
+  // Load upcoming module structure when a child is selected (regardless of current view)
   useEffect(() => {
-    if (showUpcoming && selectedChild) {
+    if (selectedChild) {
       console.log('📋 Loading upcoming module structure for child:', selectedChild.id);
       loadUpcomingModuleStructure();
     }
-  }, [showUpcoming, selectedChild, loadUpcomingModuleStructure]);
+  }, [selectedChild, loadUpcomingModuleStructure]);
+
+  // Also load upcoming module structure when past classes are loaded (in case it wasn't loaded before)
+  useEffect(() => {
+    if (selectedChild && !areBookingsLoading && upcomingModuleStructure.length === 0) {
+      console.log('📋 No upcoming module structure found, loading it now for child:', selectedChild.id);
+      loadUpcomingModuleStructure();
+    }
+  }, [selectedChild, areBookingsLoading, upcomingModuleStructure.length, loadUpcomingModuleStructure]);
 
   // Load roadmap data when past classes are loaded and not loading
   useEffect(() => {
@@ -126,13 +134,15 @@ const Roadmap = () => {
         console.log('✅ Conditions met, calling loadPastClassRoadmap with csbIds:', csbIds);
         loadPastClassRoadmap(csbIds);
       } else {
-        console.log('⚠️ No bookings found, clearing roadmap data to prevent stale data');
-        clearRoadmapData();
+        console.log('⚠️ No past bookings found, clearing past roadmap data but keeping upcoming data');
+        // Only clear past class data, not upcoming module structure
+        // We'll handle this by calling loadPastClassRoadmap with empty array
+        loadPastClassRoadmap([]);
       }
     } else {
       console.log('❌ Conditions not met for loadPastClassRoadmap');
     }
-  }, [bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap, clearRoadmapData]);
+  }, [bookings, areBookingsLoading, selectedChild, loadPastClassRoadmap]);
 
   const handleSelectChild = (child: Child) => {
     selectChild(child);
@@ -150,9 +160,12 @@ const Roadmap = () => {
 
   // Helper function to filter upcoming classes based on past attended classes
   const filterUpcomingClasses = (upcomingModules: any[], pastModules: any[]) => {
-    if (pastModules.length === 0) {
+    // If no past modules, return all upcoming modules (no filtering needed)
+    if (!pastModules || pastModules.length === 0) {
+      console.log('📋 No past modules found, returning all upcoming modules:', upcomingModules);
       return upcomingModules;
     }
+    
     // Create a set of all attended topics for quick lookup
     const attendedTopics = new Set<string>();
     const attendedModules = new Set<string>();
@@ -165,13 +178,17 @@ const Roadmap = () => {
       });
     });
 
+    console.log('📋 Filtering upcoming modules. Attended topics:', Array.from(attendedTopics));
+
     // Filter upcoming modules and their topics
-    return upcomingModules
+    const filteredModules = upcomingModules
       .map(upcomingModule => {
         // Filter out topics that have already been attended
         const filteredTopics = upcomingModule.topics.filter((topic: string) => 
           !attendedTopics.has(topic)
         );
+
+        console.log(`📋 Module ${upcomingModule.moduleName}: ${upcomingModule.topics.length} total topics, ${filteredTopics.length} remaining after filtering`);
 
         // Only include the module if it has remaining topics
         if (filteredTopics.length > 0) {
@@ -183,12 +200,22 @@ const Roadmap = () => {
         return null; // Module will be filtered out
       })
       .filter(module => module !== null); // Remove modules with no remaining topics
+
+    console.log('📋 Final filtered upcoming modules:', filteredModules);
+    return filteredModules;
   };
 
   const filteredModules = useMemo(() => {
+    console.log('🔄 filteredModules useMemo triggered:', {
+      showUpcoming,
+      groupedModulesLength: groupedModules.length,
+      upcomingModuleStructureLength: upcomingModuleStructure.length,
+      searchQuery
+    });
+
     if (!showUpcoming) {
       // For past classes, use the grouped modules from API
-      return groupedModules.map((groupedModule, index) => ({
+      const pastModules = groupedModules.map((groupedModule, index) => ({
         id: `past-${index}`,
         name: groupedModule.moduleName,
         description: `Past classes for ${groupedModule.moduleName}`,
@@ -217,12 +244,15 @@ const Roadmap = () => {
           module.description.toLowerCase().includes(searchQuery.toLowerCase());
         return matchesSearch;
       });
+
+      console.log('📚 Past modules processed:', pastModules.length);
+      return pastModules;
     }
 
     // For upcoming classes, filter based on past attended classes and use the API data
     const filteredUpcomingModules = filterUpcomingClasses(upcomingModuleStructure, groupedModules);
     
-    return filteredUpcomingModules.map((module, index) => ({
+    const upcomingModules = filteredUpcomingModules.map((module, index) => ({
       id: `upcoming-${index}`,
       name: module.moduleName,
       description: `Upcoming classes for ${module.moduleName}`,
@@ -251,6 +281,9 @@ const Roadmap = () => {
         module.description.toLowerCase().includes(searchQuery.toLowerCase());
       return matchesSearch;
     });
+
+    console.log('✨ Upcoming modules processed:', upcomingModules.length);
+    return upcomingModules;
   }, [searchQuery, selectedStatus, showUpcoming, groupedModules, upcomingModuleStructure]);
 
   // ... (All your other functions like totalClasses, getDesignerIcon, handleChangeRequest, etc., remain the same) ...
@@ -260,6 +293,15 @@ const Roadmap = () => {
   // Calculate upcoming classes based on filtered data (excluding already attended topics)
   const filteredUpcomingModules = filterUpcomingClasses(upcomingModuleStructure, groupedModules);
   const upcomingClasses = filteredUpcomingModules.reduce((sum, module) => sum + module.topics.length, 0);
+  
+  console.log('📊 Stats calculation:', {
+    totalClasses,
+    completedClasses,
+    upcomingClasses,
+    filteredUpcomingModulesLength: filteredUpcomingModules.length,
+    upcomingModuleStructureLength: upcomingModuleStructure.length,
+    groupedModulesLength: groupedModules.length
+  });
   
   const enrolledClasses = showUpcoming ? upcomingClasses : 0; // No static roadmapModules data anymore
 
@@ -676,14 +718,24 @@ const Roadmap = () => {
                 <div className="text-center py-8">
                   <BookOpen className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                   <p className="text-gray-600 font-medium">
-                    No {showUpcoming ? 'upcoming' : 'past'} classes found
+                    {showUpcoming 
+                      ? 'No upcoming classes available yet' 
+                      : 'No past classes found'
+                    }
                   </p>
                   <p className="text-gray-500 text-sm">
                     {showUpcoming 
-                      ? 'Module structure will appear here once available' 
+                      ? 'Module structure will appear here once available. Contact your teacher for more information.' 
                       : 'Complete some classes to see your learning roadmap'
                     }
                   </p>
+                  {showUpcoming && (
+                    <div className="mt-4 p-4 bg-blue-50 rounded-xl border border-blue-200">
+                      <p className="text-blue-700 text-sm">
+                        💡 <strong>Tip:</strong> If you're expecting to see upcoming classes, please check with your teacher or administrator.
+                      </p>
+                    </div>
+                  )}
                 </div>
               )}
 
