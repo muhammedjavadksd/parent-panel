@@ -118,19 +118,35 @@ const Roadmap = () => {
 
   // Load upcoming module structure when a child is selected (regardless of current view)
   useEffect(() => {
-    if (selectedChild) {
-      console.log('📋 Loading upcoming module structure for child:', selectedChild.id);
-      loadUpcomingModuleStructure();
-    }
-  }, [selectedChild, loadUpcomingModuleStructure]);
+    const fetchUpcoming = async () => {
+      if (selectedChild) {
+        const categoryId = getCategoryId(selectedSubject);
+        console.log('📋 Loading upcoming module structure for child:', selectedChild.id, 'categoryId:', categoryId);
+        const usedFallback = await loadUpcomingModuleStructure(selectedChild.id, categoryId);
+        if (usedFallback) {
+          toast({ title: 'Not enrolled in this subject, showing all upcoming modules.' });
+        }
+      }
+    };
+    fetchUpcoming();
+  }, [selectedChild, selectedSubject, loadUpcomingModuleStructure, toast]);
 
   // Also load upcoming module structure when past classes are loaded (in case it wasn't loaded before)
   useEffect(() => {
-    if (selectedChild && !areBookingsLoading && upcomingModuleStructure.length === 0) {
-      console.log('📋 No upcoming module structure found, loading it now for child:', selectedChild.id);
-      loadUpcomingModuleStructure();
-    }
-  }, [selectedChild, areBookingsLoading, upcomingModuleStructure.length, loadUpcomingModuleStructure]);
+    const fetchIfNeeded = async () => {
+      if (selectedChild && !areBookingsLoading && upcomingModuleStructure.length === 0) {
+        const categoryId = getCategoryId(selectedSubject);
+        console.log('📋 No upcoming module structure found, loading it now for child:', selectedChild.id, 'categoryId:', categoryId);
+        const usedFallback = await loadUpcomingModuleStructure(selectedChild.id, categoryId);
+        if (usedFallback) {
+          toast({ title: 'Not enrolled in this subject, showing all upcoming modules.' });
+        }
+      }
+    };    
+    fetchIfNeeded();
+  }, [selectedChild, selectedSubject, areBookingsLoading, upcomingModuleStructure.length, loadUpcomingModuleStructure, toast]);
+
+  
 
   // Load roadmap data when past classes are loaded and not loading
   useEffect(() => {

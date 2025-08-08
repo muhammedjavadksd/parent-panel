@@ -46,7 +46,9 @@ export const useRoadmap = () => {
     }
 
     // Additional validation to ensure all csbIds are valid numbers
-    const validCsbIds = csbIds.filter(id => typeof id === 'number' && !isNaN(id) && id > 0);
+    const validCsbIds = csbIds.filter(
+      id => Number.isInteger(id) && id > 0
+    );
     if (validCsbIds.length === 0) {
       console.log('⚠️ No valid csbIds found, clearing roadmap data');
       setPastClassRoadmap([]);
@@ -99,15 +101,24 @@ export const useRoadmap = () => {
     }
   }, []);
 
-  const loadUpcomingModuleStructure = useCallback(async () => {
-    console.log('🚀 loadUpcomingModuleStructure called');
+  const loadUpcomingModuleStructure = useCallback(async (childId: number, categoryId: number): Promise<boolean> => {
+    console.log('🚀 loadUpcomingModuleStructure called', { childId, categoryId });
     
     setIsLoading(true);
     setError(null);
 
     try {
-      console.log('📡 Making API call to getModuleStructure');
-      const response = await roadmapService.getModuleStructure();
+      console.log('📡 Fetching latest curriculum_id');
+      const curriculumResp = await roadmapService.getCurriculumId(childId, categoryId);
+      if (!curriculumResp.status) {
+        setError(curriculumResp.msg || 'Failed to load curriculum id');
+        setUpcomingModuleStructure([]);
+        return false;
+      }
+
+      const usedFallback = !curriculumResp.curriculumId;
+      console.log('📡 Making API call to getModuleStructure with curriculum_id:', curriculumResp.curriculumId ?? 'ALL');
+      const response = await roadmapService.getModuleStructure(curriculumResp.curriculumId);
 
       if (response.status && response.data) {
         // Group topics by module name
@@ -128,13 +139,16 @@ export const useRoadmap = () => {
 
         setUpcomingModuleStructure(grouped);
         console.log('✅ Upcoming module structure loaded:', grouped);
+        return usedFallback;
       } else {
         setError(response.msg);
         setUpcomingModuleStructure([]);
+        return false;
       }
     } catch (err: any) {
       setError(err.message || 'Failed to load upcoming module structure');
       setUpcomingModuleStructure([]);
+      return false;
     } finally {
       setIsLoading(false);
     }
