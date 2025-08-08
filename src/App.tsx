@@ -94,7 +94,16 @@ function App() {
 
   useEffect(() => {
     const firstVisit = localStorage.getItem('firstVisit');
-    if (!firstVisit) {
+    // Only parse if value is not null, not 'undefined', and is valid JSON
+    let parsedFirstVisit;
+    if (firstVisit && firstVisit !== 'undefined') {
+      try {
+        parsedFirstVisit = JSON.parse(firstVisit);
+      } catch {
+        parsedFirstVisit = firstVisit;
+      }
+    }
+    if (!parsedFirstVisit) {
       setShowPrompt(true);
     }
   }, []);
