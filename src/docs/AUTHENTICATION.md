@@ -16,7 +16,7 @@ This document describes the authentication system implemented for the Parent Pan
 ## API Endpoints
 
 ### 1. Login
-- **URL**: `GET /api/parent-panel/login`
+- **URL**: `GET /api/parent-panel/login` 
 - **Parameters**: 
   - `mobile_number` (string): User's mobile number
   - `password` (string): 4-digit password

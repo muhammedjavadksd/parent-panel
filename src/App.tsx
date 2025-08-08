@@ -11,7 +11,9 @@ import WebsiteTour from './components/WebsiteTour'; // ✅ Add this
 
 // Pages
 import Dashboard from '@/pages/Dashboard';
+
 import Classes from '@/pages/Classes';
+
 import Events from '@/pages/Events';
 import Leaderboard from '@/pages/Leaderboard';
 import Support from '@/pages/Support';
