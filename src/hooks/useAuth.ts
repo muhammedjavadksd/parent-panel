@@ -6,7 +6,14 @@ export const useAuth = () => {
     const [user, setUser] = useState<Parent | null>(() => {
         // Initialize user from localStorage if available
         const storedUser = localStorage.getItem('user');
-        return storedUser ? JSON.parse(storedUser) : null;
+        if (storedUser && storedUser !== 'undefined' && storedUser !== undefined) {
+            try {
+                return JSON.parse(storedUser);
+            } catch {
+                return null;
+            }
+        }
+        return null;
     });
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
